@@ -4,24 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>How the Economy Actually Works — Learning Hub</title>
-<meta name="description" content="How the economy actually works — an interactive learning hub. The ideas, the machine, the trap, the exit, and the buried detour through Salamanca.">
-<link rel="canonical" href="https://treymannyash.github.io/howmoneyactuallyworks/">
-
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://treymannyash.github.io/howmoneyactuallyworks/">
-<meta property="og:title" content="How the Economy Actually Works">
-<meta property="og:description" content="Four chapters + one buried detour. Interactive flow maps, shock simulations, and the road not taken.">
-<meta property="og:image" content="https://treymannyash.github.io/howmoneyactuallyworks/og.png">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:creator" content="@asheredwards_">
-<meta name="twitter:title" content="How the Economy Actually Works">
-<meta name="twitter:description" content="Four chapters + one buried detour. Interactive flow maps, shock simulations, and the road not taken.">
-<meta name="twitter:image" content="https://treymannyash.github.io/howmoneyactuallyworks/og.png">
-
-<!-- Plausible analytics: sign up at plausible.io, then uncomment (double-check data-domain matches what you register) -->
-<!-- <script defer data-domain="https://treymannyash.github.io/howmoneyactuallyworks/" src="https://plausible.io/js/script.js"></script> -->
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -72,7 +54,7 @@ h1 .tilt{font-style:italic; font-weight:600; color:var(--machine)}
 
 /* ---------- SYSTEM MAP (signature) ---------- */
 #map-sec{padding:28px 0 8px}
-.map-frame{position:relative; max-width:1060px; margin:0 auto}
+.map-frame{position:relative; max-width:1120px; width:calc(100% + 56px); margin:0 auto 0 -28px}
 svg#sysmap{width:100%; height:auto; display:block}
 .rail{stroke:var(--line); stroke-width:1.5; fill:none}
 .flow{stroke-width:2.5; fill:none; stroke-dasharray:3 9; animation:flow 1.6s linear infinite; opacity:.85}
@@ -95,10 +77,99 @@ svg#sysmap{width:100%; height:auto; display:block}
   text-transform:uppercase; color:var(--faint); margin-top:2px;
 }
 #synopsis{
-  min-height:54px; max-width:620px; margin:14px auto 0; text-align:center;
+  min-height:54px; max-width:640px; margin:14px auto 0; text-align:center;
   color:var(--sub); font-size:15px; transition:opacity .2s; padding:0 20px;
 }
 #synopsis b{color:var(--text); font-weight:500}
+.year-group{cursor:pointer}
+.year-group circle{transition:opacity .2s, stroke-width .2s}
+.year-group:hover circle, .year-group:focus circle{
+  opacity:0.85; stroke-width:1.6;
+}
+.year-hit{fill:transparent; stroke:none; opacity:1 !important}
+.year-glow{
+  fill:currentColor; opacity:0; filter:blur(7px); pointer-events:none;
+  transition:opacity .25s;
+}
+.year-group:hover .year-glow, .year-group:focus .year-glow{
+  opacity:0.45;
+}
+.year-marker{
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em;
+  fill:var(--faint); opacity:0.75; pointer-events:none;
+  transition: fill .2s, opacity .2s;
+}
+.year-marker.highlight{fill:var(--exit); opacity:0.9}
+.year-group:hover .year-marker, .year-group:focus .year-marker{
+  opacity:1;
+}
+/* soft gold pulse only on the Exit node */
+@keyframes softGoldPulse {
+  0%, 100% { stroke-opacity: 0.12; }
+  50% { stroke-opacity: 0.28; }
+}
+.node[aria-label*="Exit"] .halo:first-child {
+  animation: softGoldPulse 4.2s ease-in-out infinite;
+}
+.node[aria-label*="Exit"] .core{
+  r: 9.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .node[aria-label*="Exit"] .halo:first-child { animation: none; }
+}
+
+/* ---------- VIGILANCE / LIVE DERIVATIVES ---------- */
+#vigilance{padding:48px 0 20px}
+.vigil-label{
+  font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--faint); margin-bottom:18px; display:flex; align-items:center; gap:10px;
+}
+.vigil-label::before{content:''; width:18px; height:1px; background:var(--line)}
+.vigil-intro{
+  max-width:58ch; margin:0 auto 22px; text-align:center;
+  color:var(--sub); font-size:14.5px; line-height:1.55;
+}
+.vigil-intro b{color:var(--text); font-weight:500}
+.nugget-list{display:flex; flex-direction:column; gap:10px; max-width:720px; margin:0 auto}
+.nugget{
+  background:var(--panel); border:1px solid var(--line); border-radius:8px;
+  overflow:hidden; cursor:pointer; transition:border-color .25s, box-shadow .25s;
+}
+.nugget:hover{border-color:color-mix(in srgb, var(--trap) 35%, var(--line))}
+.nugget.open{border-color:color-mix(in srgb, var(--trap) 45%, var(--line)); box-shadow:0 0 0 1px color-mix(in srgb, var(--trap) 12%, transparent)}
+.nugget-head{
+  display:flex; align-items:center; gap:14px; padding:14px 16px;
+}
+.nugget-badge{
+  font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--trap); background:rgba(242,84,91,0.08); border:1px solid rgba(242,84,91,0.18);
+  padding:4px 8px; border-radius:3px; flex:none;
+}
+.nugget-phrase{
+  font-family:var(--serif); font-style:italic; font-size:15.5px; color:var(--text); flex:1;
+}
+.nugget-toggle{
+  font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.08em;
+  transition:transform .25s, color .2s;
+}
+.nugget.open .nugget-toggle{transform:rotate(180deg); color:var(--sub)}
+.nugget-body{
+  max-height:0; overflow:hidden; opacity:0;
+  transition:max-height .35s ease, opacity .25s ease, padding .25s ease;
+  padding:0 16px;
+  border-top:1px solid transparent;
+}
+.nugget.open .nugget-body{
+  max-height:240px; opacity:1; padding:12px 16px 16px;
+  border-top-color:var(--line);
+}
+.nugget-body p{color:var(--sub); font-size:13.5px; line-height:1.55; margin:0}
+.nugget-body p + p{margin-top:8px}
+.nugget-body .mech{
+  font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.04em;
+  margin-top:10px; padding-top:8px; border-top:1px dashed var(--line);
+}
+.nugget-body .mech b{color:var(--trap); font-weight:500}
 
 /* ---------- CHAPTERS ---------- */
 #chapters{padding:56px 0 24px}
@@ -128,6 +199,19 @@ svg#sysmap{width:100%; height:auto; display:block}
   transition:background .2s,color .2s;
 }
 .card .open:hover{background:var(--ac); color:var(--bg)}
+/* Exit card — more visual gravity as the destination */
+.card.exit{
+  box-shadow: inset 0 1px 0 rgba(247,147,26,0.28);
+  border-color: color-mix(in srgb, var(--exit) 22%, var(--line));
+}
+.card.exit:hover{
+  box-shadow: inset 0 1px 0 rgba(247,147,26,0.42), 0 10px 32px rgba(0,0,0,0.32);
+  border-color: color-mix(in srgb, var(--exit) 40%, var(--line));
+  transform: translateY(-3px);
+}
+.card.exit .open{
+  border-width: 1.5px;
+}
 .card.detour{grid-column:1/-1; border-style:dashed; flex-direction:row; align-items:center; gap:24px; flex-wrap:wrap}
 .card.detour::before{background:repeating-linear-gradient(180deg,var(--ac) 0 6px,transparent 6px 12px)}
 .card.detour .d-main{flex:1; min-width:280px; display:flex; flex-direction:column; gap:8px}
@@ -148,11 +232,6 @@ svg#sysmap{width:100%; height:auto; display:block}
   border-top:1px solid var(--line); padding-top:26px;
 }
 .how-line b{color:var(--sub); font-weight:500; font-family:var(--mono); font-size:12.5px; letter-spacing:.08em}
-
-#credit{padding:0 0 48px; text-align:center}
-.credit-line{font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--faint)}
-.credit-line a{color:inherit; text-decoration:none; transition:color .2s}
-.credit-line a:hover{color:var(--sub)}
 
 /* ---------- VIEWER ---------- */
 #viewer{position:fixed; inset:0; z-index:50; display:none; flex-direction:column; background:var(--bg)}
@@ -179,15 +258,6 @@ svg#sysmap{width:100%; height:auto; display:block}
 .vtab:hover{color:var(--text)}
 .vtab.active{color:var(--text); background:rgba(255,255,255,.05)}
 .vtab.active .dot,.vtab.visited .dot{background:var(--tc)}
-.vbar .credit{
-  margin-left:auto; flex:none; font-family:var(--mono); font-size:10.5px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--faint); text-decoration:none; white-space:nowrap;
-  padding:0 4px; transition:color .2s;
-}
-.vbar .credit:hover{color:var(--sub)}
-@media (max-width:560px){
-  .vbar .credit{display:none}
-}
 .vstage{flex:1; position:relative; background:#000}
 .vstage iframe{position:absolute; inset:0; width:100%; height:100%; border:0; display:none; background:#fff}
 .vstage iframe.show{display:block}
@@ -212,7 +282,7 @@ svg#sysmap{width:100%; height:auto; display:block}
     <header class="hero">
       <span class="eyebrow">A four-part learning hub</span>
       <h1>How the economy <span class="tilt">actually</span> works</h1>
-      <p class="lede">One system, four vantage points: <b class="c1">the ideas</b> that built it, <b class="c2">the plumbing</b> that runs it, <b class="c3">the failure mode</b> wired into it, and <b class="c4">the rails</b> being built outside it. Start at the map, or jump straight into a deep dive.</p>
+      <p class="lede">One system, four vantage points: <b class="c1">the ideas</b> that built it, <b class="c2">the plumbing</b> that runs it, <b class="c3">the failure mode</b> wired into it, and <b class="c4">the rails</b> being built outside it. The same question runs through all four: what happens when the unit of account stops being scarce.</p>
     </header>
 
     <section id="map-sec" aria-label="System map">
@@ -227,16 +297,41 @@ svg#sysmap{width:100%; height:auto; display:block}
           <path class="flow" style="stroke:var(--machine)" d="M330,105 C 375,128 380,140 400,150 C 440,210 530,225 560,213"/>
           <path class="flow" style="stroke:var(--trap)"    d="M560,213 C 620,190 640,175 660,150 C 700,90 770,68 830,78"/>
           <path class="flow" style="stroke:var(--exit)"    d="M830,78 C 900,92 960,140 1000,190"/>
+          <!-- interactive history markers along the Exit leg -->
+          <g id="year1971" class="year-group" tabindex="0" role="button" aria-label="1971 — Nixon ends gold convertibility">
+            <circle class="year-hit" cx="830" cy="48" r="22"/>
+            <circle class="year-glow" cx="830" cy="48" r="16" style="color:var(--exit)"/>
+            <circle cx="830" cy="48" r="13" fill="none" stroke="var(--exit)" stroke-width="1.4" opacity="0.45"/>
+            <text class="year-marker highlight" x="830" y="52" text-anchor="middle">1971</text>
+          </g>
+          <g id="year1987" class="year-group" tabindex="0" role="button" aria-label="1987 — Black Monday">
+            <circle class="year-hit" cx="890" cy="48" r="22"/>
+            <circle class="year-glow" cx="890" cy="48" r="16" style="color:var(--trap)"/>
+            <circle cx="890" cy="48" r="13" fill="none" stroke="var(--trap)" stroke-width="1.4" opacity="0.4"/>
+            <text class="year-marker" x="890" y="52" text-anchor="middle" style="fill:var(--trap)">1987</text>
+          </g>
+          <g id="year2000" class="year-group" tabindex="0" role="button" aria-label="2000 — Dot-com peak">
+            <circle class="year-hit" cx="945" cy="48" r="22"/>
+            <circle class="year-glow" cx="945" cy="48" r="16" style="color:var(--machine)"/>
+            <circle cx="945" cy="48" r="13" fill="none" stroke="var(--machine)" stroke-width="1.4" opacity="0.4"/>
+            <text class="year-marker" x="945" y="52" text-anchor="middle" style="fill:var(--machine)">2000</text>
+          </g>
+          <g id="year2008" class="year-group" tabindex="0" role="button" aria-label="2008 — Global Financial Crisis">
+            <circle class="year-hit" cx="995" cy="48" r="22"/>
+            <circle class="year-glow" cx="995" cy="48" r="16" style="color:var(--trap)"/>
+            <circle cx="995" cy="48" r="13" fill="none" stroke="var(--trap)" stroke-width="1.4" opacity="0.45"/>
+            <text class="year-marker" x="995" y="52" text-anchor="middle" style="fill:var(--trap)">2008</text>
+          </g>
           <!-- nodes injected by JS -->
           <g id="nodes"></g>
         </svg>
-        <p class="map-hint">Hover a station · click to enter</p>
-        <p id="synopsis">The route runs left to right — but every station stands on its own.</p>
+        <p class="map-hint">Hover a station or year · click a station to enter</p>
+        <p id="synopsis">The route runs left to right. Hover the years on the upper path (1971 → 2008) to see how the same monetary pattern repeats. Every station stands on its own — yet the same constraint runs underneath all of them.</p>
       </div>
     </section>
 
     <section id="arc">
-      <p class="arc-line">The <em class="a1">ideas</em> shaped the machine. The <em class="a2">machine</em> hides the trap. The <em class="a3">trap</em> explains the exit. The <em class="a4">exit</em> is still being built.</p>
+      <p class="arc-line">The <em class="a1">ideas</em> shaped the machine. The <em class="a2">machine</em> hides the trap. The <em class="a3">trap</em> explains the exit. The <em class="a4">exit</em> is still being built — outside the old rails.</p>
     </section>
 
     <section id="chapters" aria-label="Chapters">
@@ -244,11 +339,22 @@ svg#sysmap{width:100%; height:auto; display:block}
     </section>
 
     <section id="how">
-      <p class="how-line">First visit? Follow <b>I → IV</b> — the timeline gives you the vocabulary, the flow model gives you the mechanics, and the last two are the payoff. Returning? Jump straight in; each chapter keeps its state while this page stays open.</p>
+      <p class="how-line">
+        First visit? Follow <b>I → IV</b> — the timeline gives you the vocabulary, the flow model gives you the mechanics, and the last two are the payoff.<br><br>
+        One quiet thread runs through every chamber: whether the unit of account is scarce by nature or elastic by policy. That single distinction rewrites incentives, risk, and time preference. Returning readers can jump straight in; each chapter keeps its state while this page stays open.
+      </p>
     </section>
 
-    <section id="credit">
-      <p class="credit-line">built by <a href="https://x.com/asheredwards_" target="_blank" rel="noopener">@_asheredwards</a></p>
+    <section id="vigilance" aria-label="Contemporary transmission">
+      <div class="vigil-label">Live derivatives</div>
+      <p class="vigil-intro">
+        You’ve heard these lines your whole life. They sound like common sense.  
+        Once you see that money itself can be created at will — and that the first people to get the new money gain at everyone else’s expense — the same lines start looking different.  
+        That’s the pattern underneath all of them.
+      </p>
+      <div class="nugget-list" id="nuggetList">
+        <!-- filled by JS -->
+      </div>
     </section>
   </div>
 </div>
@@ -257,10 +363,9 @@ svg#sysmap{width:100%; height:auto; display:block}
   <div class="vbar">
     <button class="back" id="btn-back" title="Back to map">← Map</button>
     <nav class="vtabs" id="vtabs" aria-label="Chapters"></nav>
-    <a class="credit" href="https://x.com/asheredwards_" target="_blank" rel="noopener">@_asheredwards</a>
   </div>
   <div class="vstage" id="vstage">
-    <div id="loadmsg">Loading chapter…</div>
+    <div id="loadmsg">Opening chapter…</div>
   </div>
 </div>
 
@@ -294,15 +399,15 @@ const CH = [
     tag:'What the plumbing does in a crisis',
     src:'The Great Taking \u2014 visual analysis',
     syn:'<b>The Trap</b> \u2014 the legal architecture that routes \u201cyour\u201d assets upward, automatically and with priority, when the system breaks.',
-    desc:'Your assets don\u2019t sit safely in \u201cyour\u201d account \u2014 they flow through a chain of legal relationships built so that, in crisis, collateral moves upward with legal priority. Walk the eight steps that built the mechanism, then flip the chain between normal times and crisis.',
+    desc:'Your assets don\u2019t sit safely in \u201cyour\u201d account \u2014 they flow through a chain of legal relationships built so that, in crisis, collateral moves upward with legal priority. The architecture assumes an elastic unit of account. Walk the eight steps that built the mechanism, then flip the chain between normal times and crisis.',
     stats:'<i>8</i> legal steps \u00b7 normal vs. crisis chain \u00b7 precedents & key actors'
   },
   {
     key:'exit', num:'IV', roman:'IV', name:'The Exit', color:'var(--exit)', hex:'#F7931A',
     tag:'Rails built outside the system',
     src:'The parallel stack \u2014 Bitcoin L1, Liquid, Fedimint',
-    syn:'<b>The Exit</b> \u2014 the parallel stack, bottom to top: Bitcoin bedrock, then Liquid and Fedimint \u2014 with a fiat-world contrast on every element.',
-    desc:'The parallel stack, read bottom-up: five bedrock properties of Bitcoin\u2019s base layer, then the two rooms built on top \u2014 Liquid for institutions, Fedimint for communities. Every element carries a \u201cmeanwhile, in the fiat world\u201d note, and the final table puts the fiat system in a fourth column, judged by the same criteria.',
+    syn:'<b>The Exit</b> \u2014 the parallel stack, bottom to top: a scarce base layer, then Liquid and Fedimint \u2014 each element contrasted with the elastic system it sits beside.',
+    desc:'The parallel stack, read bottom-up: five bedrock properties of a monetary base that cannot be expanded by committee, then the two rooms built on top \u2014 Liquid for institutions, Fedimint for communities. Every element carries a \u201cmeanwhile, in the fiat world\u201d note. The final table puts the elastic system in a fourth column and judges both by the same criteria.',
     stats:'<i>5</i> bedrock properties \u00b7 <i>2</i> layer-2 rooms \u00b7 <i>4</i>-column reckoning vs. fiat'
   }
 ];
@@ -311,8 +416,8 @@ const DET = {
   key:'detour', num:'◆', name:'The Detour', hex:'#7FC69A',
   tag:'Salamanca, 1544–1605',
   src:'The School of Salamanca',
-  syn:'<b>The Detour</b> \u2014 three centuries before Heidelberg, Spanish friars derived subjective value, the quantity theory, and market prices. Then history buried them.',
-  desc:'The buried prologue to Chapter I. While judging the morality of contracts in an empire drowning in American silver, the theologians of Salamanca worked out subjective value, the quantity theory of money, and purchasing-power parity \u2014 centuries early. Five theses, each with a token showing where it\u2019s still running today.',
+  syn:'<b>The Detour</b> \u2014 three centuries before Heidelberg, Spanish friars derived subjective value, the quantity theory, and market prices while confronting a sudden expansion of the money supply. Then history buried them.',
+  desc:'The buried prologue to Chapter I. While judging the morality of contracts in an empire suddenly flooded with American silver, the theologians of Salamanca worked out subjective value, the quantity theory of money, and purchasing-power parity \u2014 centuries early. Five theses, each with a token showing where the same logic is still running today.',
   stats:'<i>5</i> theses \u00b7 <i>5</i> tokens to today \u00b7 <i>1</i> rediscovery, 1952'
 };
 const ALL_CH = CH.concat([DET]);
@@ -333,6 +438,28 @@ function b64ToUtf8(b64){
 const nodesG = document.getElementById('nodes');
 const synEl = document.getElementById('synopsis');
 const SYN_DEFAULT = synEl.innerHTML;
+const YEAR_TEXTS = {
+  year1971: '<b>1971 — The constraint breaks.</b> Nixon closes the gold window. The dollar is no longer backed by anything scarce. From this point forward, money can be created by policy. Every boom, bailout, and “crisis response” after this date happens under the new rules.',
+  year1987: '<b>1987 — Black Monday.</b> The market drops 22% in a single day. The Fed responds by flooding the system with liquidity. The pattern is set: when leveraged bets go bad, new money is created to protect the center. The first receivers of that money are not ordinary savers.',
+  year2000: '<b>2000 — Dot-com peak.</b> Cheap credit and the promise of a new era drive valuations far beyond earnings. When the bubble bursts, the response is the same: lower rates, more liquidity. The people closest to the new money recover first. Everyone else eats the lost years.',
+  year2008: '<b>2008 — The system cracks in public.</b> Housing credit expanded for years because money was cheap and abundant. When it collapsed, the institutions that created and packaged the risk were protected with newly created money. Homeowners and workers absorbed the real losses. Classic Cantillon: the center is rescued, the periphery pays.'
+};
+
+/* interactive year markers */
+(function(){
+  Object.keys(YEAR_TEXTS).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const show = () => { synEl.innerHTML = YEAR_TEXTS[id]; };
+    const hide = () => { synEl.innerHTML = SYN_DEFAULT; };
+    el.addEventListener('mouseenter', show);
+    el.addEventListener('mouseleave', hide);
+    el.addEventListener('focus', show);
+    el.addEventListener('blur', hide);
+    el.addEventListener('click', show);
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); show(); } });
+  });
+})();
 CH.forEach((c,i)=>{
   const [x,y] = NODE_POS[i];
   const above = y < 170;               // label placement
@@ -342,12 +469,17 @@ CH.forEach((c,i)=>{
   g.setAttribute('role','button');
   g.setAttribute('aria-label', c.num + '. ' + c.name + ' \u2014 ' + c.tag);
   const ty = above ? y+42 : y-52;
+  const anchor = i === 0 ? 'start' : i === CH.length-1 ? 'end' : 'middle';
+  const extraHalo = c.key === 'exit'
+    ? `<circle class="halo" cx="${x}" cy="${y}" r="28" fill="none" stroke="${c.hex}" stroke-opacity="0.12" stroke-width="1"/>`
+    : '';
   g.innerHTML = `
+    ${extraHalo}
     <circle class="halo" cx="${x}" cy="${y}" r="22" fill="none" stroke="${c.hex}" stroke-opacity="0.35" stroke-width="1.5"/>
     <circle class="core" cx="${x}" cy="${y}" r="8" fill="${c.hex}"/>
-    <text class="n-num" x="${x}" y="${ty}" text-anchor="middle">${c.num}.</text>
-    <text class="n-name" x="${x}" y="${ty+20}" text-anchor="middle">${c.name.toUpperCase()}</text>
-    <text class="n-tag" x="${x}" y="${ty+38}" text-anchor="middle">${c.tag}</text>`;
+    <text class="n-num" x="${x}" y="${ty}" text-anchor="${anchor}">${c.num}.</text>
+    <text class="n-name" x="${x}" y="${ty+20}" text-anchor="${anchor}">${c.name.toUpperCase()}</text>
+    <text class="n-tag" x="${x}" y="${ty+38}" text-anchor="${anchor}">${c.tag}</text>`;
   g.addEventListener('mouseenter',()=>{ synEl.innerHTML = c.syn; });
   g.addEventListener('mouseleave',()=>{ synEl.innerHTML = SYN_DEFAULT; });
   g.addEventListener('focus',()=>{ synEl.innerHTML = c.syn; });
@@ -383,7 +515,7 @@ CH.forEach((c,i)=>{
 const grid = document.getElementById('ch-grid');
 CH.forEach(c=>{
   const el = document.createElement('article');
-  el.className = 'card';
+  el.className = 'card' + (c.key === 'exit' ? ' exit' : '');
   el.style.setProperty('--ac', c.hex);
   el.innerHTML = `
     <div class="top"><span class="num">Chapter ${c.num}</span><span class="visited" data-v="${c.key}"></span></div>
@@ -444,7 +576,6 @@ const loadmsg = document.getElementById('loadmsg');
 function openChapter(key){
   const c = ALL_CH.find(x=>x.key===key);
   if(!c) return;
-  const alreadyOpen = viewer.classList.contains('open');
   viewer.classList.add('open');
   document.body.style.overflow = 'hidden';
   activeKey = key;
@@ -471,30 +602,17 @@ function openChapter(key){
       f.classList.add('show');
     }));
   }
-  // entering the viewer from the map gets its own history entry (so back -> map);
-  // switching tabs while already open replaces in place (no dupes per tab switch)
-  if (!alreadyOpen && location.hash !== '#'+key){
-    history.pushState({hub:key}, '', '#'+key);
-  } else {
-    history.replaceState({hub:key}, '', '#'+key);
-  }
-}
-
-function closeViewer(clearHash){
-  viewer.classList.remove('open');
-  document.body.style.overflow = '';
-  activeKey = null;
-  if (clearHash && location.hash){
-    history.replaceState(null, '', location.pathname + location.search);
-  }
 }
 
 document.getElementById('btn-back').addEventListener('click',()=>{
-  closeViewer(true);
+  viewer.classList.remove('open');
+  document.body.style.overflow = '';
+  activeKey = null;
 });
 document.addEventListener('keydown',e=>{
   if (e.key==='Escape' && viewer.classList.contains('open')){
-    closeViewer(true);
+    viewer.classList.remove('open');
+    document.body.style.overflow = '';
   }
 });
 /* chapters can request navigation (e.g., Chapter I ↔ the Detour) */
@@ -503,19 +621,106 @@ window.addEventListener('message', e=>{
     openChapter(e.data.hubOpen);
   }
 });
-/* browser back/forward across the map <-> chapter history entry */
-window.addEventListener('hashchange',()=>{
-  const key = location.hash.slice(1);
-  if (key && ALL_CH.some(c=>c.key===key)){
-    if (activeKey !== key) openChapter(key);
-  } else if (viewer.classList.contains('open')){
-    closeViewer(false);
+
+/* ---------- LIVE DERIVATIVES / VIGILANCE NUGGETS ---------- */
+const NUGGETS = [
+  {
+    badge: 'Price control',
+    phrase: '“Rent control keeps housing affordable”',
+    body: `
+      <p>When the government caps what landlords can charge, fewer people want to build or maintain rental housing. Supply shrinks. The apartments that remain go to whoever has the best connections or luck, not to the people who need them most.</p>
+      <p><b>Real examples:</b> San Francisco, New York, and Stockholm all have long-running rent controls. All three have severe housing shortages, black markets for leases, and long waiting lists. Cities that avoided heavy controls (Houston, Tokyo) kept building and stayed more affordable relative to incomes.</p>
+      <p>This keeps getting worse because the money itself is being diluted. As the dollar buys less, rents feel more painful — so the demand for controls grows, even while the controls themselves reduce the number of places to live.</p>
+      <div class="mech">Real driver: <b>new money enters → prices rise → people demand controls → supply falls further</b>. The money printer is the quiet cause; rent control is the visible reaction.</div>
+    `
+  },
+  {
+    badge: 'Labor floor',
+    phrase: '“We need a living wage / higher minimum wage”',
+    body: `
+      <p>A higher legal minimum wage makes it illegal to hire anyone whose work is worth less than that number. The people with the least experience and fewest skills are the first ones who stop getting hired.</p>
+      <p><b>Real examples:</b> After large minimum-wage hikes in Seattle and California, studies found reduced hours and fewer entry-level jobs for teens and low-skill workers. Fast-food chains accelerated automation (ordering kiosks, robotic fryers) in the same period. The people the policy claimed to help were often the ones priced out.</p>
+      <p>The reason the pressure never stops is that the dollar keeps losing value. Every few years the same wage buys less food and rent, so the political demand for “another raise” returns — even if productivity didn’t change.</p>
+      <div class="mech">Real driver: <b>diluting the money → real wages feel lower → demand for higher legal floors</b>. The floor fights a symptom. The printer creates the symptom.</div>
+    `
+  },
+  {
+    badge: 'Capital levy',
+    phrase: '“Tax the rich / make them pay their fair share”',
+    body: `
+      <p>Calls to “tax the rich” treat big piles of wealth as if they just appeared. In reality, a large part of the gap comes from who gets the new money first. Banks, large institutions, and governments receive freshly created dollars before prices rise. Everyone else gets the higher prices later.</p>
+      <p><b>Real examples:</b> After 2008 and again in 2020–21, massive new money creation coincided with soaring asset prices (stocks, housing, private equity). Households that already owned assets got richer on paper. Households that rented and held cash fell further behind. France’s wealth tax in the 2010s led to capital flight of thousands of high earners — the base shrank and the middle eventually paid more.</p>
+      <p>That sequence (the Cantillon effect) quietly moves purchasing power toward the well-connected. The public is then told the problem is greedy rich people — while the money creation that widened the gap continues.</p>
+      <div class="mech">Real driver: <b>new money goes to the connected first → they buy assets early → everyone else pays higher prices</b>. The tax debate rarely names the printer.</div>
+    `
+  },
+  {
+    badge: 'Stimulus',
+    phrase: '“Government must invest / stimulate the economy”',
+    body: `
+      <p>When government “stimulates,” the money still has to come from somewhere. It can tax you, borrow (future taxes), or create new money. Creating new money is the easiest political option because the cost is hidden in higher prices later.</p>
+      <p><b>Real examples:</b> 2008–09 bank bailouts and QE protected the balance sheets of the largest institutions first. 2020 stimulus checks and PPP loans were followed by the highest inflation in 40 years — the new money hit asset prices and then consumer prices. Contractors and asset owners near the spending recovered fastest; savers and wage earners on fixed incomes absorbed the loss of purchasing power.</p>
+      <p>That new money doesn’t land evenly. It lands first with government contractors, banks, and whoever is closest to the spending. By the time it reaches ordinary workers and savers, prices have already moved.</p>
+      <div class="mech">Real driver: <b>create money → spend it near the center → prices rise at the edges</b>. What looks like help is often a hidden transfer from the outside to the inside.</div>
+    `
+  },
+  {
+    badge: 'Relative position',
+    phrase: '“Wealth inequality is the defining crisis of our time”',
+    body: `
+      <p>Most people are better off in absolute terms than their grandparents were. The political fight is increasingly about relative gaps — who has more compared to whom.</p>
+      <p><b>Real examples:</b> From 2009 to 2021 the Fed’s balance sheet grew from under $1T to nearly $9T. In the same window, the S&P 500 and home prices in major metros rose dramatically. Households that already owned stocks and real estate saw their net worth jump. Households that did not were left competing for the same assets with diluted dollars. The measured wealth gap widened — then the gap itself was blamed on personal character instead of on who received the new money first.</p>
+      <p>This is the Cantillon effect in plain sight: first receivers win, last receivers lose.</p>
+      <div class="mech">Real driver: <b>Cantillon effect — first receivers win, last receivers lose</b>. The inequality conversation almost never starts with who gets the new money first.</div>
+    `
+  },
+  {
+    badge: 'Cross-subsidy',
+    phrase: '“We need affordable housing mandates”',
+    body: `
+      <p>Forcing builders to sell some units cheap does not create free housing. The builder has to make up the lost money somewhere — usually by charging more for the other units or by building fewer total homes.</p>
+      <p><b>Real examples:</b> Inclusionary zoning rules in California and New York City have been repeatedly shown to reduce overall housing production. Developers either raise prices on market-rate units or walk away from projects. The “affordable” units that do get built are often allocated by lottery — while the total number of homes stays lower than it would have been without the mandate.</p>
+      <p>Meanwhile the money keeps being diluted, so the underlying pressure on housing costs never goes away. Mandates fight the symptom; they leave the cause untouched.</p>
+      <div class="mech">Real driver: <b>money dilution pushes asset prices up → politics demands “affordable” rules → total supply falls</b>. The printer and the mandate work in the same direction: fewer homes at higher prices.</div>
+    `
   }
-});
-/* deep link: index.html#key opens straight into that chapter */
-(function(){
-  const initKey = location.hash.slice(1);
-  if (initKey && ALL_CH.some(c=>c.key===initKey)) openChapter(initKey);
+];
+
+(function renderNuggets(){
+  const list = document.getElementById('nuggetList');
+  if (!list) return;
+  NUGGETS.forEach((n, i) => {
+    const el = document.createElement('div');
+    el.className = 'nugget';
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-expanded', 'false');
+    el.innerHTML = `
+      <div class="nugget-head">
+        <span class="nugget-badge">${n.badge}</span>
+        <span class="nugget-phrase">${n.phrase}</span>
+        <span class="nugget-toggle">▼</span>
+      </div>
+      <div class="nugget-body">${n.body}</div>
+    `;
+    const toggle = () => {
+      const wasOpen = el.classList.contains('open');
+      // close others
+      list.querySelectorAll('.nugget').forEach(x => {
+        x.classList.remove('open');
+        x.setAttribute('aria-expanded', 'false');
+      });
+      if (!wasOpen) {
+        el.classList.add('open');
+        el.setAttribute('aria-expanded', 'true');
+      }
+    };
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+    list.appendChild(el);
+  });
 })();
 </script>
 </body>
