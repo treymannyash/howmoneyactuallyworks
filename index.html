@@ -723,5 +723,217 @@ const NUGGETS = [
   });
 })();
 </script>
+<!-- ==================== ADDITIONS 3-6 ==================== -->
+<style>
+/* --- Source boxes, video anchors, CTA --- */
+.source-box{
+  position:fixed; bottom:20px; right:20px; z-index:60;
+  max-width:320px; padding:16px 18px;
+  background:rgba(21,16,10,0.97); border:1px solid var(--line);
+  border-radius:10px; backdrop-filter:blur(10px);
+  font-size:13px; line-height:1.55;
+  transform:translateY(150%); transition:transform .4s ease;
+}
+.source-box.show{transform:translateY(0)}
+.source-box h4{
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em;
+  text-transform:uppercase; margin-bottom:10px;
+}
+.source-box p{color:var(--sub); font-size:12.5px; margin-bottom:10px}
+.source-box a{
+  color:var(--text); text-decoration:none;
+  font-family:var(--mono); font-size:11px;
+  border-bottom:1px solid var(--line); padding-bottom:1px;
+}
+.source-box a:hover{border-color:var(--text)}
+.source-box .tag{
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--faint); margin-top:10px;
+  display:block;
+}
+/* Video anchors positioned top-right */
+.source-box.video-anchor{ bottom:auto; top:80px; right:20px; max-width:340px; }
+/* CTA centered vertically */
+.source-box.cta-box{ bottom:auto; top:50%; right:20px; transform:translateY(-50%) translateX(120%); }
+.source-box.cta-box.show{ transform:translateY(-50%) translateX(0); }
+.source-box .cta-grid{ display:flex; flex-direction:column; gap:10px; margin:12px 0; }
+.source-box .cta-grid a{
+  display:block; padding:10px 12px; border:1px solid var(--line);
+  border-radius:6px; text-decoration:none; transition:border-color .2s;
+}
+.source-box .cta-grid a:hover{ border-color:var(--sub); }
+.source-box .cta-grid strong{
+  display:block; color:var(--text); font-family:var(--serif);
+  font-size:14px; margin-bottom:3px;
+}
+.source-box .cta-grid span{ color:var(--sub); font-size:12px; }
+.source-box .cta-note{
+  font-family:var(--mono); font-size:10px; color:var(--faint);
+  letter-spacing:.06em; margin-top:8px;
+}
+@media(max-width:640px){
+  .source-box{ left:16px; right:16px; max-width:none; bottom:12px; }
+  .source-box.video-anchor{ top:auto; bottom:12px; }
+  .source-box.cta-box{ top:auto; bottom:12px; transform:translateY(120%); }
+  .source-box.cta-box.show{ transform:translateY(0); }
+}
+</style>
+
+<!-- Source: Bitcoin (Chapter IV) -->
+<div class="source-box" id="sources-exit">
+  <h4 style="color:var(--exit)">Primary Sources</h4>
+  <p><a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin White Paper</a> — Satoshi Nakamoto, 2008. Nine pages that solve double-spending by making money scarce by algorithm.</p>
+  <p><a href="https://nakamotoinstitute.org/" target="_blank" rel="noopener">Nakamoto Institute</a> — Szabo, Finney, Dai, and the cypherpunk prehistory.</p>
+  <p><a href="https://planb.network/" target="_blank" rel="noopener">Plan B Network</a> — Courses, data models, and the stock-to-flow framework.</p>
+  <span class="tag">Education &amp; Data</span>
+</div>
+
+<!-- Source: Salamanca (Detour) -->
+<div class="source-box" id="sources-detour">
+  <h4 style="color:var(--detour)">The Salamanca Texts</h4>
+  <p><a href="https://mises.org/library/salamanca-school" target="_blank" rel="noopener">Mises Institute: Salamanca School</a> — overview and curated texts.</p>
+  <p><a href="https://mises.org/library/doctrine-right-kings" target="_blank" rel="noopener">Juan de Mariana, <em>De Rege</em></a> — on the morality of debasement (1599).</p>
+  <p><a href="https://mises.org/library/treatise-money" target="_blank" rel="noopener">Martín de Azpilcueta</a> — quantity theory of money (1556).</p>
+  <span class="tag">Primary Texts (PDF)</span>
+</div>
+
+<!-- Video: Nixon Shock (Chapter I) -->
+<div class="source-box video-anchor" id="video-ideas">
+  <h4 style="color:var(--ideas)">📺 Primary Source</h4>
+  <a href="https://www.youtube.com/watch?v=3BqHfA3mr0s" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:8px;">
+    Nixon suspends dollar convertibility — August 15, 1971
+  </a>
+  <p style="font-size:12px; color:var(--sub); line-height:1.5;">This address ended Bretton Woods. The dollar was no longer redeemable for gold at $35/oz. Everything in Chapter I flows from this moment.</p>
+  <span class="tag">Primary Source</span>
+</div>
+
+<!-- Video: Too Big to Fail (Chapter III) -->
+<div class="source-box video-anchor" id="video-trap">
+  <h4 style="color:var(--trap)">📽️ See It Dramatized</h4>
+  <a href="https://www.hbo.com/movies/too-big-to-fail" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:8px;">
+    <em>Too Big to Fail</em> (HBO, 2011)
+  </a>
+  <p style="font-size:12px; color:var(--sub); line-height:1.5;">Reconstructs the Lehman weekend and AIG bailout. The legal mechanics you just read about — collateral chains, repo freezes, Fed backstops — are the invisible scaffolding beneath the drama.</p>
+  <p style="font-size:11px; color:var(--faint); margin-top:6px;"><strong>Note:</strong> Films compress timelines. Use them to feel the pressure, not to learn the sequence.</p>
+  <span class="tag">Dramatization</span>
+</div>
+
+<!-- CTA: What Now? (Chapter IV) -->
+<div class="source-box cta-box" id="cta-exit">
+  <h4 style="color:var(--exit); margin-bottom:14px;">If this resonates</h4>
+  <div class="cta-grid">
+    <a href="https://www.river.com/learn" target="_blank" rel="noopener">
+      <strong>Learn self-custody</strong>
+      <span>Own your keys. No exchange required.</span>
+    </a>
+    <a href="https://www.fidelity.com/learning-center/trading-investing/bitcoin" target="_blank" rel="noopener">
+      <strong>Understand the tradeoffs</strong>
+      <span>Volatility, regulation, and what "hard money" actually means.</span>
+    </a>
+    <a href="#vigilance" onclick="document.getElementById('viewer').classList.remove('open'); document.body.style.overflow=''; document.getElementById('landing').classList.remove('hidden'); setTimeout(()=>document.getElementById('vigilance').scrollIntoView({behavior:'smooth'}),300); return false;">
+      <strong>Share one argument</strong>
+      <span>Pick the Live Derivative that changed your mind. Send it to someone who disagrees.</span>
+    </a>
+  </div>
+  <p class="cta-note">No affiliate links. No wallet shilling. Just the next step.</p>
+</div>
+
+<script>
+(function(){
+  // ==================== PROGRESS TRACKING ====================
+  // Restore visited chapters from localStorage
+  const savedVisited = localStorage.getItem('hte-visited');
+  if(savedVisited){
+    savedVisited.split(',').forEach(k => { if(k) visited[k] = true; });
+  }
+
+  // Show progress in the "how" section
+  function updateProgress(){
+    const howLine = document.querySelector('.how-line');
+    if(!howLine) return;
+    const keys = Object.keys(visited).filter(k => visited[k]);
+    if(keys.length === 0) return;
+    let el = howLine.querySelector('.progress-text');
+    if(!el){
+      el = document.createElement('span');
+      el.className = 'progress-text';
+      el.style.cssText = 'display:block;margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint);';
+      howLine.appendChild(el);
+    }
+    const total = CH.length;
+    el.textContent = keys.length >= total 
+      ? 'All four chapters explored. Go deeper.' 
+      : `${keys.length} of ${total} chapters explored`;
+  }
+  // Run after a short delay to ensure DOM is ready
+  setTimeout(updateProgress, 100);
+
+  // ==================== SOURCE BOXES & VIDEO ANCHORS ====================
+  function showOverlays(key){
+    // Hide all first
+    document.querySelectorAll('.source-box').forEach(b => b.classList.remove('show'));
+    // Show source box if exists
+    const sourceBox = document.getElementById('sources-' + key);
+    if(sourceBox) sourceBox.classList.add('show');
+    // Show video anchor if exists
+    const videoBox = document.getElementById('video-' + key);
+    if(videoBox) videoBox.classList.add('show');
+    // Show CTA for Chapter IV after 4 seconds
+    if(key === 'exit'){
+      setTimeout(() => {
+        const cta = document.getElementById('cta-exit');
+        if(cta && !cta.classList.contains('show')) cta.classList.add('show');
+      }, 4000);
+    }
+  }
+
+  function hideOverlays(){
+    document.querySelectorAll('.source-box').forEach(b => b.classList.remove('show'));
+  }
+
+  // ==================== PATCH openChapter ====================
+  const originalOpenChapter = window.openChapter;
+  window.openChapter = function(key){
+    // Call original
+    const result = originalOpenChapter(key);
+    // Save to localStorage
+    if(visited[key]){
+      localStorage.setItem('hte-visited', Object.keys(visited).filter(k => visited[k]).join(','));
+      updateProgress();
+    }
+    // Show overlays
+    showOverlays(key);
+    return result;
+  };
+
+  // ==================== PATCH close handlers ====================
+  const btnBack = document.getElementById('btn-back');
+  if(btnBack){
+    const originalBack = btnBack.onclick;
+    btnBack.addEventListener('click', function(){
+      hideOverlays();
+      if(originalBack) originalBack.call(this);
+    });
+  }
+
+  // Patch Escape key
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      hideOverlays();
+    }
+  });
+
+  // Also hide on any click outside viewer when viewer is open
+  document.addEventListener('click', function(e){
+    const viewer = document.getElementById('viewer');
+    if(viewer && viewer.classList.contains('open') && !viewer.contains(e.target) && !e.target.closest('.ch-card') && !e.target.closest('.node') && !e.target.closest('.detour-btn')){
+      hideOverlays();
+    }
+  });
+
+})();
+</script>
+<!-- ==================== END ADDITIONS 3-6 ==================== -->
+
 </body>
 </html>
