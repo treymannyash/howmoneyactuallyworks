@@ -934,6 +934,165 @@ const NUGGETS = [
 })();
 </script>
 <!-- ==================== END ADDITIONS 3-6 ==================== -->
+<!-- ==================== HIGH-SIGNAL SOURCES + VIDEOS ==================== -->
+<style>
+.hs-source-box{
+  position:fixed; bottom:20px; right:20px; z-index:60;
+  max-width:340px; padding:16px 18px;
+  background:rgba(21,16,10,0.97); border:1px solid var(--line);
+  border-radius:10px; backdrop-filter:blur(10px);
+  font-size:13px; line-height:1.55;
+  transform:translateY(150%); transition:transform .4s ease;
+}
+.hs-source-box.show{transform:translateY(0)}
+.hs-source-box h4{
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em;
+  text-transform:uppercase; margin-bottom:10px;
+}
+.hs-source-box p{color:var(--sub); font-size:12.5px; margin-bottom:10px}
+.hs-source-box a{
+  color:var(--text); text-decoration:none;
+  font-family:var(--mono); font-size:11px;
+  border-bottom:1px solid var(--line); padding-bottom:1px;
+}
+.hs-source-box a:hover{border-color:var(--text)}
+.hs-source-box .tag{
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--faint); margin-top:10px;
+  display:block;
+}
+/* Video variant — top right */
+.hs-source-box.video-box{ bottom:auto; top:80px; right:20px; max-width:360px; }
+.hs-source-box.video-box .vid-meta{
+  font-size:12px; color:var(--sub); line-height:1.5; margin-top:8px;
+}
+@media(max-width:640px){
+  .hs-source-box{ left:16px; right:16px; max-width:none; bottom:12px; }
+  .hs-source-box.video-box{ top:auto; bottom:12px; }
+}
+</style>
+
+<!-- I. THE IDEAS — Hayek Nobel Lecture -->
+<div class="hs-source-box" id="hs-ideas">
+  <h4 style="color:var(--ideas)">🏛️ The Austrian Climax</h4>
+  <p><a href="https://www.nobelprize.org/prizes/economic-sciences/1974/hayek/lecture/" target="_blank" rel="noopener">F.A. Hayek — "The Pretense of Knowledge"</a> (Nobel lecture, 1974)</p>
+  <p style="font-size:12px;">Hayek attacks the scientism of the economists trained in the German historical school — the same tradition that built America's textbooks and institutions. Short. Devastating.</p>
+  <span class="tag">Primary Source</span>
+</div>
+
+<!-- II. THE MACHINE — FRED M2 Chart -->
+<div class="hs-source-box" id="hs-machine">
+  <h4 style="color:var(--machine)">📊 The Machine Running</h4>
+  <p><a href="https://fred.stlouisfed.org/series/M2SL" target="_blank" rel="noopener">FRED — M2 Money Stock</a></p>
+  <p style="font-size:12px;">The Federal Reserve's own data. See the curve yourself — no interpretation needed. The visual proof of what EconPlumb's "elastic unit of account" looks like in the wild.</p>
+  <span class="tag">Live Data</span>
+</div>
+
+<!-- III. THE TRAP — David Webb -->
+<div class="hs-source-box" id="hs-trap">
+  <h4 style="color:var(--trap)">📜 The Source Document</h4>
+  <p><a href="https://www.thegreattaking.com/" target="_blank" rel="noopener">David Webb — <em>The Great Taking</em></a> (free PDF)</p>
+  <p style="font-size:12px;">The legal architecture that routes "your" assets upward, documented by a former Wall Street insider. The primary text behind Chapter III's eight-step chain.</p>
+  <span class="tag">Primary Source</span>
+</div>
+
+<!-- IV. THE EXIT — Mempool Explorer -->
+<div class="hs-source-box" id="hs-exit">
+  <h4 style="color:var(--exit)">⛓️ Scarcity You Can Watch</h4>
+  <p><a href="https://mempool.space/" target="_blank" rel="noopener">Mempool.space — Bitcoin Timechain</a></p>
+  <p style="font-size:12px;">Block height, halving countdown, fee market, the 21-million cap in real time. The parallel stack's base layer, running right now.</p>
+  <span class="tag">Live Explorer</span>
+</div>
+
+<!-- DETOUR — Rothbard on Salamanca -->
+<div class="hs-source-box" id="hs-detour">
+  <h4 style="color:var(--detour)">📖 The Bridge to 1556</h4>
+  <p><a href="https://mises.org/library/economic-thought-before-adam-smith" target="_blank" rel="noopener">Murray Rothbard — <em>Economic Thought Before Adam Smith</em></a> (Ch. 4)</p>
+  <p style="font-size:12px;">The clearest English overview of Salamanca monetary theory — de Soto, Mariana, Azpilcueta, and the theologians who discovered the quantity theory while the Spanish Empire flooded Europe with silver.</p>
+  <span class="tag">Scholarly Overview</span>
+</div>
+
+<!-- VIDEO: Robert Breedlove — What is Money? -->
+<div class="hs-source-box video-box" id="vid-breedlove">
+  <h4 style="color:var(--exit)">🎬 Robert Breedlove</h4>
+  <a href="https://www.youtube.com/watch?v=mV0mTg5E86Y" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:6px;">
+    What is Money?
+  </a>
+  <p class="vid-meta">Breedlove traces money from shells and salt to Bitcoin — the philosophical bridge between Salamanca's "just price" and the parallel stack's scarcity algorithm. Orange pilling done patiently.</p>
+  <span class="tag">Video · Philosophy</span>
+</div>
+
+<!-- VIDEO: Lyn Alden — How Money and Banking Works -->
+<div class="hs-source-box video-box" id="vid-lyn">
+  <h4 style="color:var(--machine)">🎬 Lyn Alden</h4>
+  <a href="https://www.youtube.com/watch?v=71f1X28cKcE" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:6px;">
+    How Money and Banking Works
+  </a>
+  <p class="vid-meta">Alden comes from traditional finance (engineer + equity research) and explains the plumbing — fractional reserve, Fed operations, the credit cycle — without Bitcoin bias until the final act. Perfect for the economically illiterate.</p>
+  <span class="tag">Video · Plumbing</span>
+</div>
+
+<script>
+(function(){
+  // Map chapter keys to their highest-signal source box IDs
+  const HS_MAP = {
+    'ideas': 'hs-ideas',
+    'machine': 'hs-machine',
+    'trap': 'hs-trap',
+    'exit': 'hs-exit',
+    'detour': 'hs-detour'
+  };
+  
+  // Map chapter keys to video box IDs (optional, shown alongside)
+  const VID_MAP = {
+    'ideas': 'vid-breedlove',      // Breedlove fits Ideas → Exit arc
+    'machine': 'vid-lyn',           // Lyn explains the plumbing
+    'exit': 'vid-breedlove'         // Breedlove also fits Exit
+  };
+
+  function showHSBoxes(key){
+    // Hide all first
+    document.querySelectorAll('.hs-source-box').forEach(b => b.classList.remove('show'));
+    // Show highest-signal source for this chapter
+    const hsId = HS_MAP[key];
+    if(hsId){
+      const box = document.getElementById(hsId);
+      if(box) box.classList.add('show');
+    }
+    // Show video if mapped
+    const vidId = VID_MAP[key];
+    if(vidId){
+      const vbox = document.getElementById(vidId);
+      if(vbox) vbox.classList.add('show');
+    }
+  }
+
+  function hideHSBoxes(){
+    document.querySelectorAll('.hs-source-box').forEach(b => b.classList.remove('show'));
+  }
+
+  // Patch openChapter to show HS boxes
+  const origOpen = window.openChapter;
+  if(origOpen){
+    window.openChapter = function(key){
+      const result = origOpen(key);
+      showHSBoxes(key);
+      return result;
+    };
+  }
+
+  // Patch close handlers
+  const btnBack = document.getElementById('btn-back');
+  if(btnBack){
+    btnBack.addEventListener('click', hideHSBoxes);
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') hideHSBoxes();
+  });
+
+})();
+</script>
+<!-- ==================== END HIGH-SIGNAL SOURCES + VIDEOS ==================== -->
 
 </body>
 </html>
