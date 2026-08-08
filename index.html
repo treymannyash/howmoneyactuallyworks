@@ -1093,6 +1093,228 @@ const NUGGETS = [
 })();
 </script>
 <!-- ==================== END HIGH-SIGNAL SOURCES + VIDEOS ==================== -->
+<!-- ==================== STAGGERED OVERLAYS + DISMISS ==================== -->
+<style>
+/* Base source box */
+.hs-source-box{
+  position:fixed; right:20px; z-index:60;
+  max-width:340px; padding:16px 18px;
+  background:rgba(21,16,10,0.97); border:1px solid var(--line);
+  border-radius:10px; backdrop-filter:blur(10px);
+  font-size:13px; line-height:1.55;
+  transform:translateY(150%); transition:transform .4s ease;
+}
+.hs-source-box.show{transform:translateY(0)}
+.hs-source-box h4{
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em;
+  text-transform:uppercase; margin-bottom:10px;
+}
+.hs-source-box p{color:var(--sub); font-size:12.5px; margin-bottom:10px}
+.hs-source-box a{
+  color:var(--text); text-decoration:none;
+  font-family:var(--mono); font-size:11px;
+  border-bottom:1px solid var(--line); padding-bottom:1px;
+}
+.hs-source-box a:hover{border-color:var(--text)}
+.hs-source-box .tag{
+  font-family:var(--mono); font-size:9px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--faint); margin-top:10px;
+  display:block;
+}
+
+/* Dismiss button */
+.hs-dismiss{
+  position:absolute; top:6px; right:10px;
+  background:none; border:none; color:var(--faint);
+  font-size:18px; line-height:1; cursor:pointer;
+  padding:4px; opacity:0.5; transition:opacity .2s;
+}
+.hs-dismiss:hover{opacity:1; color:var(--text)}
+
+/* Staggered positions — no overlap */
+#hs-ideas{ bottom:20px; }
+#hs-machine{ bottom:20px; }
+#hs-trap{ bottom:20px; }
+#hs-exit{ bottom:20px; }
+#hs-detour{ bottom:20px; }
+#hs-booth{ bottom:20px; }
+
+/* Video boxes stack ABOVE source boxes */
+#vid-breedlove{ bottom:160px; }
+#vid-lyn{ bottom:160px; }
+
+/* CTA sits above everything */
+#cta-exit{ bottom:300px; }
+
+/* Mobile: tighter stacking */
+@media(max-width:640px){
+  .hs-source-box{ left:16px; right:16px; max-width:none; }
+  #hs-ideas, #hs-machine, #hs-trap, #hs-exit, #hs-detour, #hs-booth{ bottom:12px; }
+  #vid-breedlove, #vid-lyn{ bottom:140px; }
+  #cta-exit{ bottom:270px; }
+}
+</style>
+
+<!-- I. THE IDEAS — Hayek -->
+<div class="hs-source-box" id="hs-ideas">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--ideas)">🏛️ The Austrian Climax</h4>
+  <p><a href="https://www.nobelprize.org/prizes/economic-sciences/1974/hayek/lecture/" target="_blank" rel="noopener">F.A. Hayek — "The Pretense of Knowledge"</a> (Nobel lecture, 1974)</p>
+  <p style="font-size:12px;">Hayek attacks the scientism of the economists trained in the German historical school — the same tradition that built America's textbooks and institutions.</p>
+  <span class="tag">Primary Source</span>
+</div>
+
+<!-- II. THE MACHINE — FRED M2 -->
+<div class="hs-source-box" id="hs-machine">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--machine)">📊 The Machine Running</h4>
+  <p><a href="https://fred.stlouisfed.org/series/M2SL" target="_blank" rel="noopener">FRED — M2 Money Stock</a></p>
+  <p style="font-size:12px;">The Federal Reserve's own data. See the curve yourself — no interpretation needed. The visual proof of what EconPlumb's "elastic unit of account" looks like in the wild.</p>
+  <span class="tag">Live Data</span>
+</div>
+
+<!-- III. THE TRAP — David Webb -->
+<div class="hs-source-box" id="hs-trap">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--trap)">📜 The Source Document</h4>
+  <p><a href="https://www.thegreattaking.com/" target="_blank" rel="noopener">David Webb — <em>The Great Taking</em></a> (free PDF)</p>
+  <p style="font-size:12px;">The legal architecture that routes "your" assets upward, documented by a former Wall Street insider. The primary text behind Chapter III's eight-step chain.</p>
+  <span class="tag">Primary Source</span>
+</div>
+
+<!-- IV. THE EXIT — Mempool -->
+<div class="hs-source-box" id="hs-exit">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--exit)">⛓️ Scarcity You Can Watch</h4>
+  <p><a href="https://mempool.space/" target="_blank" rel="noopener">Mempool.space — Bitcoin Timechain</a></p>
+  <p style="font-size:12px;">Block height, halving countdown, fee market, the 21-million cap in real time. The parallel stack's base layer, running right now.</p>
+  <span class="tag">Live Explorer</span>
+</div>
+
+<!-- DETOUR — Rothbard -->
+<div class="hs-source-box" id="hs-detour">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--detour)">📖 The Bridge to 1556</h4>
+  <p><a href="https://mises.org/library/economic-thought-before-adam-smith" target="_blank" rel="noopener">Murray Rothbard — <em>Economic Thought Before Adam Smith</em></a> (Ch. 4)</p>
+  <p style="font-size:12px;">The clearest English overview of Salamanca monetary theory — de Soto, Mariana, Azpilcueta, and the theologians who discovered the quantity theory while the Spanish Empire flooded Europe with silver.</p>
+  <span class="tag">Scholarly Overview</span>
+</div>
+
+<!-- JEFF BOOTH — The Price of Tomorrow -->
+<div class="hs-source-box" id="hs-booth">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--exit)">📘 Think Differently</h4>
+  <p><a href="https://thepriceoftomorrow.com/" target="_blank" rel="noopener">Jeff Booth — <em>The Price of Tomorrow</em></a> (2020)</p>
+  <p style="font-size:12px;">A tech CEO's case for why our economic systems can't keep up with deflation. Technology is inherently deflationary — prices should fall — but our debt-based system fights this with inflation, stealing productivity and concentrating control.</p>
+  <span class="tag">Book · Paradigm Shift</span>
+</div>
+
+<!-- VIDEO: Robert Breedlove -->
+<div class="hs-source-box video-box" id="vid-breedlove">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--exit)">🎬 Robert Breedlove</h4>
+  <a href="https://www.youtube.com/watch?v=mV0mTg5E86Y" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:6px;">
+    What is Money?
+  </a>
+  <p style="font-size:12px; color:var(--sub); line-height:1.5; margin-top:8px;">Breedlove traces money from shells and salt to Bitcoin — the philosophical bridge between scarcity, time preference, and the parallel stack. Orange pilling done patiently.</p>
+  <span class="tag">Video · Philosophy</span>
+</div>
+
+<!-- VIDEO: Lyn Alden -->
+<div class="hs-source-box video-box" id="vid-lyn">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--machine)">🎬 Lyn Alden</h4>
+  <a href="https://www.youtube.com/watch?v=71f1X28cKcE" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:6px;">
+    How Money and Banking Works
+  </a>
+  <p style="font-size:12px; color:var(--sub); line-height:1.5; margin-top:8px;">Alden comes from traditional finance and explains fractional reserve, Fed operations, and the credit cycle without Bitcoin bias until the final act. Perfect for the economically illiterate.</p>
+  <span class="tag">Video · Plumbing</span>
+</div>
+
+<!-- CTA: What Now? -->
+<div class="hs-source-box cta-box" id="cta-exit">
+  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+  <h4 style="color:var(--exit); margin-bottom:14px;">If this resonates</h4>
+  <div style="display:flex; flex-direction:column; gap:10px; margin:12px 0;">
+    <a href="https://www.river.com/learn" target="_blank" rel="noopener" style="display:block; padding:10px 12px; border:1px solid var(--line); border-radius:6px; text-decoration:none;">
+      <strong style="display:block; color:var(--text); font-family:var(--serif); font-size:14px; margin-bottom:3px;">Learn self-custody</strong>
+      <span style="color:var(--sub); font-size:12px;">Own your keys. No exchange required.</span>
+    </a>
+    <a href="https://www.fidelity.com/learning-center/trading-investing/bitcoin" target="_blank" rel="noopener" style="display:block; padding:10px 12px; border:1px solid var(--line); border-radius:6px; text-decoration:none;">
+      <strong style="display:block; color:var(--text); font-family:var(--serif); font-size:14px; margin-bottom:3px;">Understand the tradeoffs</strong>
+      <span style="color:var(--sub); font-size:12px;">Volatility, regulation, and what "hard money" actually means.</span>
+    </a>
+    <a href="#vigilance" onclick="document.getElementById('viewer').classList.remove('open'); document.body.style.overflow=''; document.getElementById('landing').classList.remove('hidden'); setTimeout(()=>document.getElementById('vigilance').scrollIntoView({behavior:'smooth'}),300); return false;" style="display:block; padding:10px 12px; border:1px solid var(--line); border-radius:6px; text-decoration:none;">
+      <strong style="display:block; color:var(--text); font-family:var(--serif); font-size:14px; margin-bottom:3px;">Share one argument</strong>
+      <span style="color:var(--sub); font-size:12px;">Pick the Live Derivative that changed your mind. Send it to someone who disagrees.</span>
+    </a>
+  </div>
+  <p style="font-family:var(--mono); font-size:10px; color:var(--faint); letter-spacing:.06em; margin-top:8px;">No affiliate links. No wallet shilling. Just the next step.</p>
+</div>
+
+<script>
+(function(){
+  // Clear all overlays before showing chapter-specific ones
+  function clearAll(){
+    document.querySelectorAll('.hs-source-box').forEach(b => b.classList.remove('show'));
+  }
+
+  // Show only overlays for this chapter
+  function showOverlays(key){
+    clearAll();
+    
+    // Source box
+    const sourceBox = document.getElementById('hs-' + key);
+    if(sourceBox) sourceBox.classList.add('show');
+    
+    // Video mapping
+    const vidMap = {
+      'ideas': 'vid-breedlove',
+      'machine': 'vid-lyn',
+      'exit': 'vid-breedlove'
+    };
+    const vidId = vidMap[key];
+    if(vidId){
+      const vidBox = document.getElementById(vidId);
+      if(vidBox) vidBox.classList.add('show');
+    }
+    
+    // Jeff Booth on Exit
+    if(key === 'exit'){
+      const booth = document.getElementById('hs-booth');
+      if(booth) booth.classList.add('show');
+    }
+    
+    // CTA on Exit after 4 seconds
+    if(key === 'exit'){
+      setTimeout(() => {
+        const cta = document.getElementById('cta-exit');
+        if(cta && !cta.classList.contains('show')) cta.classList.add('show');
+      }, 4000);
+    }
+  }
+
+  // Patch openChapter
+  const origOpen = window.openChapter;
+  if(origOpen){
+    window.openChapter = function(key){
+      const result = origOpen(key);
+      showOverlays(key);
+      return result;
+    };
+  }
+
+  // Patch close handlers
+  const btnBack = document.getElementById('btn-back');
+  if(btnBack){
+    btnBack.addEventListener('click', clearAll);
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') clearAll();
+  });
+})();
+</script>
+<!-- ==================== END STAGGERED OVERLAYS + DISMISS ==================== -->
 
 </body>
 </html>
