@@ -1093,228 +1093,447 @@ const NUGGETS = [
 })();
 </script>
 <!-- ==================== END HIGH-SIGNAL SOURCES + VIDEOS ==================== -->
-<!-- ==================== STAGGERED OVERLAYS + DISMISS ==================== -->
+<!-- ==================== CLEAN OVERLAYS + RESOURCES PAGE ==================== -->
 <style>
-/* Base source box */
-.hs-source-box{
-  position:fixed; right:20px; z-index:60;
-  max-width:340px; padding:16px 18px;
+/* --- Compact source pill (bottom right, auto-width) --- */
+.source-pill{
+  position:fixed; bottom:16px; right:16px; z-index:60;
+  max-width:320px; padding:12px 16px;
   background:rgba(21,16,10,0.97); border:1px solid var(--line);
-  border-radius:10px; backdrop-filter:blur(10px);
-  font-size:13px; line-height:1.55;
-  transform:translateY(150%); transition:transform .4s ease;
+  border-radius:8px; backdrop-filter:blur(10px);
+  font-size:12.5px; line-height:1.5;
+  transform:translateY(150%); transition:transform .35s ease;
 }
-.hs-source-box.show{transform:translateY(0)}
-.hs-source-box h4{
-  font-family:var(--mono); font-size:10px; letter-spacing:.2em;
-  text-transform:uppercase; margin-bottom:10px;
+.source-pill.show{transform:translateY(0)}
+.source-pill h4{
+  font-family:var(--mono); font-size:9px; letter-spacing:.18em;
+  text-transform:uppercase; margin-bottom:8px;
 }
-.hs-source-box p{color:var(--sub); font-size:12.5px; margin-bottom:10px}
-.hs-source-box a{
+.source-pill p{color:var(--sub); font-size:12px; margin-bottom:8px}
+.source-pill a{
   color:var(--text); text-decoration:none;
-  font-family:var(--mono); font-size:11px;
+  font-family:var(--mono); font-size:10.5px;
   border-bottom:1px solid var(--line); padding-bottom:1px;
 }
-.hs-source-box a:hover{border-color:var(--text)}
-.hs-source-box .tag{
-  font-family:var(--mono); font-size:9px; letter-spacing:.14em;
-  text-transform:uppercase; color:var(--faint); margin-top:10px;
+.source-pill a:hover{border-color:var(--text)}
+.source-pill .tag{
+  font-family:var(--mono); font-size:8.5px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--faint); margin-top:8px;
   display:block;
 }
-
-/* Dismiss button */
-.hs-dismiss{
-  position:absolute; top:6px; right:10px;
+.pill-dismiss{
+  position:absolute; top:4px; right:8px;
   background:none; border:none; color:var(--faint);
-  font-size:18px; line-height:1; cursor:pointer;
-  padding:4px; opacity:0.5; transition:opacity .2s;
+  font-size:16px; line-height:1; cursor:pointer;
+  padding:4px; opacity:0.4; transition:opacity .2s;
 }
-.hs-dismiss:hover{opacity:1; color:var(--text)}
+.pill-dismiss:hover{opacity:1; color:var(--text)}
 
-/* Staggered positions — no overlap */
-#hs-ideas{ bottom:20px; }
-#hs-machine{ bottom:20px; }
-#hs-trap{ bottom:20px; }
-#hs-exit{ bottom:20px; }
-#hs-detour{ bottom:20px; }
-#hs-booth{ bottom:20px; }
+/* --- Video trigger button (small, top right) --- */
+.vid-trigger{
+  position:fixed; top:60px; right:16px; z-index:60;
+  padding:8px 14px; background:rgba(21,16,10,0.95);
+  border:1px solid var(--line); border-radius:6px;
+  font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--sub);
+  cursor:pointer; opacity:0; pointer-events:none;
+  transition:opacity .3s, transform .2s;
+  transform:translateY(-4px);
+}
+.vid-trigger.show{opacity:1; pointer-events:auto; transform:translateY(0)}
+.vid-trigger:hover{border-color:var(--sub); color:var(--text)}
 
-/* Video boxes stack ABOVE source boxes */
-#vid-breedlove{ bottom:160px; }
-#vid-lyn{ bottom:160px; }
+/* --- Video modal (centered, clean) --- */
+.vid-modal{
+  position:fixed; inset:0; z-index:80;
+  background:rgba(10,8,5,0.92); backdrop-filter:blur(12px);
+  display:none; align-items:center; justify-content:center;
+  padding:16px;
+}
+.vid-modal.show{display:flex}
+.vid-modal-inner{
+  width:100%; max-width:720px;
+  background:var(--bg); border:1px solid var(--line);
+  border-radius:12px; overflow:hidden;
+  position:relative;
+}
+.vid-modal iframe{
+  width:100%; aspect-ratio:16/9; border:none; display:block;
+}
+.vid-modal-info{
+  padding:14px 18px; border-top:1px solid var(--line);
+}
+.vid-modal-info h4{
+  font-family:var(--serif); font-size:16px; margin-bottom:4px;
+}
+.vid-modal-info p{
+  font-size:12.5px; color:var(--sub); line-height:1.5;
+}
+.vid-modal-close{
+  position:absolute; top:10px; right:14px;
+  background:rgba(21,16,10,0.8); border:1px solid var(--line);
+  color:var(--text); font-size:18px; width:32px; height:32px;
+  border-radius:6px; cursor:pointer; z-index:5;
+  display:flex; align-items:center; justify-content:center;
+}
+.vid-modal-close:hover{background:var(--line)}
 
-/* CTA sits above everything */
-#cta-exit{ bottom:300px; }
+/* --- Resources page --- */
+#resources-page{
+  position:fixed; inset:0; z-index:90;
+  background:var(--bg); overflow-y:auto;
+  display:none;
+}
+#resources-page.show{display:block}
+.res-header{
+  position:sticky; top:0; z-index:5;
+  background:var(--bg); border-bottom:1px solid var(--line);
+  padding:16px 20px; display:flex; align-items:center; justify-content:space-between;
+}
+.res-header h2{
+  font-family:var(--serif); font-size:20px; font-weight:600;
+}
+.res-back{
+  background:none; border:1px solid var(--line); color:var(--sub);
+  font-family:var(--mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; padding:6px 14px; border-radius:4px;
+  cursor:pointer;
+}
+.res-back:hover{border-color:var(--sub); color:var(--text)}
+.res-grid{
+  max-width:720px; margin:0 auto; padding:24px 20px 60px;
+  display:flex; flex-direction:column; gap:32px;
+}
+.res-section h3{
+  font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--faint); margin-bottom:14px;
+  padding-bottom:8px; border-bottom:1px solid var(--line);
+}
+.res-item{
+  padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.res-item:last-child{border-bottom:none}
+.res-item a{
+  color:var(--text); text-decoration:none;
+  font-family:var(--serif); font-size:15px;
+  display:block; margin-bottom:4px;
+}
+.res-item a:hover{text-decoration:underline}
+.res-item p{
+  font-size:12.5px; color:var(--sub); line-height:1.55;
+}
+.res-item .res-tag{
+  font-family:var(--mono); font-size:9px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--faint); margin-top:6px;
+  display:inline-block;
+}
 
-/* Mobile: tighter stacking */
+/* Mobile */
 @media(max-width:640px){
-  .hs-source-box{ left:16px; right:16px; max-width:none; }
-  #hs-ideas, #hs-machine, #hs-trap, #hs-exit, #hs-detour, #hs-booth{ bottom:12px; }
-  #vid-breedlove, #vid-lyn{ bottom:140px; }
-  #cta-exit{ bottom:270px; }
+  .source-pill{ left:12px; right:12px; max-width:none; bottom:12px; }
+  .vid-trigger{ top:52px; right:12px; }
+  .res-grid{ padding:16px 16px 40px; }
 }
 </style>
 
-<!-- I. THE IDEAS — Hayek -->
-<div class="hs-source-box" id="hs-ideas">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+<!-- ===== SOURCE PILLS (one per chapter, auto-shows) ===== -->
+
+<div class="source-pill" id="pill-ideas">
+  <button class="pill-dismiss" onclick="this.parentElement.classList.remove('show')">×</button>
   <h4 style="color:var(--ideas)">🏛️ The Austrian Climax</h4>
   <p><a href="https://www.nobelprize.org/prizes/economic-sciences/1974/hayek/lecture/" target="_blank" rel="noopener">F.A. Hayek — "The Pretense of Knowledge"</a> (Nobel lecture, 1974)</p>
-  <p style="font-size:12px;">Hayek attacks the scientism of the economists trained in the German historical school — the same tradition that built America's textbooks and institutions.</p>
+  <p style="font-size:11.5px;">Hayek attacks the scientism of the German historical school — the same tradition that built America's textbooks.</p>
   <span class="tag">Primary Source</span>
 </div>
 
-<!-- II. THE MACHINE — FRED M2 -->
-<div class="hs-source-box" id="hs-machine">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+<div class="source-pill" id="pill-machine">
+  <button class="pill-dismiss" onclick="this.parentElement.classList.remove('show')">×</button>
   <h4 style="color:var(--machine)">📊 The Machine Running</h4>
   <p><a href="https://fred.stlouisfed.org/series/M2SL" target="_blank" rel="noopener">FRED — M2 Money Stock</a></p>
-  <p style="font-size:12px;">The Federal Reserve's own data. See the curve yourself — no interpretation needed. The visual proof of what EconPlumb's "elastic unit of account" looks like in the wild.</p>
+  <p style="font-size:11.5px;">The Fed's own data. See the curve yourself — no interpretation needed.</p>
   <span class="tag">Live Data</span>
 </div>
 
-<!-- III. THE TRAP — David Webb -->
-<div class="hs-source-box" id="hs-trap">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+<div class="source-pill" id="pill-trap">
+  <button class="pill-dismiss" onclick="this.parentElement.classList.remove('show')">×</button>
   <h4 style="color:var(--trap)">📜 The Source Document</h4>
   <p><a href="https://www.thegreattaking.com/" target="_blank" rel="noopener">David Webb — <em>The Great Taking</em></a> (free PDF)</p>
-  <p style="font-size:12px;">The legal architecture that routes "your" assets upward, documented by a former Wall Street insider. The primary text behind Chapter III's eight-step chain.</p>
+  <p style="font-size:11.5px;">The legal architecture that routes "your" assets upward. The primary text behind Chapter III.</p>
   <span class="tag">Primary Source</span>
 </div>
 
-<!-- IV. THE EXIT — Mempool -->
-<div class="hs-source-box" id="hs-exit">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+<div class="source-pill" id="pill-exit">
+  <button class="pill-dismiss" onclick="this.parentElement.classList.remove('show')">×</button>
   <h4 style="color:var(--exit)">⛓️ Scarcity You Can Watch</h4>
   <p><a href="https://mempool.space/" target="_blank" rel="noopener">Mempool.space — Bitcoin Timechain</a></p>
-  <p style="font-size:12px;">Block height, halving countdown, fee market, the 21-million cap in real time. The parallel stack's base layer, running right now.</p>
+  <p style="font-size:11.5px;">Block height, halving countdown, fee market. The parallel stack running in real time.</p>
   <span class="tag">Live Explorer</span>
 </div>
 
-<!-- DETOUR — Rothbard -->
-<div class="hs-source-box" id="hs-detour">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+<div class="source-pill" id="pill-detour">
+  <button class="pill-dismiss" onclick="this.parentElement.classList.remove('show')">×</button>
   <h4 style="color:var(--detour)">📖 The Bridge to 1556</h4>
   <p><a href="https://mises.org/library/economic-thought-before-adam-smith" target="_blank" rel="noopener">Murray Rothbard — <em>Economic Thought Before Adam Smith</em></a> (Ch. 4)</p>
-  <p style="font-size:12px;">The clearest English overview of Salamanca monetary theory — de Soto, Mariana, Azpilcueta, and the theologians who discovered the quantity theory while the Spanish Empire flooded Europe with silver.</p>
+  <p style="font-size:11.5px;">The clearest English overview of Salamanca monetary theory.</p>
   <span class="tag">Scholarly Overview</span>
 </div>
 
-<!-- JEFF BOOTH — The Price of Tomorrow -->
-<div class="hs-source-box" id="hs-booth">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
+<div class="source-pill" id="pill-booth">
+  <button class="pill-dismiss" onclick="this.parentElement.classList.remove('show')">×</button>
   <h4 style="color:var(--exit)">📘 Think Differently</h4>
   <p><a href="https://thepriceoftomorrow.com/" target="_blank" rel="noopener">Jeff Booth — <em>The Price of Tomorrow</em></a> (2020)</p>
-  <p style="font-size:12px;">A tech CEO's case for why our economic systems can't keep up with deflation. Technology is inherently deflationary — prices should fall — but our debt-based system fights this with inflation, stealing productivity and concentrating control.</p>
+  <p style="font-size:11.5px;">Technology is deflationary. Our debt-based system fights this with inflation, stealing productivity.</p>
   <span class="tag">Book · Paradigm Shift</span>
 </div>
 
-<!-- VIDEO: Robert Breedlove -->
-<div class="hs-source-box video-box" id="vid-breedlove">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
-  <h4 style="color:var(--exit)">🎬 Robert Breedlove</h4>
-  <a href="https://www.youtube.com/watch?v=mV0mTg5E86Y" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:6px;">
-    What is Money?
-  </a>
-  <p style="font-size:12px; color:var(--sub); line-height:1.5; margin-top:8px;">Breedlove traces money from shells and salt to Bitcoin — the philosophical bridge between scarcity, time preference, and the parallel stack. Orange pilling done patiently.</p>
-  <span class="tag">Video · Philosophy</span>
-</div>
+<!-- ===== VIDEO TRIGGERS (click to open modal) ===== -->
 
-<!-- VIDEO: Lyn Alden -->
-<div class="hs-source-box video-box" id="vid-lyn">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
-  <h4 style="color:var(--machine)">🎬 Lyn Alden</h4>
-  <a href="https://www.youtube.com/watch?v=71f1X28cKcE" target="_blank" rel="noopener" style="font-family:var(--serif); font-style:italic; font-size:15px; color:var(--text); text-decoration:none; display:block; margin-bottom:6px;">
-    How Money and Banking Works
-  </a>
-  <p style="font-size:12px; color:var(--sub); line-height:1.5; margin-top:8px;">Alden comes from traditional finance and explains fractional reserve, Fed operations, and the credit cycle without Bitcoin bias until the final act. Perfect for the economically illiterate.</p>
-  <span class="tag">Video · Plumbing</span>
-</div>
+<button class="vid-trigger" id="trigger-breedlove" onclick="openVidModal('breedlove')">▶ What is Money?</button>
+<button class="vid-trigger" id="trigger-lyn" onclick="openVidModal('lyn')">▶ How Money & Banking Works</button>
 
-<!-- CTA: What Now? -->
-<div class="hs-source-box cta-box" id="cta-exit">
-  <button class="hs-dismiss" onclick="this.parentElement.classList.remove('show')" title="Dismiss">×</button>
-  <h4 style="color:var(--exit); margin-bottom:14px;">If this resonates</h4>
-  <div style="display:flex; flex-direction:column; gap:10px; margin:12px 0;">
-    <a href="https://www.river.com/learn" target="_blank" rel="noopener" style="display:block; padding:10px 12px; border:1px solid var(--line); border-radius:6px; text-decoration:none;">
-      <strong style="display:block; color:var(--text); font-family:var(--serif); font-size:14px; margin-bottom:3px;">Learn self-custody</strong>
-      <span style="color:var(--sub); font-size:12px;">Own your keys. No exchange required.</span>
-    </a>
-    <a href="https://www.fidelity.com/learning-center/trading-investing/bitcoin" target="_blank" rel="noopener" style="display:block; padding:10px 12px; border:1px solid var(--line); border-radius:6px; text-decoration:none;">
-      <strong style="display:block; color:var(--text); font-family:var(--serif); font-size:14px; margin-bottom:3px;">Understand the tradeoffs</strong>
-      <span style="color:var(--sub); font-size:12px;">Volatility, regulation, and what "hard money" actually means.</span>
-    </a>
-    <a href="#vigilance" onclick="document.getElementById('viewer').classList.remove('open'); document.body.style.overflow=''; document.getElementById('landing').classList.remove('hidden'); setTimeout(()=>document.getElementById('vigilance').scrollIntoView({behavior:'smooth'}),300); return false;" style="display:block; padding:10px 12px; border:1px solid var(--line); border-radius:6px; text-decoration:none;">
-      <strong style="display:block; color:var(--text); font-family:var(--serif); font-size:14px; margin-bottom:3px;">Share one argument</strong>
-      <span style="color:var(--sub); font-size:12px;">Pick the Live Derivative that changed your mind. Send it to someone who disagrees.</span>
-    </a>
+<!-- ===== VIDEO MODAL ===== -->
+
+<div class="vid-modal" id="vid-modal" onclick="if(event.target===this)closeVidModal()">
+  <div class="vid-modal-inner">
+    <button class="vid-modal-close" onclick="closeVidModal()">×</button>
+    <div id="vid-container"></div>
+    <div class="vid-modal-info" id="vid-info"></div>
   </div>
-  <p style="font-family:var(--mono); font-size:10px; color:var(--faint); letter-spacing:.06em; margin-top:8px;">No affiliate links. No wallet shilling. Just the next step.</p>
 </div>
 
+<!-- ===== RESOURCES PAGE ===== -->
+
+<div id="resources-page">
+  <div class="res-header">
+    <h2>All Resources</h2>
+    <button class="res-back" onclick="document.getElementById('resources-page').classList.remove('show')">← Back</button>
+  </div>
+  <div class="res-grid">
+    
+    <div class="res-section">
+      <h3>Chapter I — The Ideas</h3>
+      <div class="res-item">
+        <a href="https://www.nobelprize.org/prizes/economic-sciences/1974/hayek/lecture/" target="_blank" rel="noopener">F.A. Hayek — "The Pretense of Knowledge" (Nobel lecture, 1974)</a>
+        <p>The Austrian climax. Attacks the scientism of the German historical school.</p>
+        <span class="res-tag">Primary Source</span>
+      </div>
+      <div class="res-item">
+        <a href="https://www.youtube.com/watch?v=mV0mTg5E86Y" target="_blank" rel="noopener">Robert Breedlove — What is Money?</a>
+        <p>Traces money from shells to Bitcoin. The philosophical bridge.</p>
+        <span class="res-tag">Video · Philosophy</span>
+      </div>
+    </div>
+    
+    <div class="res-section">
+      <h3>Chapter II — The Machine</h3>
+      <div class="res-item">
+        <a href="https://fred.stlouisfed.org/series/M2SL" target="_blank" rel="noopener">FRED — M2 Money Stock</a>
+        <p>The Fed's own data. The visual proof of monetary expansion.</p>
+        <span class="res-tag">Live Data</span>
+      </div>
+      <div class="res-item">
+        <a href="https://www.youtube.com/watch?v=71f1X28cKcE" target="_blank" rel="noopener">Lyn Alden — How Money and Banking Works</a>
+        <p>Fractional reserve, Fed operations, credit cycle. From traditional finance.</p>
+        <span class="res-tag">Video · Plumbing</span>
+      </div>
+    </div>
+    
+    <div class="res-section">
+      <h3>Chapter III — The Trap</h3>
+      <div class="res-item">
+        <a href="https://www.thegreattaking.com/" target="_blank" rel="noopener">David Webb — The Great Taking (free PDF)</a>
+        <p>The legal architecture that routes your assets upward in crisis.</p>
+        <span class="res-tag">Primary Source</span>
+      </div>
+    </div>
+    
+    <div class="res-section">
+      <h3>Chapter IV — The Exit</h3>
+      <div class="res-item">
+        <a href="https://mempool.space/" target="_blank" rel="noopener">Mempool.space — Bitcoin Timechain</a>
+        <p>Block height, halving, fee market. Scarcity running in real time.</p>
+        <span class="res-tag">Live Explorer</span>
+      </div>
+      <div class="res-item">
+        <a href="https://thepriceoftomorrow.com/" target="_blank" rel="noopener">Jeff Booth — The Price of Tomorrow (2020)</a>
+        <p>Technology is deflationary. Our debt system fights it with inflation.</p>
+        <span class="res-tag">Book · Paradigm Shift</span>
+      </div>
+      <div class="res-item">
+        <a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin White Paper — Satoshi Nakamoto (2008)</a>
+        <p>Nine pages. Double-spending solved by algorithmic scarcity.</p>
+        <span class="res-tag">Primary Source</span>
+      </div>
+      <div class="res-item">
+        <a href="https://nakamotoinstitute.org/" target="_blank" rel="noopener">Nakamoto Institute</a>
+        <p>Szabo, Finney, Dai. The cypherpunk prehistory.</p>
+        <span class="res-tag">Archive</span>
+      </div>
+      <div class="res-item">
+        <a href="https://planb.network/" target="_blank" rel="noopener">Plan B Network</a>
+        <p>Courses, data models, stock-to-flow framework.</p>
+        <span class="res-tag">Education & Data</span>
+      </div>
+    </div>
+    
+    <div class="res-section">
+      <h3>The Detour — Salamanca</h3>
+      <div class="res-item">
+        <a href="https://mises.org/library/economic-thought-before-adam-smith" target="_blank" rel="noopener">Murray Rothbard — Economic Thought Before Adam Smith (Ch. 4)</a>
+        <p>The clearest English overview of Salamanca monetary theory.</p>
+        <span class="res-tag">Scholarly Overview</span>
+      </div>
+      <div class="res-item">
+        <a href="https://mises.org/library/salamanca-school" target="_blank" rel="noopener">Mises Institute — Salamanca School Collection</a>
+        <p>Overview and curated texts from the School of Salamanca.</p>
+        <span class="res-tag">Primary Texts</span>
+      </div>
+      <div class="res-item">
+        <a href="https://mises.org/library/doctrine-right-kings" target="_blank" rel="noopener">Juan de Mariana — De Rege et Regis Institutione (1599)</a>
+        <p>On the morality of debasement.</p>
+        <span class="res-tag">Primary Text (PDF)</span>
+      </div>
+      <div class="res-item">
+        <a href="https://mises.org/library/treatise-money" target="_blank" rel="noopener">Martín de Azpilcueta — Treatise on Money (1556)</a>
+        <p>The quantity theory of money, discovered by theologians.</p>
+        <span class="res-tag">Primary Text (PDF)</span>
+      </div>
+    </div>
+    
+    <div class="res-section">
+      <h3>Films — The Crisis Dramatized</h3>
+      <div class="res-item">
+        <a href="https://www.hbo.com/movies/too-big-to-fail" target="_blank" rel="noopener">Too Big to Fail (HBO, 2011)</a>
+        <p>The Lehman weekend and AIG bailout from the inside. Invisible scaffolding made visible.</p>
+        <span class="res-tag">Dramatization</span>
+      </div>
+      <div class="res-item">
+        <a href="https://www.imdb.com/title/tt1596363/" target="_blank" rel="noopener">The Big Short (2015)</a>
+        <p>The housing bubble, CDOs, and the few who saw it coming.</p>
+        <span class="res-tag">Dramatization</span>
+      </div>
+      <div class="res-item">
+        <a href="https://www.imdb.com/title/tt1748122/" target="_blank" rel="noopener">Margin Call (2011)</a>
+        <p>24 hours at an investment bank on the eve of the 2008 crisis.</p>
+        <span class="res-tag">Dramatization</span>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<!-- ===== RESOURCES LINK IN FOOTER ===== -->
+<!-- Add this inside your existing footer, or paste it after the nuggets section -->
 <script>
 (function(){
-  // Clear all overlays before showing chapter-specific ones
-  function clearAll(){
-    document.querySelectorAll('.hs-source-box').forEach(b => b.classList.remove('show'));
-  }
-
-  // Show only overlays for this chapter
-  function showOverlays(key){
-    clearAll();
-    
-    // Source box
-    const sourceBox = document.getElementById('hs-' + key);
-    if(sourceBox) sourceBox.classList.add('show');
-    
-    // Video mapping
-    const vidMap = {
-      'ideas': 'vid-breedlove',
-      'machine': 'vid-lyn',
-      'exit': 'vid-breedlove'
+  // Add "All Resources" link to footer
+  const footer = document.querySelector('footer');
+  if(footer){
+    const resLink = document.createElement('a');
+    resLink.href = '#';
+    resLink.textContent = 'All Resources';
+    resLink.style.cssText = 'display:block;text-align:center;margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);text-decoration:none;';
+    resLink.onclick = function(e){
+      e.preventDefault();
+      document.getElementById('resources-page').classList.add('show');
     };
-    const vidId = vidMap[key];
-    if(vidId){
-      const vidBox = document.getElementById(vidId);
-      if(vidBox) vidBox.classList.add('show');
-    }
-    
-    // Jeff Booth on Exit
-    if(key === 'exit'){
-      const booth = document.getElementById('hs-booth');
-      if(booth) booth.classList.add('show');
-    }
-    
-    // CTA on Exit after 4 seconds
-    if(key === 'exit'){
-      setTimeout(() => {
-        const cta = document.getElementById('cta-exit');
-        if(cta && !cta.classList.contains('show')) cta.classList.add('show');
-      }, 4000);
-    }
+    footer.appendChild(resLink);
   }
-
-  // Patch openChapter
-  const origOpen = window.openChapter;
-  if(origOpen){
-    window.openChapter = function(key){
-      const result = origOpen(key);
-      showOverlays(key);
-      return result;
-    };
-  }
-
-  // Patch close handlers
-  const btnBack = document.getElementById('btn-back');
-  if(btnBack){
-    btnBack.addEventListener('click', clearAll);
-  }
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') clearAll();
-  });
 })();
 </script>
-<!-- ==================== END STAGGERED OVERLAYS + DISMISS ==================== -->
+
+<script>
+// ===== VIDEO MODAL LOGIC =====
+const VID_DATA = {
+  breedlove: {
+    url: 'https://www.youtube.com/embed/mV0mTg5E86Y',
+    title: 'Robert Breedlove — What is Money?',
+    desc: 'Breedlove traces money from shells and salt to Bitcoin — the philosophical bridge between scarcity, time preference, and the parallel stack.'
+  },
+  lyn: {
+    url: 'https://www.youtube.com/embed/71f1X28cKcE',
+    title: 'Lyn Alden — How Money and Banking Works',
+    desc: 'Fractional reserve, Fed operations, and the credit cycle explained by someone who came from traditional finance.'
+  }
+};
+
+function openVidModal(key){
+  const data = VID_DATA[key];
+  if(!data) return;
+  document.getElementById('vid-container').innerHTML = 
+    '<iframe src="' + data.url + '?autoplay=1" allowfullscreen allow="autoplay"></iframe>';
+  document.getElementById('vid-info').innerHTML = 
+    '<h4>' + data.title + '</h4><p>' + data.desc + '</p>';
+  document.getElementById('vid-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVidModal(){
+  document.getElementById('vid-modal').classList.remove('show');
+  document.getElementById('vid-container').innerHTML = '';
+  document.body.style.overflow = '';
+}
+
+// Escape to close
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    closeVidModal();
+    document.getElementById('resources-page').classList.remove('show');
+  }
+});
+
+// ===== CHAPTER OVERLAY LOGIC =====
+function clearPills(){
+  document.querySelectorAll('.source-pill').forEach(p => p.classList.remove('show'));
+  document.querySelectorAll('.vid-trigger').forEach(t => t.classList.remove('show'));
+}
+
+function showChapterOverlays(key){
+  clearPills();
+  
+  // Show source pill
+  const pill = document.getElementById('pill-' + key);
+  if(pill) pill.classList.add('show');
+  
+  // Show video trigger (if mapped)
+  const vidMap = {
+    'ideas': 'trigger-breedlove',
+    'machine': 'trigger-lyn',
+    'exit': 'trigger-breedlove'
+  };
+  const trigId = vidMap[key];
+  if(trigId){
+    const trig = document.getElementById(trigId);
+    if(trig) trig.classList.add('show');
+  }
+  
+  // Jeff Booth on Exit
+  if(key === 'exit'){
+    const booth = document.getElementById('pill-booth');
+    if(booth) booth.classList.add('show');
+  }
+}
+
+// Patch openChapter
+const origOpen = window.openChapter;
+if(origOpen){
+  window.openChapter = function(key){
+    const result = origOpen(key);
+    showChapterOverlays(key);
+    return result;
+  };
+}
+
+// Patch close
+const btnBack = document.getElementById('btn-back');
+if(btnBack){
+  btnBack.addEventListener('click', clearPills);
+}
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') clearPills();
+});
+</script>
+<!-- ==================== END CLEAN OVERLAYS + RESOURCES PAGE ==================== -->
 
 </body>
 </html>
