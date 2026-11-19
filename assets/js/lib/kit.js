@@ -1,6 +1,11 @@
 // Chapter page kit: nav, step rail, sticky 3D stage + scroll-driven cards, progress, WebGL-failure fallback.
 import { webglOK, prefersReduced } from './stage3d.js';
 
+import { EXTRAS } from '../content/extras-data.js';
+const tailHTML = key => { const x = EXTRAS[key]; if (!x) return ''; const e = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+  return x.tail.map(p => `<p>${p}</p>`).join('') + (key === 'trap' ? '' : x.res.map(r => `<h3>${e(r.label)}</h3><div class="ft-res">${r.links.map(l => `<a href="${e(l.href)}" target="_blank" rel="noopener">${e(l.title)}<span>${e(l.meta)}</span></a>`).join('')}</div>`).join('')); };
+
+
 export const CHAPTERS = [
   { key: 'ideas', roman: 'I', name: 'The Ideas', href: 'ideas.html' },
   { key: 'machine', roman: 'II', name: 'The Machine', href: 'machine.html' },
@@ -51,7 +56,7 @@ export function mountChapter(cfg) {
 
   // full text + footer
   const ft = document.createElement('section'); ft.className = 'fulltext'; ft.id = 'fulltext';
-  ft.innerHTML = `<div class="ft-in"><details id="ftd"><summary><span>Read the full chapter text</span><small>Every paragraph, event and table from the original chapter</small></summary><div class="ft-body">${cfg.fullText ? cfg.fullText() : ''}</div>
+  ft.innerHTML = `<div class="ft-in"><details id="ftd"><summary><span>Read the full chapter text</span><small>Every paragraph, event and table from the original chapter</small></summary><div class="ft-body">${cfg.fullText ? cfg.fullText() : ''}${tailHTML(cfg.key)}</div>
     <p class="ft-orig"><a href="original/${cfg.key}.html">Open the original dark-theme explorer for this chapter →</a></p></details>
     ${cfg.after || ''}
     <div class="chfoot">${idx > 0 ? `<a class="btn ghost" href="${CHAPTERS[idx - 1].href}">← ${CHAPTERS[idx - 1].roman} ${CHAPTERS[idx - 1].name}</a>` : ''}

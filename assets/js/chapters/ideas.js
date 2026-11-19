@@ -1,6 +1,7 @@
 import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect } from '../lib/stage3d.js';
 import { mountChapter, quiz, quizHTML, segmented, $, $$, esc } from '../lib/kit.js';
 import { IDEAS as I } from '../content/ideas-data.js';
+import { EXTRAS } from '../content/extras-data.js';
 
 const ERA_OF = [0, 1, 1, 3, 3, 4, 4, 6];            // which era each pipeline node falls in, by its year (derived from the era ranges on the page)
 const NODE_X = [-7.2, -3.3, -1.5, .6, 2.4, 4.0, 5.6, 7.4];
@@ -121,11 +122,16 @@ const steps = [
     src: 'Figures, throughline and the Detour call-out are verbatim from Chapter I.', enter: ({ scene }) => { eraMode = false; mythMode = false; setPos(7); scene.show && scene.show('all'); rot(true); } },
 ];
 
+const TBR = r => r ? `<p class="ft-note"><b>${esc(r.label)}.</b> ${r.body} ${r.links.map(l => `<a href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.t)}</a>`).join(' · ')}</p>` : '';
+const MX = i => { const m = EXTRAS.ideas.myths[i] || {}; return (m.stamp ? `<p class="ft-meta">${esc(m.stamp)}</p>` : '') + (m.sf ? `<p class="ft-note"><q>${esc(m.sf.quote.replace(/^"|"$/g, ''))}</q> ${esc(m.sf.attr)}. ${m.sf.note}</p>` : '') + TBR(m.tb); };
+const CTX = n => EXTRAS.ideas.contexts.filter(c => c.after === n).map(c => `<aside class="ft-item ft-note"><div class="ft-yr">${esc(c.label)}</div><p>${c.body}</p></aside>`).join('');
+const TN = i => EXTRAS.ideas.thenNow.filter(c => c.afterEra === i).map(c => `<aside class="ft-item"><div class="ft-yr">${esc(c.eyebrow)}</div><div class="ft-grid">${c.cols.map(k => `<div><b>${esc(k.head)}</b><p><q>${esc(k.quote.replace(/^"|"$/g, ''))}</q></p><p class="ft-meta">${esc(k.attr)}</p></div>`).join('')}</div><p>${esc(c.foot)}</p></aside>`).join('');
 const fullText = () => {
-  const era = I.eras.map((e, i) => `<h3 id="${e.id}">${esc(e.label)} <small class="ft-yr">${esc(e.range)}</small></h3><p>${esc(e.desc)}</p><div class="ft-grid">${I.events.filter(ev => ev.era === i).map(ev => `<article class="ft-item"><div class="ft-yr">${esc(ev.year)}</div><h4>${esc(ev.title)}</h4><p>${ev.detail}</p>${ev.people.length ? `<p class="ft-meta">${ev.people.map(esc).join(' · ')}</p>` : ''}${ev.sf ? `<p class="ft-note"><q>${esc(ev.sf.quote)}</q> — ${esc(ev.sf.attr)}. ${ev.sf.note}</p>` : ''}</article>`).join('')}</div>`).join('');
-  const myths = `<h3>The 12 embedded myths</h3><div class="ft-grid">${I.myths.map(m => `<article class="ft-item"><div class="ft-yr">${esc(m.label)}</div><h4>${esc(m.title)}</h4><p>${m.body}</p><p><b>Reality:</b> ${m.reality}</p></article>`).join('')}</div>`;
-  const figs = `<h3>Key transmission figures</h3><div class="ft-grid">${I.figs.map(f => `<article class="ft-item"><h4>${esc(f.name)}</h4><p>${esc(f.role)}</p><p class="ft-meta">${esc(f.german)}</p></article>`).join('')}</div><h3>The pipeline</h3><p>${I.pipe.map(p => `${esc(p.name)} (${esc(p.role)}, ${esc(p.year)})`).join(' → ')}</p>`;
+  const era = I.eras.map((e, i) => `<h3 id="${e.id}">${esc(e.label)} <small class="ft-yr">${esc(e.range)}</small></h3><p>${esc(e.desc)}</p><div class="ft-grid">${I.events.map((ev, n) => [ev, n]).filter(([ev]) => ev.era === i).map(([ev, n]) => `<article class="ft-item"><div class="ft-yr">${esc(ev.year)}</div><h4>${esc(ev.title)}</h4><p>${ev.detail}</p>${ev.people.length ? `<p class="ft-meta">${ev.people.map(esc).join(' · ')}</p>` : ''}${ev.sf ? `<p class="ft-note"><q>${esc(ev.sf.quote)}</q> — ${esc(ev.sf.attr)}. ${ev.sf.note}</p>` : ''}${TBR(EXTRAS.ideas.evRefs[n])}</article>${CTX(n)}`).join('')}</div>${TN(i)}`).join('');
+  const myths = `<h3>The 12 embedded myths</h3><div class="ft-grid">${I.myths.map((m, mi) => `<article class="ft-item"><div class="ft-yr">${esc(m.label)}</div><h4>${esc(m.title)}</h4><p>${m.body}</p><p><b>Reality:</b> ${m.reality}</p>${MX(mi)}</article>`).join('')}</div>`;
+  const figs = `<h3>Key transmission figures</h3><div class="ft-grid">${I.figs.map(f => `<article class="ft-item"><h4>${esc(f.name)}</h4><p>${esc(f.role)}</p><p class="ft-meta">${esc(f.german)}</p></article>`).join('')}</div><h3>The Intellectual Pipeline — Person by Person</h3><p>${I.pipe.map(p => `${esc(p.name)} (${esc(p.role)}, ${esc(p.year)})`).join(' → ')}</p>`;
   const quiz = `<h3>Who said it? Guess the decade</h3><div class="ft-grid">${I.quiz.map(q => `<article class="ft-item"><p><q>${esc(q.q)}</q></p><p class="ft-meta">${q.opts.map(o => esc(o.t) + (o.ok ? ' ✓' : '')).join(' · ')}</p>${q.rest.join('')}</article>`).join('')}</div>`;
-  return `<h3>The throughline</h3><p>${I.throughline}</p><p><a href="detour.html">◆ ${esc(I.detour.t)}</a> — ${I.detour.s}</p>` + era + myths + figs + quiz;
+  const phrases = `<h3>Recurring Arguments — By Era</h3><ul>${['Economy too complex for ordinary people', 'Competition is wasteful — coordination is better', 'We need expert management of the economy', 'Government spending creates growth', 'Markets are inherently unstable'].map(x => `<li>“${x}”</li>`).join('')}</ul><p class="ft-note">Based on themes from Thomas C. Leonard's <em>Illiberal Reformers</em>, the history of the AEA, and the intellectual genealogy of American economic thought. All interpretive claims are offered for critical engagement, not as settled conclusions.</p>`;
+  return `<h3>The throughline</h3><p>${I.throughline}</p><p><a href="detour.html">${esc(I.detour.k)}: ${esc(I.detour.t)}</a> — ${I.detour.s}</p>` + era + myths + figs + quiz + phrases;
 };
 mountChapter({ key: 'ideas', steps, fullText, build, resetView: () => sc && sc.show(viewMode) });
