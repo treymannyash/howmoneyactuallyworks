@@ -73,7 +73,8 @@
   #arc{padding-top:60px}
 }
 
-@media (min-width:901px){.hero .scene{inset:0 0 120px 0}.dock{bottom:18px}.dock .dock-lab{position:absolute;left:0;top:-22px;margin:0}.dock .yr span{font-size:12.5px}}
+@media (min-width:901px){.hero .scene{inset:0 0 120px 9vw}.dock{bottom:18px}.dock .dock-lab{position:absolute;left:0;top:-22px;margin:0}.dock .yr span{font-size:12.5px}}
 @media (max-width:900px){.dock .yrs{flex-wrap:wrap}.dock button.yr{flex:1 1 140px}}
 
 @media (max-width:900px){.hero .copy{top:auto}.nlabel.chn{max-width:78px;font-size:10.5px;padding:3px 6px}}
+@media (min-width:901px) and (max-height:820px){.hero .copy{top:84px}h1{font-size:clamp(40px,4.8vw,64px);margin:10px 0 12px}.intro{font-size:15.5px;margin-bottom:10px}.synopsis{font-size:14px}}
