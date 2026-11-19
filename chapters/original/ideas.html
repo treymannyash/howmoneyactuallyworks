@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>From Heidelberg to Harvard — The Full Story</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#15100A;--surface:#1B1410;--panel:#221A12;--ink:#F0EAE0;--sub:#B5A78F;--muted:#7A6D58;
+    --border:rgba(232,203,150,.15);--grid:rgba(232,203,150,.045);
+    --accent:#E0B458;--accent-soft:rgba(224,180,88,.12);
+    --ideo:#F7931A;--pol:#4CC9F0;--tb:#C89BF5;--myth:#F2545B;--myth-bg:rgba(242,84,91,.07);--myth-border:rgba(242,84,91,.3);
+    --serif:'Fraunces',Georgia,serif;--sans:'Archivo',system-ui,sans-serif;--mono:'IBM Plex Mono',monospace;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:70px}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:56px 56px}
+  ::selection{background:rgba(224,180,88,.3)}
+  button{font-family:inherit;cursor:pointer}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+  strong{color:var(--ink);font-weight:500}
+
+  .progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--accent);z-index:60;width:0;transition:width .1s linear}
+
+  /* ── era rail (the tracker) ───────────────────────── */
+  .era-nav{position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:2px;counter-reset:eranav}
+  .era-nav a{
+    counter-increment:eranav;display:flex;align-items:center;gap:10px;text-decoration:none;
+    color:var(--muted);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    padding:6px 8px;border-radius:5px;transition:color .2s,background .2s;
+  }
+  .era-nav a .dot{
+    width:22px;height:22px;border:1px solid var(--border);border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-style:italic;font-size:10px;color:var(--sub);
+    transition:border-color .2s,background .2s,color .2s;
+  }
+  .era-nav a .dot::after{content:counter(eranav,upper-roman)}
+  .era-nav a:hover{color:var(--ink)}
+  .era-nav a.active{color:var(--accent)}
+  .era-nav a.active .dot{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  @media(max-width:1140px){
+    .era-nav{left:0;right:0;top:0;transform:none;flex-direction:row;justify-content:center;gap:0;
+      background:rgba(21,16,10,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:8px 6px}
+    .era-nav a{font-size:0;padding:5px 5px;gap:0}
+    .era-nav a .dot{width:26px;height:26px;font-size:11px}
+  }
+
+  .container{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 26px 80px}
+
+  /* ── header ───────────────────────── */
+  header{padding:66px 0 26px}
+  .badge{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);display:inline-flex;align-items:center;gap:12px}
+  .badge::after{content:'';width:44px;height:1px;background:var(--border)}
+  header h1{font-family:var(--serif);font-weight:900;font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.015em;margin:16px 0 16px;color:var(--ink)}
+  header h1 em{font-style:italic;font-weight:600;color:var(--accent)}
+  .subtitle{color:var(--sub);font-size:16.5px;max-width:62ch}
+
+  /* ── filters & legend ───────────────────────── */
+  .filter-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:22px 0 10px}
+  .filter-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+  .filter-btn{background:none;border:1px solid var(--border);color:var(--sub);border-radius:20px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:6px 14px;transition:all .2s}
+  .filter-btn:hover{color:var(--ink);border-color:var(--sub)}
+  .filter-btn.active{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:500}
+  .filter-btn[data-filter="ideology"].active{background:var(--ideo);border-color:var(--ideo)}
+  .filter-btn[data-filter="policy"].active{background:var(--pol);border-color:var(--pol)}
+  .filter-btn[data-filter="textbook"].active{background:var(--tb);border-color:var(--tb)}
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin:8px 0 4px;font-size:12.5px;color:var(--muted)}
+  .legend-item{display:flex;align-items:center;gap:8px}
+  .legend-swatch{width:11px;height:11px;border-radius:3px}
+  .legend-swatch.myth{background:var(--myth-bg);border:1px solid var(--myth)}
+  .legend-swatch.context{background:var(--panel);border:1px solid var(--border)}
+
+  /* ── stats ───────────────────────── */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+  .stat{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:18px 16px;text-align:center;transition:border-color .2s}
+  .stat:hover{border-color:rgba(224,180,88,.4)}
+  .stat-num{font-family:var(--serif);font-weight:600;font-size:28px;color:var(--accent);line-height:1.1}
+  .stat-label{font-size:12px;color:var(--sub);margin-top:5px}
+  @media(max-width:640px){.stats{grid-template-columns:1fr 1fr}}
+
+  /* ── timeline & eras ───────────────────────── */
+  .timeline{position:relative}
+  .timeline::before{content:'';position:absolute;left:7px;top:8px;bottom:8px;width:1px;background:var(--border)}
+  .era{position:relative;padding-left:36px;margin-bottom:14px}
+  .era-dot{position:absolute;left:0;top:26px;width:15px;height:15px;border-radius:50%;background:var(--bg);border:2px solid var(--accent);transition:background .2s}
+  .era:hover .era-dot{background:var(--accent)}
+  .era-header{cursor:pointer;position:sticky;top:0;z-index:5;background:rgba(21,16,10,.93);backdrop-filter:blur(8px);padding:16px 0 10px;border-bottom:1px solid var(--border)}
+  @media(max-width:1140px){.era-header{top:43px}}
+  .era-label{font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:-.01em;color:var(--ink);display:flex;align-items:baseline;gap:12px}
+  .era-toggle{font-family:var(--mono);font-size:14px;color:var(--muted);transition:transform .25s;display:inline-block}
+  .era:not(.collapsed) .era-toggle{transform:rotate(90deg)}
+  .era-range{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;color:var(--accent);margin-top:3px}
+  .era-desc{color:var(--sub);font-size:14.5px;max-width:64ch;padding:14px 0 6px}
+  .events-wrapper{overflow:hidden;transition:max-height .45s ease}
+  .era.collapsed .events-wrapper{max-height:0!important}
+
+  /* ── events ───────────────────────── */
+  .event{display:grid;grid-template-columns:86px 1fr;gap:16px;padding:20px 0;border-bottom:1px solid var(--border);transition:opacity .3s}
+  .event.filtered-out{opacity:.16}
+  .event-year{font-family:var(--mono);font-size:12.5px;color:var(--accent);letter-spacing:.04em;padding-top:3px}
+  .event-title{font-family:var(--serif);font-weight:600;font-size:18px;line-height:1.3;margin-bottom:8px}
+  .event-detail{color:var(--sub);font-size:14.5px;max-width:62ch}
+  .event-people{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .person{font-family:var(--mono);font-size:10.5px;color:var(--sub);border:1px solid var(--border);border-radius:14px;padding:3px 10px}
+  .tags{display:flex;gap:6px;margin-top:10px}
+  .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:3px}
+  .tag-institution{color:var(--accent);border:1px solid var(--accent)}
+  .tag-ideology{color:var(--ideo);border:1px solid var(--ideo)}
+  .tag-policy{color:var(--pol);border:1px solid var(--pol)}
+  .tag-textbook{color:var(--tb);border:1px solid var(--tb)}
+  @media(max-width:640px){.event{grid-template-columns:1fr;gap:4px}}
+
+  /* ── myth / context cards ───────────────────────── */
+  .myth-card{margin:16px 0;padding:18px 20px;background:var(--myth-bg);border:1px solid var(--myth-border);border-left:3px solid var(--myth);border-radius:8px;position:relative}
+  .myth-card::before{content:'⚠';position:absolute;top:-10px;left:14px;background:var(--myth);color:var(--bg);font-size:10px;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%}
+  .myth-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--myth);margin-bottom:6px}
+  .myth-title{font-family:var(--serif);font-weight:600;font-size:16px;margin-bottom:8px}
+  .myth-body{color:var(--sub);font-size:13.5px}
+  .myth-reality{margin-top:12px;padding-top:12px;border-top:1px dashed var(--myth-border);color:var(--sub);font-size:13.5px}
+  .myth-reality::before{content:'Reality — ';font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  .context-card{margin:16px 0;padding:18px 20px;background:var(--panel);border:1px solid var(--border);border-radius:8px}
+  .context-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .context-body{color:var(--sub);font-size:13.5px}
+
+  /* ── quiz cards ───────────────────────── */
+  .quiz-card{margin:16px 0;padding:20px 22px;border:1px dashed rgba(224,180,88,.4);border-radius:8px;background:var(--surface)}
+  .quiz-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .quiz-q{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink);max-width:60ch;margin-bottom:8px}
+  .quiz-hint{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+  .quiz-opts{display:flex;gap:8px;flex-wrap:wrap}
+  .quiz-opt{background:none;border:1px solid var(--border);color:var(--sub);border-radius:5px;font-family:var(--mono);font-size:12px;padding:7px 16px;transition:all .2s}
+  .quiz-opt:hover:not([disabled]){color:var(--ink);border-color:var(--sub)}
+  .quiz-opt[disabled]{cursor:default;opacity:.55}
+  .quiz-opt.correct{color:var(--accent);border-color:var(--accent);opacity:1}
+  .quiz-opt.wrong{color:var(--myth);border-color:var(--myth);opacity:1}
+  .quiz-reveal{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+  .quiz-reveal.show{display:block}
+  .quiz-reveal-who{font-family:var(--mono);font-size:11.5px;color:var(--accent);margin-bottom:6px}
+  .quiz-reveal-note{color:var(--sub);font-size:13px}
+
+  /* ── sound familiar ───────────────────────── */
+  .sound-familiar{margin-top:12px}
+  .sf-btn{background:none;border:1px solid var(--border);color:var(--sub);border-radius:20px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;padding:5px 14px;transition:all .2s}
+  .sf-btn:hover{color:var(--accent);border-color:var(--accent)}
+  .sf-content{max-height:0;overflow:hidden;transition:max-height .35s ease}
+  .sf-content.open{max-height:400px}
+  .sf-inner{margin-top:10px;padding:14px 16px;border-left:2px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+  .sf-quote{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink)}
+  .sf-attr{font-family:var(--mono);font-size:10.5px;color:var(--accent);margin-top:8px}
+  .sf-note{color:var(--sub);font-size:12.5px;margin-top:8px}
+
+  /* ── textbook refs ───────────────────────── */
+  .textbook-links{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .textbook-link{font-family:var(--mono);font-size:10.5px;color:var(--tb);border:1px solid rgba(200,155,245,.35);border-radius:14px;padding:3px 10px;text-decoration:none;transition:all .2s}
+  .textbook-link:hover{background:rgba(200,155,245,.12)}
+  .textbook-ref{margin:16px 0;padding:16px 18px;border:1px solid rgba(200,155,245,.3);border-left:3px solid var(--tb);border-radius:8px;background:var(--surface);position:relative}
+  .textbook-ref-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--tb);margin-bottom:6px}
+  .textbook-ref-body{color:var(--sub);font-size:13.5px}
+  .tb-stamp{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--tb);border:1px solid rgba(200,155,245,.35);padding:2px 8px;border-radius:10px;white-space:nowrap;z-index:2;pointer-events:none}
+
+  /* ── then / now ───────────────────────── */
+  .then-now{margin:16px 0;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:18px 20px}
+  .then-now-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  .then-now-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .then-now-col{padding:0 18px 0 0}
+  .then-now-col+.then-now-col{border-left:1px solid var(--border);padding:0 0 0 18px}
+  .then-now-head{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .then-now-quote{font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--ink)}
+  .then-now-attr{font-family:var(--mono);font-size:10px;color:var(--sub);margin-top:8px}
+  .then-now-foot{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border);color:var(--sub);font-size:12.5px}
+  @media(max-width:640px){.then-now-grid{grid-template-columns:1fr}.then-now-col{padding:0}.then-now-col+.then-now-col{border-left:none;border-top:1px solid var(--border);margin-top:12px;padding:12px 0 0}}
+
+  /* ── pipeline & figures ───────────────────────── */
+  .connections{margin-top:52px}
+  .connections h3{font-family:var(--serif);font-weight:600;font-size:24px;margin-bottom:14px}
+  .pipeline{display:flex;align-items:stretch;overflow-x:auto;padding:16px 0;-webkit-overflow-scrolling:touch;gap:2px}
+  .pipe-node{flex:none;border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:12px 14px;min-width:128px;transition:border-color .2s}
+  .pipe-node:hover{border-color:var(--accent)}
+  .pipe-node .name{font-family:var(--serif);font-weight:600;font-size:13.5px}
+  .pipe-node .role{font-size:11px;color:var(--sub);margin-top:3px}
+  .pipe-node .year{font-family:var(--mono);font-size:10px;color:var(--accent);margin-top:6px}
+  .pipe-arrow{flex:none;align-self:center;color:var(--accent);font-size:15px;padding:0 8px}
+  .key-figures{margin-top:52px}
+  .key-figures h3{font-family:var(--serif);font-weight:600;font-size:24px;margin-bottom:16px}
+  .figure-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .figure{border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:18px 20px;transition:border-color .2s}
+  .figure:hover{border-color:rgba(224,180,88,.4)}
+  .figure-name{font-family:var(--serif);font-weight:600;font-size:16px}
+  .figure-role{color:var(--sub);font-size:13px;margin-top:6px}
+  .figure-german{font-family:var(--mono);font-size:10.5px;color:var(--accent);margin-top:10px}
+  @media(max-width:680px){.figure-grid{grid-template-columns:1fr}}
+
+  /* ── throughline ───────────────────────── */
+  .throughline{border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);padding:26px 28px;margin-top:52px;position:relative;overflow:hidden}
+  .throughline::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--ideo),var(--pol))}
+  .throughline h3{font-family:var(--serif);font-weight:600;font-size:20px;margin-bottom:10px}
+  .throughline p{color:var(--sub);font-size:14.5px}
+
+  /* ── policy cycle ───────────────────────── */
+  .policy-cycle{margin-top:52px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);padding:24px 26px}
+  .policy-cycle-title{font-family:var(--serif);font-weight:600;font-size:22px;margin-bottom:4px}
+  .policy-cycle-sub{color:var(--sub);font-size:13.5px;margin-bottom:16px;max-width:62ch}
+  .cycle-svg-wrap{display:block;width:100%}
+  .cycle-svg-wrap svg{width:100%;height:auto;display:block}
+  .cycle-node-group{cursor:pointer}
+  .cycle-node-group circle{transition:all .2s}
+  .cycle-node-group circle.node-bg{fill:var(--panel);stroke:var(--accent);stroke-width:1.5}
+  .cycle-node-group:hover circle.node-bg{fill:var(--accent-soft)}
+  .cycle-svg-wrap text{fill:var(--ink);font-family:var(--sans)}
+  .cycle-svg-wrap path,.cycle-svg-wrap line{stroke:var(--muted)}
+  .cycle-detail{display:none;margin-top:14px;padding:14px 16px;border-left:2px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+  .cycle-detail.show{display:block}
+  .cycle-detail-title{font-family:var(--serif);font-weight:600;font-size:15px;margin-bottom:6px}
+  .cycle-detail-body{color:var(--sub);font-size:13px}
+  .cycle-mobile{display:none;flex-direction:column;gap:8px}
+  .cycle-step{border:1px solid var(--border);border-radius:8px;background:var(--panel);padding:12px 14px}
+  .cycle-step-n{font-family:var(--serif);font-style:italic;font-weight:600;color:var(--accent);font-size:14px}
+  .cycle-step-t{font-family:var(--serif);font-weight:600;font-size:14px;margin-top:2px}
+  .cycle-step-eg{color:var(--sub);font-size:12px;margin-top:4px}
+  .cycle-arrow-dn{text-align:center;color:var(--accent);font-size:13px}
+  @media(max-width:700px){.cycle-svg-wrap{display:none!important}.cycle-mobile{display:flex!important}}
+
+  /* ── phrases tracker ───────────────────────── */
+  .phrases-tracker{position:fixed;bottom:16px;right:16px;z-index:55;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .pt-toggle{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--sub);background:rgba(27,20,16,.95);border:1px solid var(--border);padding:7px 14px;border-radius:20px;backdrop-filter:blur(8px);transition:all .2s;line-height:1;user-select:none}
+  .pt-toggle:hover{color:var(--accent);border-color:var(--accent)}
+  .pt-panel{display:none;background:rgba(27,20,16,.97);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;max-width:320px;backdrop-filter:blur(10px)}
+  .pt-panel.open{display:block}
+  .pt-title{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .pt-row{margin-bottom:12px}
+  .pt-phrase{font-size:12px;color:var(--sub);margin-bottom:5px;font-style:italic}
+  .pt-dots{display:flex;gap:5px;align-items:center}
+  .pt-dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--muted);transition:all .3s}
+  .pt-dot.lit{background:var(--accent);border-color:var(--accent)}
+  .pt-era-label{font-family:var(--mono);font-size:8.5px;color:var(--muted)}
+
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+  .reveal.visible{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  /* ── detour call ───────────────────────── */
+  .detour-call{display:block;margin:26px 0 0;border:1px dashed rgba(127,198,154,.5);border-radius:10px;background:rgba(127,198,154,.06);padding:16px 20px;text-decoration:none;cursor:pointer;transition:border-color .2s,background .2s}
+  .detour-call:hover{border-color:#7FC69A;background:rgba(127,198,154,.1)}
+  .dc-k{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#7FC69A;display:block;margin-bottom:6px}
+  .dc-t{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink);display:block}
+  .dc-s{font-size:13px;color:var(--sub);display:block;margin-top:4px}
+  .dc-s b{color:#7FC69A;font-weight:500}
+
+
+/* ===== neat resource / video block ===== */
+.res-block{
+  margin: 36px 0 20px;
+  padding: 18px 20px;
+  background: var(--panel, #221A12);
+  border: 1px solid var(--line, rgba(232,203,150,.15));
+  border-radius: 10px;
+}
+.res-block .res-label{
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint, #7A6D58);
+  margin-bottom: 12px;
+}
+.res-block a{
+  display: block;
+  color: var(--text, #F0EAE0);
+  text-decoration: none;
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line, rgba(232,203,150,.1));
+  transition: color .2s;
+}
+.res-block a:last-child{ border-bottom: none; }
+.res-block a:hover{ color: var(--ac, #E0B458); }
+.res-block a .res-meta{
+  display: block;
+  font-size: 11.5px;
+  color: var(--sub, #B5A78F);
+  margin-top: 3px;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+</style>
+<style>/* hub fix: keep the closing note + resources inside the page column */
+.hub-tail{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 26px 72px;box-sizing:border-box}
+.hub-tail>p{color:var(--sub,#B5A78F);font-size:15.5px;line-height:1.75;max-width:68ch;margin:40px 0 0}
+.hub-tail .res-block{margin-top:32px}
+</style>
+</head>
+<body>
+<a href="../ideas.html" style="position:fixed;z-index:99999;left:12px;bottom:12px;background:#F5EEE1;color:#2A2118;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.4)">← Back to the new interactive chapter</a>
+<script>addEventListener('message',function(e){if(e.data&&e.data.hubOpen)location.href=e.data.hubOpen+'.html'});</script>
+<div class="progress-bar" id="progressBar"></div>
+<nav class="era-nav" id="eraNav">
+  <a href="#era1"><span class="dot"></span>German Roots</a>
+  <a href="#era2"><span class="dot"></span>Building</a>
+  <a href="#era3"><span class="dot"></span>Gatekeeping</a>
+  <a href="#era4"><span class="dot"></span>Keynes</a>
+  <a href="#era5"><span class="dot"></span>Lock-In</a>
+  <a href="#era6"><span class="dot"></span>Monetarist Turn</a>
+  <a href="#era7"><span class="dot"></span>Legacy</a>
+</nav>
+<div class="container">
+<header>
+  <div class="badge">An Institutional History · Expanded Edition</div>
+  <h1>From <em>Heidelberg</em> to <em>Harvard</em></h1>
+  <p class="subtitle">How German-trained economists built the institutions, pipelines, and textbooks that shaped American economic thought — and the myths that hardened inside the system along the way.</p>
+</header>
+<div class="filter-bar">
+  <span class="filter-label">Filter</span>
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="institution">Institution</button>
+  <button class="filter-btn" data-filter="ideology">Ideology</button>
+  <button class="filter-btn" data-filter="policy">Policy</button>
+  <button class="filter-btn" data-filter="textbook">Textbook</button>
+</div>
+<div class="legend">
+  <div class="legend-item"><div class="legend-swatch myth"></div>Embedded myth / fallacy</div>
+  <div class="legend-item"><div class="legend-swatch context"></div>Historical context</div>
+</div>
+<div class="stats reveal">
+  <div class="stat"><div class="stat-num">~150</div><div class="stat-label">Years of influence</div></div>
+  <div class="stat"><div class="stat-num">48+</div><div class="stat-label">German-trained founders</div></div>
+  <div class="stat"><div class="stat-num">4M+</div><div class="stat-label">Samuelson copies sold</div></div>
+  <div class="stat"><div class="stat-num">12</div><div class="stat-label">Embedded myths traced</div></div>
+</div>
+
+<a class="detour-call" href="#" onclick="parent.postMessage({hubOpen:'detour'},'*');return false;">
+  <span class="dc-k">◆ The Detour · the buried prologue</span>
+  <span class="dc-t">Before Heidelberg, there was Salamanca.</span>
+  <span class="dc-s">Three centuries before the German pilgrimage, Spanish friars had already derived subjective value, the quantity theory, and market prices. <b>Take the detour →</b></span>
+</a>
+<div class="timeline" style="margin-top:44px;">
+
+<!-- ERA 1 -->
+<div class="era" id="era1">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">I. The German Training Ground <span class="era-toggle">›</span></div>
+    <div class="era-range">1870s – 1890s</div>
+  </div>
+  <div class="era-desc">There were essentially no PhD programs in economics in the United States. Young Americans who wanted serious training had one option: Germany. What they found wasn't just methodology — it was a complete worldview about the relationship between expertise, the state, and society.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">1870s</div>
+      <div class="event-content">
+        <div class="event-title">The Pilgrimage to Germany</div>
+        <div class="event-detail">Between 1870 and 1900, at least <strong>48 Americans</strong> who would become professional economists earned doctorates at German universities — Heidelberg, Berlin, Halle, and Göttingen. The attraction: Germany had the most advanced university system in the world. America had almost nothing — no research universities, no economics departments, no PhD programs.</div>
+        <div class="event-people">
+          <span class="person">Richard T. Ely → Heidelberg</span>
+          <span class="person">Henry C. Adams → Berlin</span>
+          <span class="person">E.R.A. Seligman → Berlin/Heidelberg</span>
+          <span class="person">Simon Patten → Halle</span>
+          <span class="person">Edward A. Ross → Berlin</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="quiz-card reveal" role="group" aria-label="Who Said It quiz">
+      <div class="quiz-eyebrow">&#x2753; Who Said It? — Guess the Decade</div>
+      <div class="quiz-q">"The great error of individualism is to suppose that economic outcomes emerge from impersonal natural forces rather than from social arrangements that can be consciously guided by reason, expertise, and the power of the state."</div>
+      <div class="quiz-hint">When was this written?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" data-correct="1" onclick="handleQuiz(this)" aria-label="1880s">1880s</button>
+        <button class="quiz-opt" data-correct="0" onclick="handleQuiz(this)" aria-label="1930s">1930s</button>
+        <button class="quiz-opt" data-correct="0" onclick="handleQuiz(this)" aria-label="1970s">1970s</button>
+        <button class="quiz-opt" data-correct="0" onclick="handleQuiz(this)" aria-label="2010s">2010s</button>
+      </div>
+      <div class="quiz-reveal">
+        <div class="quiz-reveal-who">Richard T. Ely, paraphrasing the Verein position — AEA founding materials, 1885</div>
+        <div class="quiz-reveal-note">The language reads as contemporary progressive economics. It was the operating premise of the German Historical School. The argument has never really changed — only the credentials of those making it.</div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">1872</div>
+      <div class="event-content">
+        <div class="event-title">The Verein für Socialpolitik</div>
+        <div class="event-detail">German economists led by <strong>Gustav von Schmoller</strong> found the Verein für Socialpolitik — an organization that explicitly rejects Manchestertum (British-style laissez-faire) and argues the state must direct economic life. Schmoller's core claim: that trained academic experts, not market forces, should determine social outcomes. The Americans absorb this model and bring it home wholesale.</div>
+        <div class="event-people">
+          <span class="person">Gustav von Schmoller</span>
+          <span class="person">Adolph Wagner</span>
+          <span class="person">Karl Knies</span>
+          <span class="person">Wilhelm Roscher</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+        <div class="sound-familiar">
+          <button class="sf-btn" onclick="toggleSF(this)" aria-expanded="false">Sound familiar?</button>
+          <div class="sf-content" aria-hidden="true">
+            <div class="sf-inner">
+              <div class="sf-quote">"Central bank independence must be protected precisely because monetary policy is too technically complex to be made through democratic processes."</div>
+              <div class="sf-attr">— Christine Lagarde, IMF Managing Director, Davos, 2016</div>
+              <div class="sf-note">Schmoller's argument in 1872 was structurally identical: trained academic experts, insulated from popular pressure, must direct economic outcomes. The 21st-century version has better branding.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-card">
+      <div class="context-label">Historical Context — The Kathedersozialist</div>
+      <div class="context-body">The German Historical School was born in Bismarck-era politics. German academics had a <strong>direct role in government</strong> that British or American scholars did not. The <strong>Kathedersozialist</strong> ("socialists of the lectern") believed the professor's proper role was to guide the state. These men wrote legislation, sat on royal commissions, and saw themselves as the intellectual vanguard of a managed society. The Americans internalized not just the ideas but the <strong>professional identity</strong>: the economist as state planner.</div>
+    </div>
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">1875–85</div>
+      <div class="event-content">
+        <div class="event-title">Karl Knies and the Heidelberg Pipeline</div>
+        <div class="event-detail"><strong>Karl Knies</strong> at Heidelberg becomes the single most important mentor to the American generation. He teaches that economic "laws" are not universal but historically contingent — each nation must discover its own path, guided by its educated class. His American students include <strong>Richard T. Ely</strong> (future AEA founder), <strong>Henry Carter Adams</strong> (future railroad regulation architect), and <strong>Davis Rich Dewey</strong> (future AER editor for 30 years).</div>
+        <div class="event-people">
+          <span class="person">Karl Knies (mentor)</span>
+          <span class="person">Richard T. Ely</span>
+          <span class="person">Henry Carter Adams</span>
+          <span class="person">Davis Rich Dewey</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #1</div>
+      <div class="myth-title">"Economics is a value-free science like physics"</div>
+      <div class="myth-body">The German-trained generation deliberately positioned economics as a <strong>"science"</strong> to gain authority — but it was never value-free. From the beginning, the founders embedded specific normative commitments (state intervention, expert management, racial hierarchy) inside what they presented as objective findings. The scientific framing was itself a political strategy to insulate their policy preferences from democratic challenge.</div>
+      <div class="myth-reality">Economics has always been entangled with ideology. The original "scientists" chose which questions to ask, which data to collect, and which populations to study — all shaped by prior political commitments. The scientific framing gave their preferences the authority of fact.</div>
+    </div>
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">1876</div>
+      <div class="event-content">
+        <div class="event-title">Johns Hopkins University Opens</div>
+        <div class="event-detail">America's first research university, modeled directly on the German system by <strong>Daniel Coit Gilman</strong>. Prioritizes graduate research and the seminar method over undergraduate teaching. <strong>Richard T. Ely</strong> gets his first American professorship here in 1881 and immediately begins training the next generation. Johns Hopkins becomes the template that Harvard, Columbia, Chicago, and Wisconsin will replicate.</div>
+        <div class="event-people">
+          <span class="person">Daniel Coit Gilman (president)</span>
+          <span class="person">Richard T. Ely (first econ chair)</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">1880s</div>
+      <div class="event-content">
+        <div class="event-title">Simon Patten's "Abundance Economics"</div>
+        <div class="event-detail"><strong>Simon Nelson Patten</strong>, trained at Halle under <strong>Johannes Conrad</strong>, returns to the University of Pennsylvania and argues America has entered an "economy of abundance" where old rules of scarcity no longer apply. The state's role is to manage this abundance through expert administration. His framework — that scarcity is a policy choice, not a natural condition — becomes foundational to later Keynesian and welfare-state thinking.</div>
+        <div class="event-people">
+          <span class="person">Simon N. Patten → Penn</span>
+          <span class="person">Johannes Conrad (mentor, Halle)</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #2</div>
+      <div class="myth-title">"Minimum wages help the lowest-paid workers"</div>
+      <div class="myth-body">The original Progressive economists who advocated for minimum wages were explicit: the laws were meant to <strong>exclude</strong> workers deemed "unemployable" — racial minorities, immigrants, and women — from the labor force entirely. <strong>Henry Rogers Seager</strong> of Columbia wrote that minimum wages would act as a sorting mechanism, identifying the "unfit" who should be removed from industry. <strong>Sidney Webb</strong> called it a tool against "economic parasites."</div>
+      <div class="myth-reality">The modern argument that minimum wages are purely about helping low-wage workers strips away the original eugenic design. Whether minimum wages help or hurt today is a legitimate empirical debate — but the policy was not invented for benevolent reasons. Understanding its origin reveals how "reform" and exclusion were intertwined from the start.</div>
+      <span class="tb-stamp">Econ 101 standard</span>
+      <div class="sound-familiar" style="margin-top:10px">
+        <button class="sf-btn" onclick="toggleSF(this)" aria-expanded="false">Sound familiar?</button>
+        <div class="sf-content" aria-hidden="true">
+          <div class="sf-inner">
+            <div class="sf-quote">"Raising the minimum wage to $15 is simple justice. No one working full time should live in poverty. The evidence is clear: it won't cost jobs."</div>
+            <div class="sf-attr">— Senator Bernie Sanders, Senate floor statement, 2021</div>
+            <div class="sf-note">The original progressive case for minimum wages also invoked humanitarian language — while the exclusionary mechanism was written into the statute, not the speech. The humanitarian framing is as old as the policy. The eugenic design rarely appears in either version.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ERA 2 -->
+<div class="era" id="era2">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">II. Building the American Apparatus <span class="era-toggle">›</span></div>
+    <div class="era-range">1885 – 1910</div>
+  </div>
+  <div class="era-desc">The German-trained generation returns and builds institutions: professional associations, journals, PhD programs, and entire university departments — all constructed in roughly twenty-five years, all controlled by scholars sharing the same German-derived worldview.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="institution ideology">
+      <div class="event-year">1885</div>
+      <div class="event-content">
+        <div class="event-title">American Economic Association Founded at Saratoga Springs</div>
+        <div class="event-detail"><strong>Richard T. Ely</strong> drafts the AEA's founding platform — more political manifesto than scholarly charter. It declares: "We regard the state as an agency whose positive assistance is one of the indispensable conditions of human progress." It explicitly rejects laissez-faire as "unsafe in politics and unsound in morals." Of the 50 charter members, the majority trained in Germany. First generation dissenters — including <strong>J. Laurence Laughlin</strong> of Chicago — are deliberately marginalized.</div>
+        <div class="event-people">
+          <span class="person">Richard T. Ely (founder)</span>
+          <span class="person">Henry Carter Adams</span>
+          <span class="person">Edmund J. James</span>
+          <span class="person">J.L. Laughlin (opponent)</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span><span class="tag tag-ideology">Ideology</span></div>
+        <div class="sound-familiar">
+          <button class="sf-btn" onclick="toggleSF(this)" aria-expanded="false">Sound familiar?</button>
+          <div class="sf-content" aria-hidden="true">
+            <div class="sf-inner">
+              <div class="sf-quote">"Economics is not a matter of opinion. There is a scientific consensus on what policies work. Dismissing peer-reviewed economics is no different from denying climate change."</div>
+              <div class="sf-attr">— Paul Krugman, New York Times, November 2012</div>
+              <div class="sf-note">Ely's 1885 platform also appealed to "science" to silence dissent — specifically against laissez-faire, which he called "unsafe in politics and unsound in morals." The rhetorical move is identical: claim the prestige of science, then define disagreement as ignorance.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-card reveal" role="group" aria-label="Who Said It quiz">
+      <div class="quiz-eyebrow">&#x2753; Who Said It? — Guess the Decade</div>
+      <div class="quiz-q">"When private investment is insufficient to maintain full employment, public expenditure must supply what the market cannot provide. Government spending is not waste — it is stimulus to the whole body economic."</div>
+      <div class="quiz-hint">When was this written?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" data-correct="0" onclick="handleQuiz(this)">1890s</button>
+        <button class="quiz-opt" data-correct="1" onclick="handleQuiz(this)">1930s</button>
+        <button class="quiz-opt" data-correct="0" onclick="handleQuiz(this)">1960s</button>
+        <button class="quiz-opt" data-correct="0" onclick="handleQuiz(this)">2020s</button>
+      </div>
+      <div class="quiz-reveal">
+        <div class="quiz-reveal-who">Alvin Hansen, Fiscal Policy and Business Cycles, 1941 — paraphrased</div>
+        <div class="quiz-reveal-note">Hansen was writing in the middle of the Depression and WWII buildup, but this exact argument — government fills the gap private investment leaves — reappears verbatim in every stimulus debate since, including 2009 and 2021.</div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">1890s</div>
+      <div class="event-content">
+        <div class="event-title">The PhD Factory Turns On</div>
+        <div class="event-detail">Columbia under <strong>E.R.A. Seligman</strong>; Wisconsin under <strong>Ely</strong> (moved from Hopkins in 1892); Harvard under <strong>Frank Taussig</strong>; Chicago under <strong>Laughlin</strong> — all build graduate programs. The PhD becomes the essential credential. A generation earlier, public intellectuals on economics were journalists, ministers, businessmen. Now the gates close. German-trained scholars control nearly every credentialing committee.</div>
+        <div class="event-people">
+          <span class="person">E.R.A. Seligman → Columbia</span>
+          <span class="person">Richard T. Ely → Wisconsin</span>
+          <span class="person">Frank Taussig → Harvard</span>
+          <span class="person">J.L. Laughlin → Chicago</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="context-card">
+      <div class="context-label">Historical Context — The Credential Revolution</div>
+      <div class="context-body"><strong>Henry George</strong>, the most widely-read economic thinker in late 19th century America, was a journalist with no degree. His <em>Progress and Poverty</em> (1879) outsold every economics text. The professionalization project was partly a campaign to displace voices like his. Ely explicitly argued only university-trained experts should advise on policy — simultaneously elevating his authority and silencing popular thinkers. Even the <strong>Austrian School</strong> (Menger, Böhm-Bawerk) was largely ignored until Hayek arrived at LSE in the 1930s.</div>
+    </div>
+
+    <div class="event" data-tags="ideology policy">
+      <div class="event-year">1890s</div>
+      <div class="event-content">
+        <div class="event-title">Eugenics and Economics Merge</div>
+        <div class="event-detail">The same economists building the profession simultaneously lead the eugenics movement. <strong>Francis A. Walker</strong> (MIT president and AEA president) argues immigration degrades American racial "stock." <strong>Edward A. Ross</strong> coins "race suicide" and campaigns for Asian exclusion. <strong>John R. Commons</strong> publishes <em>Races and Immigrants in America</em> (1907), ranking racial groups by economic capacity. These are mainstream, peer-reviewed, professionally endorsed positions.</div>
+        <div class="event-people">
+          <span class="person">Francis A. Walker (MIT/AEA pres.)</span>
+          <span class="person">Edward A. Ross → "race suicide"</span>
+          <span class="person">John R. Commons</span>
+          <span class="person">Irving Fisher → eugenics leader</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span><span class="tag tag-policy">Policy</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #3</div>
+      <div class="myth-title">"Immigration depresses wages for native workers"</div>
+      <div class="myth-body">This argument was developed by <strong>Francis A. Walker</strong> and <strong>Richmond Mayo-Smith</strong> in the 1890s as "scientific" justification for racial exclusion. Walker's theory — that immigrant "hordes" displaced native reproduction — was explicitly eugenic. The economic framework was built backward: start with the conclusion (restrict immigration), then construct the model.</div>
+      <div class="myth-reality">Most modern empirical research finds immigration has small or positive net effects on native wages, with distributional effects varying by sector and skill level. The framing of immigration as inherently wage-depressing — as a "law" — traces directly to eugenic pseudoscience, though it has been stripped of its origins.</div>
+    </div>
+
+    <div class="event" data-tags="institution policy">
+      <div class="event-year">1904</div>
+      <div class="event-content">
+        <div class="event-title">"The Wisconsin Idea" — Economists as Legislators</div>
+        <div class="event-detail"><strong>John R. Commons</strong>, Ely's star student, builds the most consequential professor-to-policy pipeline in American history. Under Governor <strong>Robert La Follette</strong>, Commons and his students draft Wisconsin's workers' compensation law, public utility regulation, and the framework that becomes the basis for Social Security. His students <strong>Edwin Witte</strong> (Social Security Act) and <strong>Arthur Altmeyer</strong> (SSA administrator for 20 years) carry the model nationwide.</div>
+        <div class="event-people">
+          <span class="person">John R. Commons (architect)</span>
+          <span class="person">Robert La Follette (governor)</span>
+          <span class="person">Edwin Witte → Social Security Act</span>
+          <span class="person">Arthur Altmeyer → SSA, 20 yrs</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span><span class="tag tag-policy">Policy</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">1907</div>
+      <div class="event-content">
+        <div class="event-title">Irving Fisher — Economist as Eugenics Crusader</div>
+        <div class="event-detail"><strong>Irving Fisher</strong> of Yale — arguably the most brilliant technical economist of his generation — becomes president of the American Eugenics Society. Fisher views "human capital" (his term) as a stock to be managed and eugenic selection as efficiency policy. He advocates forced sterilization, immigration restriction, and Prohibition within a framework of "scientific" resource optimization. His technical contributions (the Fisher equation, debt-deflation) remain valid — but were produced within a worldview treating populations as inputs to optimize.</div>
+        <div class="event-people"><span class="person">Irving Fisher → Yale</span></div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #4</div>
+      <div class="myth-title">"Government experts can allocate resources better than markets"</div>
+      <div class="myth-body">The German Historical School's core premise — that trained experts can identify optimal social outcomes — was imported wholesale. This wasn't an empirical finding. It was an <strong>axiom</strong>, absorbed at Heidelberg and embedded in every institution the returnees built. The belief that credentialed economists possess knowledge sufficient to manage complex systems became the default assumption — rarely tested, simply presupposed.</div>
+      <div class="myth-reality">The 20th century produced extensive evidence that centralized planning faces severe knowledge and incentive problems (Hayek's "knowledge problem," public choice theory, the socialist calculation debate). The blanket assumption that experts outperform decentralized decision-making was more faith than science — persisting because it serves the professional interests of the class that holds it.</div>
+      <span class="tb-stamp">Econ 101 standard</span>
+      <div class="sound-familiar" style="margin-top:10px">
+        <button class="sf-btn" onclick="toggleSF(this)" aria-expanded="false">Sound familiar?</button>
+        <div class="sf-content" aria-hidden="true">
+          <div class="sf-inner">
+            <div class="sf-quote">"Markets have demonstrably failed to deliver on climate, housing, and healthcare. We need coordinated expert-led public investment to address these market failures — the private sector simply cannot do this alone."</div>
+            <div class="sf-attr">— Janet Yellen, Treasury Secretary, Senate Finance Committee testimony, 2021</div>
+            <div class="sf-note">The German Historical School's core premise, restated for the 21st century: identified market failures justify expert-coordinated intervention. The logic of the Verein für Socialpolitik, 136 years later, delivered from a Senate hearing room instead of a Heidelberg seminar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- Then vs. Now Card 1: Expert Gatekeeping -->
+<div class="then-now reveal" role="complementary" aria-label="Then vs. Now comparison">
+  <div class="then-now-eyebrow">Then vs. Now — Expert Authority</div>
+  <div class="then-now-grid">
+    <div class="then-now-col">
+      <div class="then-now-head">THEN</div>
+      <div class="then-now-quote">"The public is incompetent to judge economic questions. The science of political economy must be left to those trained in its methods, or policy will be dictated by sentiment and ignorance."</div>
+      <div class="then-now-attr">Richard T. Ely, AEA founding address, 1885</div>
+    </div>
+    <div class="then-now-col">
+      <div class="then-now-head">NOW</div>
+      <div class="then-now-quote">"We need to listen to the economists. This is a matter of empirical science. When voters reject the expert consensus, the results are predictably catastrophic."</div>
+      <div class="then-now-attr">Larry Summers, interview, The Atlantic, 2016</div>
+    </div>
+  </div>
+  <div class="then-now-foot">Same argument. Same structure. Same appeal to expertise as a bar to democratic input. 130 years apart.</div>
+</div>
+
+<!-- ERA 3 -->
+<div class="era" id="era3">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">III. Professionalization & Gatekeeping <span class="era-toggle">›</span></div>
+    <div class="era-range">1910 – 1930</div>
+  </div>
+  <div class="era-desc">The infrastructure is complete. What happens next is consolidation: controlling who publishes, who gets hired, who advises government — and who gets defined out of the profession entirely.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">1911</div>
+      <div class="event-content">
+        <div class="event-title">American Economic Review Launches</div>
+        <div class="event-detail"><strong>Davis Rich Dewey</strong> — Knies' student from Heidelberg — becomes editor and controls the journal for 30 years. Publication in the AER becomes essential for tenure. The journal enforces methodological and ideological norms: empirical work framed within interventionist assumptions is favored. Classical liberal perspectives are systematically underrepresented.</div>
+        <div class="event-people"><span class="person">Davis Rich Dewey (editor, 30 yrs)</span></div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="policy">
+      <div class="event-year">1913</div>
+      <div class="event-content">
+        <div class="event-title">The Federal Reserve Act & the Income Tax</div>
+        <div class="event-detail"><strong>E.R.A. Seligman</strong> of Columbia is the chief academic architect of the progressive income tax (16th Amendment). The Federal Reserve's design draws on debates dominated by the German-trained generation. <strong>J. Laurence Laughlin</strong> influences Fed structure but loses the larger battle: the Fed institutionalizes permanent government management of money and credit — exactly the Verein model applied to American banking.</div>
+        <div class="event-people">
+          <span class="person">E.R.A. Seligman → income tax</span>
+          <span class="person">J.L. Laughlin → Fed structure</span>
+          <span class="person">Paul Warburg → Fed design</span>
+        </div>
+        <div class="tags"><span class="tag tag-policy">Policy</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #5</div>
+      <div class="myth-title">"The Federal Reserve is a neutral, technocratic institution"</div>
+      <div class="myth-body">The Fed was presented as a purely technical solution to banking panics. But its creation implemented the German model: <strong>expert management of the economy through a centralized institution insulated from democratic accountability</strong>. The assumption that monetary policy should be managed by credentialed experts rather than constrained by rules (like the gold standard) was the Verein worldview applied to American banking.</div>
+      <div class="myth-reality">The Fed is a political institution that makes distributional choices — who benefits from easy money, who bears inflation costs, which sectors get support during crises. Framing these as "technical" decisions obscures the reality that monetary policy creates winners and losers, and the experts making those calls have their own class interests and biases.</div>
+      <span class="tb-stamp">Still in Fed models</span>
+      <div class="sound-familiar" style="margin-top:10px">
+        <button class="sf-btn" onclick="toggleSF(this)" aria-expanded="false">Sound familiar?</button>
+        <div class="sf-content" aria-hidden="true">
+          <div class="sf-inner">
+            <div class="sf-quote">"The Federal Reserve's independence is sacrosanct. Political interference with monetary policy decisions would be catastrophic for the credibility of our institutions and ultimately for ordinary Americans."</div>
+            <div class="sf-attr">— Jerome Powell, Fed Chair, press conference remarks, July 2019</div>
+            <div class="sf-note">Every Fed chair since Marriner Eccles has used nearly identical language. The "independence" framing originated with the same Verein model that treated expert insulation as self-evidently good — the question of what the Fed's independence is <em>for</em> has never been satisfactorily answered.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="policy ideology">
+      <div class="event-year">1917–24</div>
+      <div class="event-content">
+        <div class="event-title">Immigration Restriction Becomes Law</div>
+        <div class="event-detail">Three decades of economic "science" culminate in law. The Immigration Act of 1917 and Johnson-Reed Act of 1924 (national origins quotas) are directly informed by AEA members' arguments. The Dillingham Commission (1907–11) relied on work by <strong>Jeremiah Jenks</strong> of Cornell. Quotas are designed to reduce Southern/Eastern European immigration and bar Asians entirely — justified by economic arguments about wage depression and "assimilability" developed inside the academy.</div>
+        <div class="event-people">
+          <span class="person">Jeremiah Jenks → Dillingham Commission</span>
+          <span class="person">Francis A. Walker (intellectual architect)</span>
+        </div>
+        <div class="tags"><span class="tag tag-policy">Policy</span><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">1920s</div>
+      <div class="event-content">
+        <div class="event-title">The Second Generation Takes the Chairs</div>
+        <div class="event-detail">The original German-trained scholars retire or die, but their students hold virtually every important chair. Commons' students at Wisconsin, Ely's across the Midwest, Seligman's at Columbia, Taussig's at Harvard. The interventionist consensus is no longer argued for — it's the professional air new economists breathe. Laissez-faire is taught as a historical curiosity.</div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ERA 4 -->
+<div class="era" id="era4">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">IV. The Keynesian Takeover <span class="era-toggle">›</span></div>
+    <div class="era-range">1930 – 1946</div>
+  </div>
+  <div class="era-desc">The Depression doesn't create the interventionist apparatus — it activates it. The institutions built by the German-trained generation are already in place. Keynes provides the theoretical superstructure for a building whose foundation was poured forty years earlier.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="policy institution">
+      <div class="event-year">1933</div>
+      <div class="event-content">
+        <div class="event-title">The New Deal Brain Trust</div>
+        <div class="event-detail">FDR's advisors are products of the German-influenced system. <strong>Rexford Tugwell</strong> (Columbia, student of <strong>Wesley Clair Mitchell</strong>) explicitly admires Mussolini's corporatist planning. <strong>Adolf Berle</strong> (Columbia) co-architects the New Deal. Commons' student <strong>Edwin Witte</strong> chairs the committee drafting the Social Security Act (1935). Another Commons student, <strong>Arthur Altmeyer</strong>, runs the SSA for its first two decades. The "Wisconsin Idea" goes national.</div>
+        <div class="event-people">
+          <span class="person">Rexford Tugwell → Brain Trust</span>
+          <span class="person">Adolf Berle → Brain Trust</span>
+          <span class="person">Edwin Witte → Social Security</span>
+          <span class="person">Arthur Altmeyer → SSA</span>
+          <span class="person">Wesley C. Mitchell → NBER founder</span>
+        </div>
+        <div class="tags"><span class="tag tag-policy">Policy</span><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #6</div>
+      <div class="myth-title">"FDR's New Deal ended the Great Depression"</div>
+      <div class="myth-body">Perhaps the most consequential economic myth in American public life, cemented by <strong>Keynesian economists with professional incentives to validate the interventionist model</strong>. Unemployment remained above 14% through 1940. What ended mass unemployment was WWII military mobilization. The New Deal provided relief and institutional reform, but as economic recovery the evidence is far weaker than the textbook narrative.</div>
+      <div class="myth-reality">Robert Higgs argued the New Deal prolonged the Depression through regime uncertainty. Christina Romer showed monetary policy, not fiscal, drove pre-war recovery. The truth is genuinely contested — but the "FDR saved the economy" story was promoted by economists whose careers depended on the interventionist model being vindicated.</div>
+    </div>
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">1936</div>
+      <div class="event-content">
+        <div class="event-title">Keynes Publishes <em>The General Theory</em></div>
+        <div class="event-detail"><strong>John Maynard Keynes</strong> provides the theoretical architecture: economies can get stuck in underemployment; aggregate demand matters; government spending fills the gap; saving can be a "paradox." Critically, he doesn't have to convince American economists that government should act — they already believe that. What he provides is a <em>model</em> — equations and diagrams that can be taught and published. He transforms the German-derived interventionist instinct into something that looks like science.</div>
+        <div class="event-people"><span class="person">John Maynard Keynes</span></div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #7</div>
+      <div class="myth-title">"The Paradox of Thrift — saving is bad for the economy"</div>
+      <div class="myth-body">Keynes argued that if everyone saves simultaneously, total demand falls and everyone ends up poorer. <strong>Samuelson</strong> enshrined this as a core principle in his textbook. For decades, the "paradox" was taught as fundamental insight justifying government spending to compensate for "excessive" saving.</div>
+      <div class="myth-reality">The paradox assumes savings are stuffed in mattresses rather than channeled through financial markets into investment. In reality, savings fund capital formation — the mechanism creating future productive capacity. The "paradox" only works under very specific assumptions (liquidity trap, zero bound) that were generalized into a universal principle. The practical effect: making consumption seem virtuous and saving harmful — a convenient argument for governments that wanted to spend.</div>
+      <div class="textbook-ref">
+        <div class="textbook-ref-label">Déjà vu</div>
+        <div class="textbook-ref-body">Search "paradox of thrift" in your intro macro textbook — it's there. Typically appears in the Keynesian expenditure model or aggregate demand chapters. <strong>Mankiw</strong> covers it; so does every AP Macro prep book. It's usually presented as a settled insight, not an assumption-dependent edge case.
+          <div class="textbook-links">
+            <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Macro ↗</a>
+            <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="institution ideology">
+      <div class="event-year">1938–41</div>
+      <div class="event-content">
+        <div class="event-title">Alvin Hansen's Fiscal Policy Seminar at Harvard</div>
+        <div class="event-detail"><strong>Alvin Hansen</strong> — a Minnesota-born economist who converted to Keynesianism in his 50s — runs the seminar that becomes the single most important training ground. His students: <strong>Paul Samuelson</strong> (THE textbook), <strong>James Tobin</strong> (JFK advisor), <strong>John Kenneth Galbraith</strong> (most famous economist in America), <strong>Richard Musgrave</strong> (public finance), <strong>Evsey Domar</strong>, <strong>Abram Bergson</strong>. Hansen also develops "secular stagnation" — the idea mature economies need permanent fiscal stimulus. Revived by <strong>Larry Summers</strong> in 2013.</div>
+        <div class="event-people">
+          <span class="person">Alvin Hansen (convener)</span>
+          <span class="person">Paul Samuelson → MIT</span>
+          <span class="person">James Tobin → Yale/JFK</span>
+          <span class="person">J.K. Galbraith → Harvard</span>
+          <span class="person">Richard Musgrave</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="policy institution">
+      <div class="event-year">1946</div>
+      <div class="event-content">
+        <div class="event-title">Employment Act of 1946</div>
+        <div class="event-detail">The institutional capstone. Federal law makes "maximum employment, production, and purchasing power" an official goal. Creates the <strong>Council of Economic Advisers</strong>. <strong>Edwin Nourse</strong> becomes first CEA chair. The dream of the Verein für Socialpolitik — trained economists guiding state policy from inside government — is now American law.</div>
+        <div class="event-people">
+          <span class="person">Edwin Nourse (first CEA chair)</span>
+          <span class="person">Leon Keyserling (CEA member)</span>
+        </div>
+        <div class="tags"><span class="tag tag-policy">Policy</span><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #8</div>
+      <div class="myth-title">"Government spending multiplies through the economy"</div>
+      <div class="myth-body">The "multiplier" — $1 of government spending generates more than $1 of activity — became Keynesian gospel via <strong>Richard Kahn's</strong> 1931 paper. Samuelson's textbook taught students to calculate it as 1/(1-MPC). It became the core justification for deficit spending.</div>
+      <div class="myth-reality">Decades of research show the multiplier is highly context-dependent and often below 1.0 — meaning government spending can <em>reduce</em> total activity by crowding out private investment. Robert Barro found multipliers near 0.8 for non-defense spending. Wartime estimates aren't generalizable to peacetime. The textbook version systematically overstates it.</div>
+      <div class="textbook-ref">
+        <div class="textbook-ref-label">Déjà vu</div>
+        <div class="textbook-ref-body">You almost certainly calculated this in class: <strong>Multiplier = 1 ÷ (1 − MPC)</strong>. That formula is in every intro macro textbook and on the AP Macro exam. It's usually presented as a clean, reliable tool — the empirical murkiness isn't mentioned.
+          <div class="textbook-links">
+            <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Macro ↗</a>
+            <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ERA 5 -->
+<div class="era" id="era5">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">V. The Textbook Lock-In <span class="era-toggle">›</span></div>
+    <div class="era-range">1948 – 1970</div>
+  </div>
+  <div class="era-desc">A single textbook captures the consensus and transmits it to millions. The Keynesian framework stops being debatable and becomes the way economics is taught — the mental operating system installed in every Econ 101 student. <strong>If you took economics in high school or college, this is the era that shaped what you learned.</strong> Samuelson's 1948 synthesis still runs underneath <strong>Mankiw's <em>Principles of Economics</em></strong> (the most widely assigned college textbook today), <strong>Krugman &amp; Wells</strong>, <strong>McConnell, Brue &amp; Flynn</strong> (dominant in AP courses), and the free <a href="https://openstax.org/books/principles-economics-3e/pages/1-introduction" target="_blank" style="color:var(--purple)">OpenStax Principles of Economics</a>. The structure — circular flow, AD/AS, fiscal multiplier, Phillips curve, GDP accounting — was fixed here.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="textbook institution">
+      <div class="event-year">1948</div>
+      <div class="event-content">
+        <div class="event-title">Samuelson's <em>Economics</em> — The Textbook That Defined a Discipline</div>
+        <div class="event-detail"><strong>Paul Samuelson's</strong> textbook: <strong>19 editions, 4M+ copies, 40+ languages</strong>. He synthesizes Keynesian macro with neoclassical micro into the "neoclassical synthesis" — Keynesian demand management as the macro framework, marginalist analysis as micro, presented as complementary parts of unified science. This synthesis is Samuelson's invention, not Keynes's — and it becomes the default mental model for two generations.</div>
+        <div class="event-people"><span class="person">Paul Samuelson → MIT</span></div>
+        <div class="tags"><span class="tag tag-textbook">Textbook</span><span class="tag tag-institution">Institution</span></div>
+        <div class="textbook-ref">
+          <div class="textbook-ref-label">Déjà vu — this is the origin</div>
+          <div class="textbook-ref-body">Every intro economics course you've taken descends directly from this synthesis. Today's standard — <strong>Mankiw's <em>Principles of Economics</em></strong> (now in its 9th edition) — is structurally the same book, updated. If you took AP Economics, the circular flow diagram, the spending multiplier, the Phillips curve tradeoff, and the AD-AS model all trace back here.
+            <div class="textbook-links">
+              <a class="textbook-link" href="https://openstax.org/books/principles-economics-3e/pages/1-introduction" target="_blank">OpenStax Principles of Economics ↗</a>
+              <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Principles of Macroeconomics ↗</a>
+              <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #9</div>
+      <div class="myth-title">"Recessions are caused by insufficient aggregate demand"</div>
+      <div class="myth-body">Samuelson's textbook teaches this as <em>the</em> explanation: people aren't spending enough, output falls, unemployment rises. Solution: government fills the "demand gap." The framework treats recessions as one type of problem with one type of solution — so thoroughly drilled that many economists couldn't conceive alternatives.</div>
+      <div class="myth-reality">Recessions have multiple causes — malinvestment from credit expansion (Austrian theory), real shocks (RBC theory), financial fragility (Minsky), policy uncertainty. "Demand deficiency" is one lens, not the only one. Its textbook dominance crowded out competing explanations for decades, leaving economists poorly equipped for crises like 2008 that didn't fit the simple demand-gap story.</div>
+      <div class="textbook-ref">
+        <div class="textbook-ref-label">Déjà vu — the AD-AS diagram</div>
+        <div class="textbook-ref-body">The aggregate demand / aggregate supply model — the diagram with the downward-sloping AD curve shifting left during recessions — is the visual centerpiece of intro macro. Every high school AP course and college Econ 101 section builds around it. It encodes this exact assumption: recessions are demand shortfalls, cured by shifting AD rightward.
+          <div class="textbook-links">
+            <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Macro ↗</a>
+            <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+            <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-microeconomics" target="_blank">AP Microeconomics ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">1950s</div>
+      <div class="event-content">
+        <div class="event-title">MIT Becomes the Center of Gravity</div>
+        <div class="event-detail"><strong>Samuelson</strong> and <strong>Robert Solow</strong> make MIT the most influential department in the world. Their approach — highly mathematical, Keynesian in macro, interventionist in policy — becomes the gold standard. <strong>Franco Modigliani</strong> joins in 1962. MIT trains an extraordinary number of future central bankers, finance ministers, and Nobel laureates. Its influence on global policy is arguably greater than any other institution.</div>
+        <div class="event-people">
+          <span class="person">Paul Samuelson → MIT</span>
+          <span class="person">Robert Solow → MIT</span>
+          <span class="person">Franco Modigliani → MIT</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="textbook ideology">
+      <div class="event-year">1958</div>
+      <div class="event-content">
+        <div class="event-title">The Phillips Curve — The Policy Menu</div>
+        <div class="event-detail"><strong>A.W. Phillips</strong> observes an inverse relationship between unemployment and wage inflation in UK data. <strong>Samuelson and Solow</strong> repackage it as a stable U.S. policy tradeoff: government can "choose" its preferred combination. This becomes the centerpiece of Keynesian policy — a menu for technocrats to fine-tune the economy.</div>
+        <div class="event-people">
+          <span class="person">A.W. Phillips</span>
+          <span class="person">Samuelson & Solow</span>
+        </div>
+        <div class="tags"><span class="tag tag-textbook">Textbook</span><span class="tag tag-ideology">Ideology</span></div>
+        <div class="textbook-ref">
+          <div class="textbook-ref-label">Déjà vu — the curve you drew</div>
+          <div class="textbook-ref-body">The downward-sloping curve plotting unemployment against inflation is in every intro macro textbook and on the AP exam. Students are taught to read it as a policy menu: move along the curve to choose your preferred outcome. The caveat — that it may not be stable — appears much later in the chapter, if at all.
+            <div class="textbook-links">
+              <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Macro ↗</a>
+              <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #10</div>
+      <div class="myth-title">"Government can trade inflation for lower unemployment"</div>
+      <div class="myth-body">For a decade, this was the master equation. Policymakers believed they could permanently buy lower unemployment by accepting more inflation. Taught in every textbook, used by every central bank, underlying the Kennedy-Johnson economic program. <strong>Walter Heller</strong> used it to design the 1964 tax cut.</div>
+      <div class="myth-reality"><strong>Milton Friedman</strong> (1967) and <strong>Edmund Phelps</strong> (1968) predicted the tradeoff was temporary: once inflation expectations adjusted, you'd get the same unemployment with <em>higher</em> inflation. The 1970s proved them exactly right. Stagflation should have killed the Phillips Curve as a policy tool. Instead, it was patched, modified, and quietly retained in weaker form. Most undergrads still learn a version.</div>
+      <div class="textbook-ref">
+        <div class="textbook-ref-label">Déjà vu</div>
+        <div class="textbook-ref-body">If you took AP Macro or Econ 101, you were tested on the short-run vs. long-run Phillips Curve distinction — the "patch" added after stagflation. The long-run curve is vertical (Friedman was right), but the short-run version is still taught as a usable policy tool. The same concept that failed in the 1970s lives on in adapted form in <strong>Mankiw</strong>, <strong>Krugman &amp; Wells</strong>, <strong>McConnell &amp; Brue</strong>, and every AP prep book.
+          <div class="textbook-links">
+            <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Macro ↗</a>
+            <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="policy">
+      <div class="event-year">1961–68</div>
+      <div class="event-content">
+        <div class="event-title">The Apex — Economists Run the White House</div>
+        <div class="event-detail">Hansen's students are in power. <strong>Walter Heller</strong> (CEA chair under JFK) designs the Revenue Act of 1964 — the first explicitly Keynesian tax cut. <strong>James Tobin</strong> advises on monetary policy. <strong>Samuelson</strong> is JFK's chief outside advisor. <strong>Galbraith</strong> serves as Ambassador to India. Under LBJ, <strong>Gardner Ackley</strong> runs the CEA and tries to fine-tune the economy during Vietnam. The full pipeline — German seminar to textbook to Oval Office — is at peak capacity.</div>
+        <div class="event-people">
+          <span class="person">Walter Heller → CEA/JFK</span>
+          <span class="person">James Tobin → CEA/JFK</span>
+          <span class="person">Paul Samuelson → JFK advisor</span>
+          <span class="person">J.K. Galbraith → Ambassador</span>
+          <span class="person">Gardner Ackley → CEA/LBJ</span>
+        </div>
+        <div class="tags"><span class="tag tag-policy">Policy</span></div>
+      </div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ERA 6 -->
+<div class="era" id="era6">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">VI. The Monetarist Counter-Revolution <span class="era-toggle">›</span></div>
+    <div class="era-range">1970 – 1990</div>
+  </div>
+  <div class="era-desc">Stagflation breaks the Keynesian consensus — but not the infrastructure. Friedman and Chicago offer alternatives, but work within the same apparatus the German-trained generation built. The critique changes what's taught but not how the profession is organized.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">1970–75</div>
+      <div class="event-content">
+        <div class="event-title">Stagflation Breaks the Model</div>
+        <div class="event-detail">Simultaneous high inflation (12% by 1974) and high unemployment — impossible under Phillips Curve logic. <strong>Arthur Burns</strong> at the Fed tries demand management and makes inflation worse. Nixon imposes wage and price controls in 1971 — the ultimate Keynesian intervention — and they fail catastrophically.</div>
+        <div class="event-people">
+          <span class="person">Arthur Burns → Fed chair</span>
+          <span class="person">Richard Nixon → wage/price controls</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="ideology institution">
+      <div class="event-year">1976</div>
+      <div class="event-content">
+        <div class="event-title">Friedman Wins the Nobel — Chicago Ascends</div>
+        <div class="event-detail"><strong>Milton Friedman</strong> and the Chicago School — <strong>George Stigler</strong> (regulatory capture), <strong>Gary Becker</strong> (human capital), <strong>Robert Lucas</strong> (rational expectations) — offer an alternative: monetarism, skepticism of intervention, rules over discretion. But crucially, they operate within the same structure: AEA, top journals, PhD pipelines. Friedman doesn't destroy the apparatus — he captures parts of it.</div>
+        <div class="event-people">
+          <span class="person">Milton Friedman → Chicago</span>
+          <span class="person">George Stigler</span>
+          <span class="person">Robert Lucas</span>
+          <span class="person">Gary Becker</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="context-card">
+      <div class="context-label">Historical Context — The Counter-Revolution's Limits</div>
+      <div class="context-body">Friedman's monetarism still assumed <strong>credentialed experts should manage the money supply</strong> through a central bank — he just wanted rules rather than discretion. The deeper German inheritance — that the economy should be managed by professionals through centralized institutions — was never challenged. Even the "free market" 1980s was implemented by economists working through the same Fed, CEA, and academic pipeline.</div>
+    </div>
+
+    <div class="event" data-tags="policy">
+      <div class="event-year">1979</div>
+      <div class="event-content">
+        <div class="event-title">Volcker's Shock — Monetarism in Practice</div>
+        <div class="event-detail"><strong>Paul Volcker</strong> raises the federal funds rate to over 20% to crush inflation. It works — inflation falls from 13% to 3% — but causes the worst recession since the Depression (unemployment peaks at 10.8%). First major policy action justified by monetarist rather than Keynesian logic. Demonstrates that central bank decisions have enormous distributional consequences.</div>
+        <div class="event-people"><span class="person">Paul Volcker → Fed chair</span></div>
+        <div class="tags"><span class="tag tag-policy">Policy</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #11</div>
+      <div class="myth-title">"Deficits don't matter" / "We owe it to ourselves"</div>
+      <div class="myth-body">A persistent Keynesian argument: government debt isn't a problem because it's mostly owed domestically. <strong>Abba Lerner's</strong> "functional finance" (1943) argued deficits should be judged only by effects on employment, not size. This evolved into casual dismissal of debt concerns characterizing Keynesian policy advice for decades. Modern Monetary Theory (MMT) is the latest version.</div>
+      <div class="myth-reality">Government debt transfers from future taxpayers to present bondholders — "we" don't owe it to "ourselves" in any meaningful sense. Debt service consumes increasing budget shares, crowds out other spending, and constrains future policy. The casual dismissal of fiscal constraints — embedded since Lerner, amplified through Samuelson's textbook — has enabled systematically reckless fiscal policy.</div>
+    </div>
+
+  </div></div>
+</div>
+
+<!-- ERA 7 -->
+<div class="era" id="era7">
+  <div class="era-dot"></div>
+  <div class="era-header" onclick="toggleEra(this)">
+    <div class="era-label">VII. The Legacy — What Persists <span class="era-toggle">›</span></div>
+    <div class="era-range">1990 – Present</div>
+  </div>
+  <div class="era-desc">Intellectual content evolves — "New Keynesian" models replace old ones, behavioral economics challenges rational actors. But the institutional architecture the German-trained generation built between 1876 and 1910 remains largely intact.</div>
+  <div class="events-wrapper"><div class="events">
+
+    <div class="event" data-tags="institution">
+      <div class="event-year">Today</div>
+      <div class="event-content">
+        <div class="event-title">The Architecture Endures</div>
+        <div class="event-detail">The <strong>AEA</strong> still controls the profession's premier journal and meeting. The <strong>PhD pipeline</strong> from ~10 elite departments still produces most influential economists. The <strong>CEA</strong> still advises every president. The <strong>Fed</strong> still manages money through expert discretion. Textbooks — now <strong>Mankiw's</strong> instead of Samuelson's, but structurally similar — still teach Keynesian demand management as default macro. The architecture Ely, Seligman, and Commons built in the 1880s–1900s is the skeleton American economics still walks on.</div>
+        <div class="event-people">
+          <span class="person">N.G. Mankiw → current textbook</span>
+          <span class="person">Fed → Bernanke, Yellen, Powell</span>
+        </div>
+        <div class="tags"><span class="tag tag-institution">Institution</span></div>
+      </div>
+    </div>
+
+    <div class="myth-card">
+      <div class="myth-label">Embedded Myth #12</div>
+      <div class="myth-title">"GDP growth = economic health"</div>
+      <div class="myth-body">GDP — developed by <strong>Simon Kuznets</strong> in the 1930s — was designed as a wartime production metric. Kuznets himself warned: "the welfare of a nation can scarcely be inferred from a measurement of national income." But the Keynesian framework, built around managing aggregate output, made GDP the master metric. Every policy debate, election, and textbook chapter revolves around it.</div>
+      <div class="myth-reality">GDP doesn't measure wealth distribution, environmental costs, household production, leisure, or health. A hurricane that destroys homes and triggers rebuilding <em>increases</em> GDP. A parent leaving work to raise children <em>decreases</em> it. The metric's centrality reflects Keynesian emphasis on aggregate demand, not inherent superiority. We built an entire policy apparatus around optimizing a number its inventor told us not to optimize.</div>
+      <div class="textbook-ref">
+        <div class="textbook-ref-label">Déjà vu — chapter one of every textbook</div>
+        <div class="textbook-ref-body">GDP is introduced in the opening chapters of every economics course at every level. High school students learn the expenditure formula <strong>GDP = C + I + G + NX</strong> as one of the first things in the class. College courses add real vs. nominal, deflators, and per-capita adjustments — but the framing of GDP as the primary measure of economic health is inherited, not defended. The formula appears in <strong>Mankiw</strong>, <strong>Krugman &amp; Wells</strong>, <strong>McConnell &amp; Brue</strong>, OpenStax, and every AP prep book — usually before the chapter that briefly notes its limitations.
+          <div class="textbook-links">
+            <a class="textbook-link" href="https://openstax.org/books/principles-macroeconomics-3e/pages/1-introduction" target="_blank">OpenStax Macro ↗</a>
+            <a class="textbook-link" href="https://openstax.org/books/principles-economics-3e/pages/1-introduction" target="_blank">OpenStax Principles of Econ ↗</a>
+            <a class="textbook-link" href="https://apcentral.collegeboard.org/courses/ap-macroeconomics" target="_blank">AP Macroeconomics ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="event" data-tags="ideology">
+      <div class="event-year">2008–</div>
+      <div class="event-content">
+        <div class="event-title">The 2008 Crisis — The System Stress-Tests Itself</div>
+        <div class="event-detail">The financial crisis exposes failures at every level. Dominant macro models (DSGE) don't include financial sectors. The Fed doesn't see it coming. The "efficient markets hypothesis" fails catastrophically. Response: massive Keynesian stimulus (TARP, ARRA) justified by multiplier estimates that prove too optimistic. <strong>Larry Summers</strong> revives Hansen's 1938 "secular stagnation" to explain slow recovery. The cycle completes: Hansen's theory, filtered through Samuelson's textbook, returns as 21st-century policy.</div>
+        <div class="event-people">
+          <span class="person">Larry Summers → secular stagnation</span>
+          <span class="person">Ben Bernanke → Fed/crisis</span>
+          <span class="person">Christina Romer → CEA/ARRA</span>
+        </div>
+        <div class="tags"><span class="tag tag-ideology">Ideology</span></div>
+      </div>
+    </div>
+
+    <div class="context-card">
+      <div class="context-label">The Final Irony</div>
+      <div class="context-body">The German-trained generation built American economics to be a tool of reform. 150 years later, the system they built has produced a profession that is <strong>remarkably insular, intellectually homogeneous, and resistant to outside critique</strong>. The gatekeeping designed to exclude "unscientific" voices now excludes heterodox economists, non-Western perspectives, and practical business knowledge. The pipeline from elite PhD to elite department to policy role remains extraordinarily narrow. The architecture endures — but whether it serves the public or merely reproduces itself is the question the profession has never adequately answered.</div>
+    </div>
+
+  </div></div>
+</div>
+
+</div>
+
+<div class="connections reveal">
+  <h3>The Intellectual Pipeline — Person by Person</h3>
+  <div class="pipeline">
+    <div class="pipe-node"><div class="name">Karl Knies</div><div class="role">Heidelberg</div><div class="year">1870s</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">Richard Ely</div><div class="role">AEA / Wisconsin</div><div class="year">1885</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">J.R. Commons</div><div class="role">Wisconsin / Policy</div><div class="year">1904</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">Edwin Witte</div><div class="role">Social Security</div><div class="year">1935</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">Alvin Hansen</div><div class="role">Harvard Seminar</div><div class="year">1938</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">Samuelson</div><div class="role">MIT / Textbook</div><div class="year">1948</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">Heller / Tobin</div><div class="role">White House</div><div class="year">1961</div></div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-node"><div class="name">Mankiw</div><div class="role">Textbook / CEA</div><div class="year">1998</div></div>
+  </div>
+</div>
+
+<div class="throughline reveal">
+  <h3>The Throughline</h3>
+  <p>The German Historical School economists didn't just bring ideas to America — they built the <strong>institutions</strong> that reproduced those ideas: the PhD program, the professional association, the policy advisory role, the introductory textbook. Keynes didn't create a new system; he provided the most powerful theory for a system already built and waiting. Each generation trained the next within the same infrastructure, and at every stage, certain assumptions hardened into "laws" taught as settled science: that experts can manage economies, that government spending multiplies wealth, that saving is suspect, that GDP equals progress. These weren't empirical discoveries — they were axioms embedded by the founders and transmitted through the pipeline they built. The myths persist because the institutions that propagate them were designed, from the beginning, to be self-reinforcing.</p>
+</div>
+
+<div class="key-figures reveal">
+  <h3>Key Transmission Figures</h3>
+  <div class="figure-grid">
+    <div class="figure">
+      <div class="figure-name">Richard T. Ely (1854–1943)</div>
+      <div class="figure-role">Founded the AEA. Trained at Heidelberg under Knies. Built Wisconsin's econ department. Called laissez-faire "unsafe in politics and unsound in morals."</div>
+      <div class="figure-german">Studied under Karl Knies, Heidelberg</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">E.R.A. Seligman (1861–1939)</div>
+      <div class="figure-role">Columbia for 50 years. Chief architect of the progressive income tax. Built Columbia's graduate program into a policy factory.</div>
+      <div class="figure-german">Berlin → Heidelberg → Paris</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">John R. Commons (1862–1945)</div>
+      <div class="figure-role">Ely's most consequential student. Architect of Wisconsin labor law and the institutional framework for Social Security.</div>
+      <div class="figure-german">Ely → Commons → Witte/Altmeyer</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">Irving Fisher (1867–1947)</div>
+      <div class="figure-role">Yale. Most technically brilliant economist of his generation. Also president of the American Eugenics Society. Created the Fisher equation and "human capital" concept.</div>
+      <div class="figure-german">Yale PhD, European-influenced</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">Alvin Hansen (1887–1975)</div>
+      <div class="figure-role">"The American Keynes." Harvard seminar trained Samuelson, Tobin, Galbraith, Musgrave. Inventor of "secular stagnation."</div>
+      <div class="figure-german">Institutional bridge figure</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">Paul Samuelson (1915–2009)</div>
+      <div class="figure-role">Hansen's student. His textbook (1948, 19 editions, 4M+ copies) defined how economics was taught worldwide. Created the "neoclassical synthesis." Nobel 1970.</div>
+      <div class="figure-german">Hansen → Samuelson → the textbook</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">Walter Heller (1915–1987)</div>
+      <div class="figure-role">JFK's CEA chair. Designed the 1964 tax cut. Brought the Hansen-Samuelson framework directly into the Oval Office.</div>
+      <div class="figure-german">The pipeline reaches the president</div>
+    </div>
+    <div class="figure">
+      <div class="figure-name">Milton Friedman (1912–2006)</div>
+      <div class="figure-role">Chicago. Most important Keynesian critic. Predicted stagflation. Won the monetarist debate. But operated within the same institutional structure.</div>
+      <div class="figure-german">Counter-revolution from within</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <!-- SOCIAL LINKS – add inside <footer> before the <p> -->
+<div style="margin: 24px 0 16px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap;">
+  </div>
+  <p>Based on themes from Thomas C. Leonard's <em>Illiberal Reformers</em>, the history of the AEA, and the intellectual genealogy of American economic thought.<br>
+  All interpretive claims are offered for critical engagement, not as settled conclusions.</p>
+</footer>
+</div>
+
+<!-- Feature 3: Recurring Phrases Tracker -->
+<div class="phrases-tracker" id="phrasesTracker" aria-label="Recurring arguments tracker">
+  <div class="pt-panel" id="ptPanel" role="region" aria-label="Recurring argument phrases across eras">
+    <div class="pt-title">Recurring Arguments — By Era</div>
+    <div class="pt-row">
+      <div class="pt-phrase">"Economy too complex for ordinary people"</div>
+      <div class="pt-dots" title="One dot per era (I–VII)">
+        <div class="pt-dot" data-pid="p1" data-era="0" title="Era I"></div>
+        <div class="pt-dot" data-pid="p1" data-era="1" title="Era II"></div>
+        <div class="pt-dot" data-pid="p1" data-era="2" title="Era III"></div>
+        <div class="pt-dot" data-pid="p1" data-era="3" title="Era IV"></div>
+        <div class="pt-dot" data-pid="p1" data-era="4" title="Era V"></div>
+        <div class="pt-dot" data-pid="p1" data-era="5" title="Era VI"></div>
+        <div class="pt-dot" data-pid="p1" data-era="6" title="Era VII"></div>
+      </div>
+    </div>
+    <div class="pt-row">
+      <div class="pt-phrase">"Competition is wasteful — coordination is better"</div>
+      <div class="pt-dots">
+        <div class="pt-dot" data-pid="p2" data-era="0" title="Era I"></div>
+        <div class="pt-dot" data-pid="p2" data-era="1" title="Era II"></div>
+        <div class="pt-dot" data-pid="p2" data-era="2" title="Era III"></div>
+        <div class="pt-dot" data-pid="p2" data-era="3" title="Era IV"></div>
+        <div class="pt-dot" data-pid="p2" data-era="4" title="Era V"></div>
+        <div class="pt-dot" data-pid="p2" data-era="5" title="Era VI"></div>
+        <div class="pt-dot" data-pid="p2" data-era="6" title="Era VII"></div>
+      </div>
+    </div>
+    <div class="pt-row">
+      <div class="pt-phrase">"We need expert management of the economy"</div>
+      <div class="pt-dots">
+        <div class="pt-dot" data-pid="p3" data-era="0" title="Era I"></div>
+        <div class="pt-dot" data-pid="p3" data-era="1" title="Era II"></div>
+        <div class="pt-dot" data-pid="p3" data-era="2" title="Era III"></div>
+        <div class="pt-dot" data-pid="p3" data-era="3" title="Era IV"></div>
+        <div class="pt-dot" data-pid="p3" data-era="4" title="Era V"></div>
+        <div class="pt-dot" data-pid="p3" data-era="5" title="Era VI"></div>
+        <div class="pt-dot" data-pid="p3" data-era="6" title="Era VII"></div>
+      </div>
+    </div>
+    <div class="pt-row">
+      <div class="pt-phrase">"Government spending creates growth"</div>
+      <div class="pt-dots">
+        <div class="pt-dot" data-pid="p4" data-era="0" title="Era I"></div>
+        <div class="pt-dot" data-pid="p4" data-era="1" title="Era II"></div>
+        <div class="pt-dot" data-pid="p4" data-era="2" title="Era III"></div>
+        <div class="pt-dot" data-pid="p4" data-era="3" title="Era IV"></div>
+        <div class="pt-dot" data-pid="p4" data-era="4" title="Era V"></div>
+        <div class="pt-dot" data-pid="p4" data-era="5" title="Era VI"></div>
+        <div class="pt-dot" data-pid="p4" data-era="6" title="Era VII"></div>
+      </div>
+    </div>
+    <div class="pt-row" style="margin-bottom:0">
+      <div class="pt-phrase">"Markets are inherently unstable"</div>
+      <div class="pt-dots">
+        <div class="pt-dot" data-pid="p5" data-era="0" title="Era I"></div>
+        <div class="pt-dot" data-pid="p5" data-era="1" title="Era II"></div>
+        <div class="pt-dot" data-pid="p5" data-era="2" title="Era III"></div>
+        <div class="pt-dot" data-pid="p5" data-era="3" title="Era IV"></div>
+        <div class="pt-dot" data-pid="p5" data-era="4" title="Era V"></div>
+        <div class="pt-dot" data-pid="p5" data-era="5" title="Era VI"></div>
+        <div class="pt-dot" data-pid="p5" data-era="6" title="Era VII"></div>
+      </div>
+    </div>
+  </div>
+  <button class="pt-toggle" id="ptToggle" aria-expanded="false" aria-controls="ptPanel">&#x1F501; Recurring Arguments</button>
+</div>
+
+<script>
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const s=window.scrollY,d=document.documentElement.scrollHeight-window.innerHeight;progressBar.style.width=(d>0?(s/d)*100:0)+'%'});
+const eraNav=document.getElementById('eraNav'),eras=document.querySelectorAll('.era[id]'),navLinks=document.querySelectorAll('.era-nav a');
+window.addEventListener('scroll',()=>{eraNav.classList.toggle('visible',window.scrollY>300);let c='';eras.forEach(e=>{if(e.getBoundingClientRect().top<=window.innerHeight*.4)c=e.id});navLinks.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+c))});
+navLinks.forEach(l=>l.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(l.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}));
+function toggleEra(h){const e=h.closest('.era');e.classList.toggle('collapsed');const w=e.querySelector('.events-wrapper');w.style.maxHeight=e.classList.contains('collapsed')?'0px':w.scrollHeight+'px'}
+document.querySelectorAll('.events-wrapper').forEach(w=>w.style.maxHeight=w.scrollHeight+'px');
+document.querySelectorAll('.filter-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const f=btn.dataset.filter;document.querySelectorAll('.event').forEach(evt=>{if(f==='all')evt.classList.remove('filtered-out');else evt.classList.toggle('filtered-out',!(evt.dataset.tags||'').includes(f))})})});
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+function toggleSF(btn) {
+  const content = btn.nextElementSibling;
+  const isOpen = content.classList.contains('open');
+  content.classList.toggle('open');
+  btn.setAttribute('aria-expanded', !isOpen);
+}
+
+function handleQuiz(opt) {
+  const card = opt.closest('.quiz-card');
+  if (!card) return;
+  
+  const allOpts = card.querySelectorAll('.quiz-opt');
+  const reveal = card.querySelector('.quiz-reveal');
+  
+  // Disable all options after first click
+  allOpts.forEach(o => {
+    o.disabled = true;
+    if (o === opt) {
+      if (opt.dataset.correct === '1') {
+        opt.classList.add('correct');
+      } else {
+        opt.classList.add('wrong');
+      }
+    } else if (o.dataset.correct === '1') {
+      o.classList.add('correct'); // highlight the right answer if user was wrong
+    }
+  });
+  
+  // Show the reveal section
+  if (reveal) reveal.classList.add('show');
+}
+
+// Phrases Tracker toggle (the floating bottom panel)
+const ptToggle = document.getElementById('ptToggle');
+const ptPanel = document.getElementById('ptPanel');
+if (ptToggle && ptPanel) {
+  ptToggle.addEventListener('click', () => {
+    const isOpen = ptPanel.classList.contains('open');
+    ptPanel.classList.toggle('open');
+    ptToggle.setAttribute('aria-expanded', !isOpen);
+  });
+}
+
+// Optional: make the era dots in the phrases tracker light up on scroll (nice polish)
+function highlightPhrasesOnScroll() {
+  const dots = document.querySelectorAll('.pt-dot');
+  const scrollY = window.scrollY;
+  dots.forEach(dot => {
+    const era = parseInt(dot.dataset.era);
+    if (era !== undefined && scrollY > era * 800) {
+      dot.classList.add('lit');
+    }
+  });
+}
+window.addEventListener('scroll', highlightPhrasesOnScroll);
+</script>
+
+
+
+<div class="hub-tail">
+<p>The same intellectual tradition that rejected universal economic laws also proved useful for redefining terms. Once “capitalism” could be stretched to cover both relatively open markets and heavily managed mixed economies, almost any outcome could be attributed to it. The word became a portable explanation rather than a precise description of institutions. That semantic flexibility later proved valuable to those defending discretionary monetary and legal systems.</p>
+
+<div class="res-block">
+  <div class="res-label">Further watching & reading</div>
+  <a href="https://youtu.be/iRzr1QU6K1o" target="_blank" rel="noopener">Nixon Ends Bretton Woods (Aug 15, 1971)<span class="res-meta">Primary video · The actual televised announcement that closed the gold window</span></a>
+  <a href="https://youtu.be/J4IylYhh6Vw" target="_blank" rel="noopener">What is Money?<span class="res-meta">Video · Clear philosophical and historical framing of money itself</span></a>
+  <a href="https://youtu.be/7rFZ_eD211E" target="_blank" rel="noopener">Human Action — Ludwig von Mises (overview)<span class="res-meta">Video · Core Austrian treatise on purposeful action and subjective value</span></a>
+  <a href="https://www.nobelprize.org/prizes/economic-sciences/1974/hayek/lecture/" target="_blank" rel="noopener">F.A. Hayek — "The Pretense of Knowledge"<span class="res-meta">Nobel lecture (1974) · The Austrian climax against scientism in economics</span></a>
+  <a href="https://mises.org/library/economic-thought-before-adam-smith" target="_blank" rel="noopener">Murray Rothbard — Economic Thought Before Adam Smith<span class="res-meta">Book chapter · Best English overview of the School of Salamanca</span></a>
+</div>
+</div>
+</body>
+</html>

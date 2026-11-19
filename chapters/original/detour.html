@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Detour — The School of Salamanca</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15100A; --bg2:#1B1410; --panel:#221A12; --line:rgba(232,203,150,.15);
+  --grid:rgba(232,203,150,.045);
+  --text:#F0EAE0; --sub:#B5A78F; --faint:#7A6D58;
+  --ac:#7FC69A; --ac-soft:rgba(127,198,154,.12); --amber:#E0B458;
+  --serif:'Fraunces',Georgia,serif; --sans:'Archivo',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:56px 56px}
+::selection{background:rgba(127,198,154,.28)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:2px}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 26px}
+
+header{padding:62px 0 26px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ac);display:inline-flex;align-items:center;gap:12px}
+.eyebrow::before{content:'◆';font-size:9px}
+.eyebrow::after{content:'';width:44px;height:1px;background:var(--line)}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(38px,6.2vw,64px);line-height:1.0;letter-spacing:-.015em;margin:16px 0 16px}
+.lede{color:var(--sub);font-size:16.5px;max-width:60ch}
+.lede b{color:var(--text);font-weight:500}
+
+.why{margin-top:22px;border-left:2px solid var(--ac);background:var(--ac-soft);border-radius:0 10px 10px 0;padding:16px 20px;max-width:66ch}
+.why p{color:var(--sub);font-size:14px}
+.why b{color:var(--text);font-weight:500}
+.why .k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ac);display:block;margin-bottom:6px}
+
+section{padding:42px 0 6px}
+.sec-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(25px,3.4vw,34px);letter-spacing:-.01em;margin-bottom:10px}
+.sec-lede{color:var(--sub);font-size:15px;max-width:62ch;margin-bottom:24px}
+
+/* setting strip */
+.ctx{display:flex;border:1px solid var(--line);border-radius:10px;background:var(--bg2);overflow:hidden;flex-wrap:wrap}
+.ctx>div{padding:20px 22px;flex:1;min-width:180px}
+.ctx>div+div{border-left:1px solid var(--line)}
+.ctx .big{font-family:var(--serif);font-weight:600;font-size:30px;color:var(--ac);line-height:1.1}
+.ctx .cap{font-size:12.5px;color:var(--sub);margin-top:6px}
+
+/* theses */
+.thesis{border:1px solid var(--line);border-radius:10px;background:var(--bg2);margin-bottom:16px;overflow:hidden}
+.th-head{padding:22px 24px 0;display:flex;gap:16px;align-items:baseline}
+.th-num{font-family:var(--serif);font-style:italic;font-weight:600;font-size:22px;color:var(--ac);flex:none}
+.th-title{font-family:var(--serif);font-weight:600;font-size:21px;line-height:1.25}
+.th-who{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--faint);padding:6px 24px 0 0;margin-left:38px}
+.th-body{padding:12px 24px 18px;margin-left:38px}
+.th-body p{color:var(--sub);font-size:14.5px;max-width:58ch}
+.th-body p+p{margin-top:10px}
+.th-body b{color:var(--text);font-weight:500}
+.token{
+  margin:0 24px 22px 62px;border:1px dashed rgba(127,198,154,.45);border-radius:8px;
+  padding:12px 16px;background:rgba(127,198,154,.05);
+}
+.token .tk{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ac);display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.token .tk::before{content:'◆';font-size:8px}
+.token p{color:var(--sub);font-size:13px;max-width:56ch}
+.token p b{color:var(--text);font-weight:500}
+.token .yrs{font-family:var(--mono);font-size:11px;color:var(--ac)}
+@media(max-width:600px){.th-who,.th-body{margin-left:0}.token{margin-left:24px}}
+
+/* burial */
+.burial{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:24px 26px}
+.burial p{color:var(--sub);font-size:14.5px;max-width:64ch}
+.burial p+p{margin-top:12px}
+.burial b{color:var(--text);font-weight:500}
+.burial .rediscovery{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line)}
+.rd-item{display:grid;grid-template-columns:64px 1fr;gap:14px;padding:7px 0;font-size:13.5px;color:var(--sub)}
+.rd-item .y{font-family:var(--mono);font-size:11.5px;color:var(--ac);padding-top:2px}
+.rd-item b{color:var(--text);font-weight:500}
+
+/* the fork */
+.fork{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fork>div{padding:22px 24px;background:var(--bg2)}
+.fork>div+div{border-left:1px solid var(--line)}
+.fork .fh{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+.fork .f-sala .fh{color:var(--ac)}
+.fork .f-heid .fh{color:var(--amber)}
+.fork ol{list-style:none;counter-reset:f}
+.fork li{counter-increment:f;display:flex;gap:10px;padding:5px 0;font-size:13.5px;color:var(--sub)}
+.fork li::before{content:counter(f);font-family:var(--serif);font-style:italic;font-weight:600;color:var(--faint);flex:none;width:14px}
+.fork-foot{margin-top:16px;font-family:var(--serif);font-style:italic;font-size:17px;color:var(--text);max-width:56ch}
+.fork-foot .g{color:var(--ac)} .fork-foot .a{color:var(--amber)}
+@media(max-width:640px){.fork{grid-template-columns:1fr}.fork>div+div{border-left:none;border-top:1px solid var(--line)}}
+
+.return{
+  margin:26px 0 0;display:inline-flex;align-items:center;gap:10px;background:none;
+  border:1px solid var(--ac);color:var(--ac);border-radius:5px;font-family:var(--mono);
+  font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;padding:10px 18px;
+  transition:background .2s,color .2s;text-decoration:none;
+}
+.return:hover{background:var(--ac);color:var(--bg)}
+.srcnote{padding:40px 0 60px;color:var(--faint);font-size:12px;max-width:66ch}
+
+/* ===== neat resource / video block ===== */
+.res-block{
+  margin: 36px 0 20px;
+  padding: 18px 20px;
+  background: var(--panel, #221A12);
+  border: 1px solid var(--line, rgba(232,203,150,.15));
+  border-radius: 10px;
+}
+.res-block .res-label{
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint, #7A6D58);
+  margin-bottom: 12px;
+}
+.res-block a{
+  display: block;
+  color: var(--text, #F0EAE0);
+  text-decoration: none;
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line, rgba(232,203,150,.1));
+  transition: color .2s;
+}
+.res-block a:last-child{ border-bottom: none; }
+.res-block a:hover{ color: var(--ac, #E0B458); }
+.res-block a .res-meta{
+  display: block;
+  font-size: 11.5px;
+  color: var(--sub, #B5A78F);
+  margin-top: 3px;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+</style>
+</head>
+<body>
+<a href="../detour.html" style="position:fixed;z-index:99999;left:12px;bottom:12px;background:#F5EEE1;color:#2A2118;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.4)">← Back to the new interactive chapter</a>
+<script>addEventListener('message',function(e){if(e.data&&e.data.hubOpen)location.href=e.data.hubOpen+'.html'});</script>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">The Detour · branches off Chapter I</span>
+  <h1>The School of Salamanca</h1>
+  <p class="lede">Three centuries before the Heidelberg pilgrimage, Dominican friars and jurists at a Castilian university confronted the first great inflation of the modern world — and reasoned their way to <b>subjective value, the quantity theory of money, and market-set prices</b>. Then history buried them.</p>
+  <div class="why">
+    <span class="k">Why this detour exists</span>
+    <p>Chapter I tells the story of the line that won: Americans trained in 1870s Germany who built a profession around <b>expert management</b> of the economy. This detour is the older line they never learned — one that started from the opposite premise: the exact just price is known to God alone, so no human authority can compute it. <b>The rest is supply and demand.</b></p>
+  </div>
+</header>
+
+<section id="setting">
+  <div class="sec-eyebrow">The setting</div>
+  <h2>An empire drowning in silver</h2>
+  <p class="sec-lede">From the 1540s, treasure fleets poured American silver into Castile — and prices climbed for decades, something no living theory could explain. The theologians of Salamanca, obliged to judge the morality of every contract, ended up explaining the mechanics instead.</p>
+  <div class="ctx">
+    <div><div class="big">1544–1605</div><div class="cap">The school's active years, from Vitoria's students to Molina</div></div>
+    <div><div class="big">12 years</div><div class="cap">Azpilcueta's quantity theory (1556) preceded Jean Bodin, long credited as its originator</div></div>
+    <div><div class="big">1952</div><div class="cap">Year the school's monetary theory was recovered for economics — the book this detour is built on</div></div>
+  </div>
+</section>
+
+<section id="theses">
+  <div class="sec-eyebrow">The doctrine</div>
+  <h2>Five theses, four centuries early</h2>
+  <p class="sec-lede">Each thesis below was worked out in scholastic Latin between 1544 and 1605 — and each carries a token: where the same idea is still running, right now.</p>
+
+  <div class="thesis">
+    <div class="th-head"><span class="th-num">I.</span><span class="th-title">Value is estimation, not substance</span></div>
+    <div class="th-who">Luis Saravia de la Calle, c. 1544 · Diego de Covarrubias, 1554</div>
+    <div class="th-body">
+      <p>Saravia de la Calle argued, with some heat, that <b>cost of production plays no part in determining price</b> — a thing is worth what people commonly judge it to be worth, given its usefulness and scarcity. Covarrubias pushed further: an article's value doesn't come from its intrinsic nature but from the <b>estimation</b> in which it is held, which is why the same good fetches different prices in different places.</p>
+    </div>
+    <div class="token">
+      <span class="tk">Token · still running</span>
+      <p><span class="yrs">1544 → 1871 → now.</span> Economics "discovered" this as <b>marginal utility</b> three centuries later (Menger, Jevons, Walras) — and it's why labor-theory and cost-plus pricing keep failing wherever they're tried. Every airline seat priced differently on the same flight is Covarrubias in action.</p>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="th-head"><span class="th-num">II.</span><span class="th-title">More money, higher prices</span></div>
+    <div class="th-who">Martín de Azpilcueta "Navarrus," 1556</div>
+    <div class="th-body">
+      <p>Watching American treasure cross Castile, Azpilcueta produced the first clear statement of the <b>quantity theory of money</b>: the high cost of living was the direct result of the flood of silver. Money, he saw, obeys the same law as everything else — <b>where it is abundant, it is worth less</b>. Jean Bodin made the same claim in 1568 and took the credit for four hundred years; England caught up in 1581.</p>
+    </div>
+    <div class="token">
+      <span class="tk">Token · still running</span>
+      <p><span class="yrs">1556 → 2020 → 2022.</span> The U.S. money supply expanded roughly 40% in two years; inflation then hit a forty-year high. Azpilcueta needed no committee, no model, and no data feed to predict that — only the observation that money is not exempt from scarcity.</p>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="th-head"><span class="th-num">III.</span><span class="th-title">Money is worth more where it is scarce</span></div>
+    <div class="th-who">Francisco de Vitoria, 1535 · developed by the school through Mercado and García</div>
+    <div class="th-body">
+      <p>Vitoria noticed that a thousand ducats paid in Medina bought fewer in Germany when money was scarce there — and rightly so, he judged. His successors built this into a theory of the exchanges: <b>currencies trade at rates reflecting what money actually buys in each place</b>. Grice-Hutchinson called it the school's most original achievement — an anticipation of purchasing-power parity, a doctrine "not usually associated with the sixteenth century."</p>
+    </div>
+    <div class="token">
+      <span class="tk">Token · still running</span>
+      <p><span class="yrs">1535 → today, daily.</span> Purchasing-power parity is now the baseline model of the $7-trillion-a-day FX market — it's the theory inside the Big Mac Index, and the reason currency pegs that fight it (Argentina, repeatedly) eventually snap.</p>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="th-head"><span class="th-num">IV.</span><span class="th-title">The just price is the market price</span></div>
+    <div class="th-who">The school's consensus · sharpened by Luis de Molina and, later, Juan de Lugo</div>
+    <div class="th-body">
+      <p>Medieval doctrine demanded a "just price" — the school asked who could possibly know it. Their answer: absent fraud or monopoly, the just price <b>is</b> the common price formed in the market, because it aggregates every buyer's and seller's estimation. Lugo put the theological ceiling on it: the mathematically exact just price is known <b>to God alone</b>. Everyone else gets the market.</p>
+    </div>
+    <div class="token">
+      <span class="tk">Token · still running</span>
+      <p><span class="yrs">1605 → 1945 → every price control since.</span> Hayek's famous insight — that prices transmit knowledge no planner can gather — is this thesis in modern dress. And every attempt to overrule it, from Diocletian to 1970s price freezes to modern rent caps, has produced the same shortages the friars would have predicted.</p>
+    </div>
+  </div>
+
+  <div class="thesis">
+    <div class="th-head"><span class="th-num">V.</span><span class="th-title">Trade is a natural right</span></div>
+    <div class="th-who">Francisco de Vitoria, lectures of the 1530s</div>
+    <div class="th-body">
+      <p>Asked to judge Spain's claims in the Americas, Vitoria reshaped the old <b>ius gentium</b> — the law of peoples — around a radical premise: peoples, including the conquered, hold natural rights, and among them the right to <b>trade freely with one another</b>. His lectures are recognized as a foundation of international law, transmitted through Grotius.</p>
+    </div>
+    <div class="token">
+      <span class="tk">Token · still running</span>
+      <p><span class="yrs">1535 → 1625 → now.</span> The legal skeleton of the modern trading world — that commerce between nations is a right, not a favor granted by princes — runs through Vitoria. Scholars traced Grotius's debts to the Spaniards as early as 1730.</p>
+    </div>
+  </div>
+</section>
+
+<section id="burial">
+  <div class="sec-eyebrow">The disappearance</div>
+  <h2>How it got buried — and dug back up</h2>
+  <div class="burial">
+    <p>The school didn't fail — it was <b>forgotten</b>. Its economics lay encased in Latin treatises on moral theology, formatted as Questions, Objections, and Solutions — invisible to a discipline that decided its own story began with Adam Smith in 1776. Spain's decline and the Black Legend did the rest: nobody went looking for the origins of free-market thought in the country of the Inquisition.</p>
+    <p>The recovery took four centuries and came from the edges of the profession:</p>
+    <div class="rediscovery">
+      <div class="rd-item"><span class="y">1943</span><div><b>José Larraz</b> connects the Spanish writers as a coherent school with a shared monetary doctrine.</div></div>
+      <div class="rd-item"><span class="y">1952</span><div><b>Marjorie Grice-Hutchinson</b>, encouraged and advised by <b>F. A. Hayek</b> at the LSE, publishes <i>The School of Salamanca</i> — translating the key texts and naming the three original contributions: subjective value, the quantity theory, and purchasing-power parity.</div></div>
+      <div class="rd-item"><span class="y">1954</span><div><b>Joseph Schumpeter</b>'s monumental history concludes the scholastics came closer than anyone to founding economics as a science.</div></div>
+      <div class="rd-item"><span class="y">1970s–</span><div><b>Murray Rothbard</b> and the Austrian school claim the Salamancans as their true ancestors — "proto-Austrians" — rerouting the family tree of free-market economics from Glasgow to Castile.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="fork">
+  <div class="sec-eyebrow">The payoff</div>
+  <h2>Two lines, one fork</h2>
+  <p class="sec-lede">Hold this detour next to Chapter I and the whole hub snaps into focus. Two traditions answered the same question — <i>who should set economic outcomes?</i> — in opposite ways.</p>
+  <div class="fork">
+    <div class="f-sala">
+      <div class="fh">◆ The Salamanca line · 1544</div>
+      <ol>
+        <li>Value lives in human estimation.</li>
+        <li>Prices therefore carry knowledge no authority holds.</li>
+        <li>Money itself obeys supply and demand — so it must be kept honest.</li>
+        <li>The exact just price is God's; the state's job is to police fraud, not to compute prices.</li>
+      </ol>
+    </div>
+    <div class="f-heid">
+      <div class="fh">The Heidelberg line · 1872 → Chapter I</div>
+      <ol>
+        <li>Outcomes should be consciously designed.</li>
+        <li>Trained experts, not markets, should do the designing.</li>
+        <li>Money is a policy instrument to be managed.</li>
+        <li>Institutions — associations, journals, textbooks — reproduce the managers.</li>
+      </ol>
+    </div>
+  </div>
+  <p class="fork-foot">Chapter I is the story of how the <span class="a">second line</span> built the modern economics profession. This detour is the <span class="g">first line</span> — the road that was open, and not taken.</p>
+  <a class="return" href="#" onclick="parent.postMessage({hubOpen:'ideas'},'*');return false;">↩ Return to Chapter I — see which line won</a>
+</section>
+
+<p class="srcnote">Built on Marjorie Grice-Hutchinson, <i>The School of Salamanca: Readings in Spanish Monetary Theory, 1544–1605</i> (Oxford, 1952), with the standard rediscovery literature (Larraz 1943; Schumpeter 1954; Rothbard). Dates and priority claims follow Grice-Hutchinson. Educational summary — read the original texts; the friars are better company than their reputation suggests.</p>
+
+
+
+<p>The Salamanca writers were already distinguishing voluntary exchange from legally privileged position — a distinction that later vocabulary would frequently blur.</p>
+
+<div class="res-block">
+  <div class="res-label">Further watching & reading</div>
+  <a href="https://mises.org/mises-wire/true-founders-economics-school-salamanca" target="_blank" rel="noopener">The True Founders of Economics: The School of Salamanca<span class="res-meta">Mises Institute · Overview and curated texts on the Spanish scholastics</span></a>
+</div></div>
+</body>
+</html>
