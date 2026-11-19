@@ -55,14 +55,14 @@ export function createXray(stageEl, panel, listEl, { gl, reduced }) {
   st.onFrame((dt, t, k) => {
     let mv = false; const n = items[sel], cnt = n.chain.length;
     bubbles.forEach((g, i) => { const u = g.userData, on = i === sel; if (smoothTo(u, 'u', on ? 1 : 0, k)) mv = true; u.L.position.x = -.96 - u.u * .3; u.R.position.x = .96 + u.u * .3; u.L.rotation.y = -u.u * .22; u.R.rotation.y = u.u * .22; g.position.z = -3.2 + u.u * 1.1; g.scale.setScalar(1 + u.u * .06); if (!reduced) mv = true; });
-    nodes.forEach((m, j) => { const on = j < cnt; const x = (j - (cnt - 1) / 2) * 3.4; m.position.x = x; const tg = on ? 1 : 0; if (smoothTo(m.userData, 's', tg, k)) mv = true; m.scale.setScalar(Math.max(.001, m.userData.s ?? 0)); m.material.color.set(HUES[sel]).lerp(new THREE.Color('#B93B4A'), j / Math.max(1, cnt - 1) * .55); m.visible = (m.userData.s ?? 0) > .02; nlabs[j].el.hidden = !on; if (on && nlabs[j].el.dataset.t !== n.chain[j]) { nlabs[j].el.textContent = n.chain[j]; nlabs[j].el.dataset.t = n.chain[j]; } });
+    nodes.forEach((m, j) => { const on = j < cnt; const x = (j - (cnt - 1) / 2) * (mobile ? 2.5 : 3.4); m.position.x = x; const tg = on ? 1 : 0; if (smoothTo(m.userData, 's', tg, k)) mv = true; m.scale.setScalar(Math.max(.001, m.userData.s ?? 0)); m.material.color.set(HUES[sel]).lerp(new THREE.Color('#B93B4A'), j / Math.max(1, cnt - 1) * .55); m.visible = (m.userData.s ?? 0) > .02; nlabs[j].el.hidden = !on; if (on && nlabs[j].el.dataset.t !== n.chain[j]) { nlabs[j].el.textContent = n.chain[j]; nlabs[j].el.dataset.t = n.chain[j]; } });
     links.forEach((c, j) => { const on = j < cnt - 1; c.visible = on; if (on) { const a = nodes[j].position.x, b = nodes[j + 1].position.x; c.scale.y = Math.abs(b - a) - 1; c.position.x = (a + b) / 2; c.rotation.z = Math.PI / 2; } });
     const ph = reduced ? .9 : (t * .25) % 1; const seg = ph * Math.max(1, cnt - 1); const j0 = Math.min(Math.floor(seg), cnt - 2); tok.visible = cnt > 1; if (cnt > 1) { const a = nodes[j0].position.x, b = nodes[j0 + 1].position.x; tok.position.set(a + (b - a) * (seg - j0), .7 + .55 + Math.sin(t * 6) * .04, 0); if (!reduced) mv = true; }
     const showApt = sel === 0; apt.visible = showApt; aLab1.el.hidden = aLab2.el.hidden = !showApt;
     if (showApt) { const c = cap / 100; apts.forEach((g, j) => { const keep = Math.max(.12, 1 - c * (.45 + j * .1)); if (smoothTo(g.userData, 's', keep, k)) mv = true; g.scale.y = g.userData.s ?? 1; g.userData.b.parent.visible = true; }); people.forEach((p, j) => { const on = j < Math.round(c * 8) ? 1 : 0; if (smoothTo(p.userData, 'u', on, k)) mv = true; p.scale.setScalar(Math.max(.001, p.userData.u)); }); }
     return mv;
   });
-  const fit = () => st.fit(new THREE.Vector3(0, 3.7, 1.0), mobile ? 6.6 : 7.0, 6.0, .42);
+  const fit = () => st.fit(new THREE.Vector3(0, 3.7, 1.0), mobile ? 7.8 : 7.0, 6.0, .42);
   st.options = {}; st.view(fit(), { instant: true });
   new ResizeObserver(() => { st.view(fit(), { instant: true }); }).observe(stageEl);
   return { select };

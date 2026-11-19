@@ -103,3 +103,5 @@ table.cmp .on{background:var(--accent-bg)}
 .nlabel.tw{flex-direction:column;gap:0;text-align:center;line-height:1.2;text-transform:none;letter-spacing:.02em;padding:5px 12px}
 .nlabel.tw b{font:600 13px var(--sans)}.nlabel.tw .st{font:italic 500 12px var(--serif);color:var(--ink2)}
 .nlabel.tw.crisis{background:var(--bad-bg);border-color:var(--bad)}
+
+@media (max-width:700px){.nlabel.tw{font-size:10px;padding:3px 7px}.nlabel.tw .st{display:none}}

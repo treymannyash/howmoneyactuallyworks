@@ -115,7 +115,7 @@ const steps = [
     init: (card, ctx) => {
       const QS = I.quiz.map(q => ({ q: `<span class="quote-card">${esc(q.q)}</span>`, o: q.opts.map(o => [o.t, o.ok ? 1 : 0]), why: q.rest.join(' ') }));
       quiz(card, QS, { onShow: Q => { quizSel = -1; if (sc) { sc.qcard.userData.tx = 0; sc.qcard.userData.tz = 3.2; sc.qcard.userData.ty = 1.9; } S && S.markDirty(); },
-        onAnswer: (Q, oi, ok) => { const right = Q.o.findIndex(x => x[1]); quizSel = right; sc.qcard.userData.tx = -4.5 + right * 3; sc.qcard.userData.tz = 5.2; sc.qcard.userData.ty = 1; S.markDirty(); }, done: (s, n) => `<b class="g">${s} of ${n}.</b> The language reads as contemporary because the argument has never really changed.` });
+        onAnswer: (Q, oi, ok) => { const right = Q.o.findIndex(x => x[1]); quizSel = right; if (sc) { sc.qcard.userData.tx = -4.5 + right * 3; sc.qcard.userData.tz = 5.2; sc.qcard.userData.ty = 1; } S && S.markDirty(); }, done: (s, n) => `<b class="g">${s} of ${n}.</b> The language reads as contemporary because the argument has never really changed.` });
     }, enter: ({ scene }) => { eraMode = false; mythMode = false; scene.show && scene.show('quiz'); rot(false); } },
   { id: 'who', rail: 'The throughline', kicker: 'Key transmission figures', n: '5 / 5', tall: true,
     html: `<h2>Eight people. One throughline.</h2><div class="evlist" style="max-height:30vh">${I.figs.map(f => `<details class="ev"><summary><b></b><span>${esc(f.name)}</span></summary><div class="ev-b"><p>${esc(f.role)}</p><p class="ft-meta">${esc(f.german)}</p></div></details>`).join('')}</div><p>${I.throughline}</p><a class="btn" href="detour.html">◆ ${esc(I.detour.t)} →</a><p class="src" style="margin-top:12px">${I.detour.s}</p>`,
