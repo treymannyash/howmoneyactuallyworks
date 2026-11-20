@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter II — The Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15100A; --bg2:#1B1410; --panel:#221A12; --line:rgba(232,203,150,.15);
+  --grid:rgba(232,203,150,.045);
+  --text:#F0EAE0; --sub:#B5A78F; --faint:#7A6D58;
+  --ac:#4CC9F0; --warn:#E0B458; --stress:#F7931A; --broken:#F2545B;
+  --serif:'Fraunces',Georgia,serif; --sans:'Archivo',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:56px 56px}
+::selection{background:rgba(76,201,240,.28)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:2px}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px}
+
+header{padding:56px 0 26px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ac);display:inline-flex;align-items:center;gap:12px}
+.eyebrow::after{content:'';width:44px;height:1px;background:var(--line)}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(38px,6vw,62px);line-height:1.0;letter-spacing:-.015em;margin:14px 0 14px}
+.lede{color:var(--sub);font-size:16.5px;max-width:64ch}
+.lede b{color:var(--text);font-weight:500}
+
+/* scenario bar */
+.scen-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:22px 0 18px}
+.scen-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-right:6px}
+.scen{
+  background:none;border:1px solid var(--line);color:var(--sub);border-radius:5px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;padding:8px 13px;
+  transition:border-color .2s,color .2s,background .2s;
+}
+.scen:hover{color:var(--text);border-color:var(--sub)}
+.scen.on{background:var(--sc,#F2545B);border-color:var(--sc,#F2545B);color:var(--bg);font-weight:500}
+
+/* layout */
+.stage{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:22px;align-items:start;padding-bottom:64px}
+.map-card{border:1px solid var(--line);border-radius:12px;background:var(--bg2);padding:10px 8px 4px;position:sticky;top:18px}
+svg#map{width:100%;height:auto;display:block}
+.map-hint{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);text-align:center;padding:6px 0 10px}
+
+/* edges — static at idle; motion only where attention should go */
+.edge{fill:none;stroke-width:1.5;opacity:.26;transition:opacity .25s,stroke .25s}
+.edge.hl,.edge.st-warn,.edge.st-stress,.edge.st-broken{stroke-dasharray:2.5 8;animation:flow 1.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-10.5}}
+@media (prefers-reduced-motion:reduce){.edge{animation:none!important}}
+.map-dim .edge{opacity:.06}
+.map-dim .edge.hl{opacity:.95;stroke-width:2.4}
+.map-dim .edge.st-warn{stroke:var(--warn)!important;opacity:.95;stroke-width:2.2}
+.map-dim .edge.st-stress{stroke:var(--stress)!important;opacity:.95;stroke-width:2.4}
+.map-dim .edge.st-broken{stroke:var(--broken)!important;opacity:.95;stroke-width:2.6}
+.zone-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.26em;fill:var(--faint);opacity:.85}
+.zone-rect{fill:none;stroke:var(--line);stroke-dasharray:4 6;rx:14}
+.map-dim .zone-label,.map-dim .zone-rect{opacity:.25}
+
+/* nodes */
+.nd{cursor:pointer}
+.nd circle.body{stroke-width:1.5;transition:opacity .25s,stroke .25s,fill .25s}
+.nd .ring{fill:none;stroke-width:2;opacity:0;transition:opacity .25s}
+.nd text{transition:opacity .25s}
+.nd-name{font-family:var(--mono);font-size:11px;letter-spacing:.1em;fill:var(--text)}
+.map-dim .nd:not(.hl):not(.st) circle.body{opacity:.22}
+.map-dim .nd:not(.hl):not(.st) text{opacity:.28}
+.nd.hl .ring{opacity:1}
+.nd.st-warn .ring{opacity:1;stroke:var(--warn)}
+.nd.st-stress .ring{opacity:1;stroke:var(--stress)}
+.nd.st-broken .ring{opacity:1;stroke:var(--broken)}
+.nd.st-broken circle.body{fill:rgba(242,84,91,.25)}
+
+/* panel */
+.reader{
+  border:1px solid var(--line);border-radius:12px;background:var(--panel);
+  padding:26px 26px 24px;min-height:420px;
+}
+.rd-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--tagc,var(--ac));margin-bottom:10px}
+.rd-title{font-family:var(--serif);font-weight:600;font-size:24px;line-height:1.18;letter-spacing:-.01em;margin-bottom:14px}
+.rd-body p{color:var(--sub);font-size:14.5px;margin-bottom:14px}
+.rd-body p b{color:var(--text);font-weight:500}
+.rd-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:18px 0 6px}
+.rd-stat{font-family:var(--mono);font-size:12px;color:var(--ac);border-top:1px solid var(--line);padding-top:14px;margin-top:6px}
+.rd-why{border-left:2px solid var(--tagc,var(--ac));padding-left:14px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.chip{
+  background:none;border:1px solid var(--line);color:var(--sub);border-radius:20px;
+  font-family:var(--mono);font-size:11px;padding:6px 12px;transition:border-color .2s,color .2s;
+}
+.chip:hover{color:var(--text);border-color:var(--cc,var(--sub))}
+.chip i{font-style:normal;color:var(--cc,var(--ac))}
+.rd-back{
+  background:none;border:none;color:var(--faint);font-family:var(--mono);font-size:11px;
+  letter-spacing:.12em;text-transform:uppercase;padding:0;margin-bottom:14px;display:block;
+}
+.rd-back:hover{color:var(--text)}
+
+/* tour */
+.tour-row{display:flex;align-items:center;gap:12px;padding:20px 0 0}
+.tour-btn{
+  display:inline-flex;align-items:center;gap:10px;background:var(--ac);border:1px solid var(--ac);
+  color:var(--bg);border-radius:5px;font-family:var(--mono);font-size:11.5px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;padding:10px 18px;transition:opacity .2s;
+}
+.tour-btn:hover{opacity:.85}
+.tour-note{font-size:13px;color:var(--faint)}
+.rd-bridge{font-family:var(--serif);font-style:italic;font-size:16.5px;color:var(--text);margin-bottom:14px;line-height:1.45}
+.chip.read{border-color:rgba(76,201,240,.45)}
+.chip .tick{font-style:normal;color:var(--ac);margin-left:4px}
+.read-count{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+
+/* stepper */
+.stepper{display:flex;align-items:center;gap:10px;margin:4px 0 18px}
+.stp-btn{
+  background:none;border:1px solid var(--line);color:var(--text);border-radius:5px;
+  font-family:var(--mono);font-size:12px;padding:7px 14px;transition:border-color .2s;
+}
+.stp-btn:hover:not(:disabled){border-color:var(--sub)}
+.stp-btn:disabled{opacity:.3;cursor:default}
+.stp-dots{display:flex;gap:6px;flex:1;justify-content:center}
+.stp-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--faint);transition:background .2s,border-color .2s}
+.stp-dot.done{background:var(--sc);border-color:var(--sc)}
+.sev{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:3px 9px;border-radius:3px;display:inline-block;margin-bottom:12px}
+.sev.warn{color:var(--warn);border:1px solid var(--warn)}
+.sev.stress{color:var(--stress);border:1px solid var(--stress)}
+.sev.broken{color:var(--broken);border:1px solid var(--broken)}
+.macros{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}
+.macros .rd-kicker{margin-top:0}
+.mac-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;font-family:var(--mono);font-size:12px}
+.mac-grid span{color:var(--faint)} .mac-grid b{color:var(--text);font-weight:500;text-align:right}
+.exit-scen{margin-top:18px;background:none;border:1px solid var(--line);color:var(--sub);border-radius:5px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px}
+.exit-scen:hover{color:var(--text);border-color:var(--sub)}
+
+@media (max-width:920px){
+  .stage{grid-template-columns:1fr}
+  .map-card{position:static}
+  .reader{min-height:0}
+}
+
+/* ===== neat resource / video block ===== */
+.res-block{
+  margin: 36px 0 20px;
+  padding: 18px 20px;
+  background: var(--panel, #221A12);
+  border: 1px solid var(--line, rgba(232,203,150,.15));
+  border-radius: 10px;
+}
+.res-block .res-label{
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint, #7A6D58);
+  margin-bottom: 12px;
+}
+.res-block a{
+  display: block;
+  color: var(--text, #F0EAE0);
+  text-decoration: none;
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line, rgba(232,203,150,.1));
+  transition: color .2s;
+}
+.res-block a:last-child{ border-bottom: none; }
+.res-block a:hover{ color: var(--ac, #E0B458); }
+.res-block a .res-meta{
+  display: block;
+  font-size: 11.5px;
+  color: var(--sub, #B5A78F);
+  margin-top: 3px;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+</style>
+<style>/* hub fix: keep the closing note + resources inside the page column */
+.hub-tail{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:0 24px 72px;box-sizing:border-box}
+.hub-tail>p{color:var(--sub,#B5A78F);font-size:15.5px;line-height:1.75;max-width:68ch;margin:40px 0 0}
+.hub-tail .res-block{margin-top:32px}
+</style>
+</head>
+<body>
+<a href="../machine.html" style="position:fixed;z-index:99999;left:12px;bottom:12px;background:#F5EEE1;color:#2A2118;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.4)">← Back to the new interactive chapter</a>
+<script>addEventListener('message',function(e){if(e.data&&e.data.hubOpen)location.href=e.data.hubOpen+'.html'});</script>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Chapter II — The Machine</span>
+  <h1>How money actually moves</h1>
+  <p class="lede">The economy is plumbing: <b>12 chambers</b> connected by <b>27 pipes</b>. New here? Take the guided tour — it walks the whole system in order. Then click anything freely, or run a shock and watch stress travel.</p>
+</header>
+
+<div class="tour-row">
+  <button class="tour-btn" id="tour-btn">▶ Guided tour · 12 stops</button>
+  <span class="tour-note" id="tour-note">The recommended first pass — one chamber at a time, in the order money moves.</span>
+</div>
+
+<div class="scen-bar" id="scen-bar">
+  <span class="scen-label">Run a shock</span>
+</div>
+
+<div class="stage">
+  <div class="map-card">
+    <svg id="map" viewBox="0 0 900 680" aria-label="Flow map of the economy">
+      <g id="zones"></g>
+      <g id="edges"></g>
+      <g id="nodes"></g>
+    </svg>
+    <div class="map-hint"><span id="map-hint">Click a chamber to open it</span> <span class="read-count" id="read-count"></span></div>
+  </div>
+  <aside class="reader" id="reader" aria-live="polite"></aside>
+</div>
+
+</div>
+
+<script>
+const EX={
+  'households_firms':{tag:'Consumer Spending',tc:'#00e5a0',title:'You buy things → Companies earn revenue',plain:'Every time you spend at a store, restaurant, or online, that money flows directly to businesses. This single flow drives about 70% of the entire US economy. Economists call it Personal Consumption Expenditure (PCE).',detail:'In 2024, US households spent $18.8 trillion on goods and services. When consumer confidence is high, spending rises and businesses thrive. When fear sets in, spending contracts and businesses cut back.',why:'If consumers suddenly stop spending — say, because oil prices ate their paycheck or a recession scare hits — businesses earn less, hire fewer people, and the whole loop begins shrinking.'},
+  'firms_households':{tag:'Wages & Income',tc:'#00e5a0',title:'Companies pay workers → Workers have money to spend',plain:'Every paycheck, salary, or bonus is a company sending money back to households. This is the return leg of the main loop — and the reason the circuit is "circular." Firms hire people, pay wages, and those same people then turn around and buy the firms\' products.',detail:'Total US labor compensation is about $13 trillion per year. When firms are profitable, they hire more and pay more. When struggling, they freeze hiring and cut hours, which then cuts consumer spending in a self-reinforcing spiral.',why:'When wages stagnate or layoffs rise, households have less to spend. Less spending means less business revenue. Less revenue means more layoffs. This is the classic recession feedback loop.'},
+  'households_banks':{tag:'Savings & Deposits',tc:'#4db8ff',title:'You deposit money → Banks pool it to lend out',plain:'When you put money in a savings or checking account, it doesn\'t just sit in a vault. Banks pool everyone\'s deposits together and lend most of it to businesses and borrowers. Your $10,000 deposit quietly becomes part of someone\'s business loan.',detail:'This is fractional reserve banking. Banks keep a small fraction as a reserve and lend the rest, creating new money in the process. The current US personal savings rate is about 3.8% — meaning Americans save about 4 cents of every dollar they earn.',why:'During a panic, people rush to pull their money out (a bank run). Without deposits, banks can\'t lend, and the entire credit system seizes — within days.'},
+  'banks_firms':{tag:'Business Loans',tc:'#4db8ff',title:'Banks lend to companies → Businesses invest and grow',plain:'Banks take deposits and lend them to businesses so those businesses can buy equipment, open new locations, hire workers, or simply cover operating expenses. This credit is the fuel that lets firms grow far beyond what they could afford on their own cash.',detail:'About $12 trillion in commercial loans are outstanding at any given time in the US. The interest rate on these loans moves directly with the Fed\'s rate decisions — making the Fed the most powerful influence on business investment.',why:'When banks tighten lending standards (as they sharply did in 2023), businesses can\'t invest, can\'t make payroll, and the economy contracts. Business investment is one of the most volatile and impactful components of GDP.'},
+  'banks_households':{tag:'Consumer Loans',tc:'#60a5fa',title:'Banks lend to you → You can buy homes, cars, and more',plain:'Mortgages, auto loans, student loans, and credit cards are all forms of banks lending money directly to households. This allows people to buy things that would take decades to save for — making credit a massive amplifier of purchasing power.',detail:'Total US household debt is about $20 trillion, with mortgages alone at $13 trillion. Consumer credit multiplies what households can spend beyond their current income.',why:'When interest rates spike (as in 2022-2024), mortgages become unaffordable, car loans get expensive, and consumer spending on big-ticket items collapses. This is the most direct channel through which Fed rate hikes slow the economy.'},
+  'banks_consumers_credit':{tag:'Credit Origination',tc:'#60a5fa',title:'Banks decide to create loans → Credit system activated',plain:'Before you can get a mortgage or car loan, a bank has to decide to offer it. They assess your income, credit history, and debt load, set the terms, and then actually create the loan. Without this decision, there is no consumer credit.',detail:'The Fed\'s Senior Loan Officer Survey (SLOOS) tracks how banks are changing their lending standards each quarter. When it turns sharply negative — as it did in 2023 — it signals a tightening of credit that will ripple through the whole economy months later.',why:'SVB\'s collapse in March 2023 caused fear to spread across regional banks. Many tightened standards overnight, refusing loans even to creditworthy borrowers. The credit pipe narrowed sharply before most people noticed.'},
+  'consumers_credit_households':{tag:'Loan Disbursement',tc:'#60a5fa',title:'Approved credit reaches you → Spending power amplified',plain:'Once a bank approves your mortgage or auto loan, that money arrives in your account and you can spend it. This is the moment credit becomes real economic activity — a new house is built, a car drives off the lot, a business gets paid.',detail:'Credit amplifies economic activity beyond current income. A family earning $80,000 per year can buy a $400,000 home because of mortgage credit. The entire housing construction industry — and all the furniture, appliances, and services attached to it — depends on this flow.',why:'If this pipe narrows (high rates, strict standards), home sales crash, construction halts, and the ripple effects cost hundreds of thousands of jobs across housing-adjacent industries.'},
+  'treasury_banks':{tag:'Bond Issuance',tc:'#fbbf24',title:'Treasury sells bonds → Banks buy them as safe assets',plain:'When the government spends more than it collects in taxes, it borrows money by selling Treasury bonds. Banks, foreign governments, and investors buy these bonds. Think of it as the government giving a formal IOU that pays interest over time.',detail:'Treasury bonds are the backbone of the global financial system — they\'re considered the world\'s safest asset. Their yields set the "risk-free rate" that every other interest rate in the economy is benchmarked against. A 10Y Treasury at 4.2% means a corporate bond must yield at least 5-6% to attract buyers.',why:'When Treasury yields spike suddenly (because of a supply surge or demand collapse), every other interest rate spikes too — mortgages, corporate bonds, car loans. That\'s why a Treasury market disruption can destabilize the entire economy.'},
+  'banks_treasury':{tag:'Bond Purchases',tc:'#fbbf24',title:'Banks buy Treasuries → Government funded, banks stay liquid',plain:'Banks are major buyers of US Treasury bonds. It\'s a safe place to invest deposits that earns some interest. Banks hold Treasuries as "liquid, low-risk" assets on their balance sheets — until rates rise and those bonds lose market value.',detail:'This is exactly what destroyed Silicon Valley Bank (SVB) in 2023. It bought massive amounts of long-duration Treasuries when rates were near zero. When rates rose sharply in 2022-2023, those bonds fell in market value — creating massive unrealized losses that spooked depositors.',why:'Banks holding long-duration bonds become vulnerable when rates rise. Assets shrink in market value while liabilities (deposits) stay the same. That gap can trigger insolvency and bank runs.'},
+  'foreign_treasury':{tag:'Foreign Demand',tc:'#fbbf24',title:'Foreign governments buy US bonds → America borrows cheaply',plain:'Countries like Japan, China, the UK, and others hold trillions of dollars in US Treasury bonds as national reserves. This enormous foreign demand keeps US borrowing costs lower than they would otherwise be — a massive structural advantage for the US.',detail:'Foreign holders own about $8.5 trillion in US Treasuries. China and Japan are the two largest foreign holders. When they sell, it puts upward pressure on yields and can destabilize the market.',why:'If foreign buyers lose confidence in US fiscal discipline and start selling Treasuries en masse, yields spike, the dollar could weaken, and US government borrowing costs surge — potentially triggering a debt crisis.'},
+  'treasury_government':{tag:'Deficit Funding',tc:'#ff7043',title:'Bond sales fund all government spending beyond tax revenue',plain:'The money raised from selling Treasury bonds goes directly to the federal government to fund programs — Social Security, Medicare, military, infrastructure, and everything else. Without functioning bond markets, the government couldn\'t run a deficit at all.',detail:'The US federal deficit is roughly $1.8 trillion per year (2025). Every dollar of that must be borrowed through bond markets. The national debt has crossed $36 trillion. Interest payments on that debt now exceed $900 billion per year — larger than the defense budget.',why:'If bond markets seize and the government can\'t borrow, it faces an impossible choice: slash spending dramatically overnight, or have the Fed monetize the debt by buying bonds directly — both have severe economic consequences.'},
+  'government_households':{tag:'Transfer Payments',tc:'#ff7043',title:'Government sends money to people → Demand gets a safety floor',plain:'Social Security checks, Medicare payments, unemployment benefits, food stamps, and disability payments are all the government sending money directly back to households. These are called transfer payments, and they act as automatic shock absorbers that kick in during recessions.',detail:'About $2.5 trillion per year flows from government directly to households. During recessions, these payments automatically rise as more people claim unemployment and food stamps — providing a built-in economic stimulus without requiring any new legislation.',why:'Without these transfers, every recession would spiral much further downward. When people lose jobs and these payments kick in, they replace a portion of lost income and maintain some consumer spending — preventing a demand freefall.'},
+  'households_government':{tag:'Income Taxes',tc:'#ff7043',title:'You pay taxes → Government gets funded',plain:'Every paycheck has income and payroll taxes withheld. These taxes fund government operations — public services, safety nets, defense, and debt service. The progressive tax structure means higher earners pay a higher percentage of income.',detail:'Federal income and payroll taxes generate about $3.8 trillion per year. The progressive structure creates an automatic stabilizer: when a recession hits and incomes fall, tax revenues fall even faster — the government automatically collects less, leaving more money in the private sector.',why:'In a recession, tax revenues can fall by hundreds of billions without any policy change, automatically widening the deficit and providing mild stimulus. This is called an "automatic stabilizer."'},
+  'firms_government':{tag:'Corporate Taxes',tc:'#ff7043',title:'Companies pay tax on profits → Government gets revenue',plain:'When firms earn profit, they owe the government a share — currently 21% at the federal level plus state taxes. Corporate taxes are one of the more politically contested parts of the fiscal system, because companies and their lobbyists work hard to minimize them.',detail:'Corporate taxes generate about $500 billion per year for the federal government. When profits are high (booms), revenue surges. When firms lose money (recessions), corporate tax revenue collapses.',why:'A sharp cut in corporate taxes (like the 2017 Tax Cuts and Jobs Act) boosts after-tax profits and can spur investment — but also widens the deficit. Companies often respond with share buybacks rather than new investment.'},
+  'fed_banks':{tag:'Monetary Policy',tc:'#c084fc',title:'The Fed sets the price of money → Every loan rate adjusts',plain:'The Federal Reserve sets the overnight interest rate at which banks lend to each other — the Fed Funds Rate. This single number is the most powerful economic lever on the planet. It filters through every other interest rate in the economy within weeks: mortgages, car loans, business loans, credit cards.',detail:'When the Fed raises rates, borrowing becomes more expensive everywhere. When it cuts, borrowing becomes cheaper. The Fed raised rates 11 times in 2022-2023 (from 0% to 5.25%), the fastest tightening cycle in 40 years — deliberately slowing the economy to crush inflation.',why:'The Fed hiking too much can cause a recession (2006-2007 setup). The Fed cutting too fast can reignite inflation (the 1970s). There is no neutral position — every rate decision has winners and losers across the entire economy.'},
+  'banks_fed':{tag:'Reserve Balances',tc:'#c084fc',title:'Banks park excess cash at the Fed → The system stays stable',plain:'Banks are required to maintain a minimum level of cash in reserve (not lent out). They hold these reserves at the Federal Reserve itself. The Fed pays interest on these reserves, giving it a powerful lever to control how much banks lend out.',detail:'The Fed set reserve requirements to 0% during COVID to encourage maximum lending. It now pays about 3.4% interest on excess reserves (IOER), which sets a floor under the Fed Funds Rate — banks won\'t lend to each other for less than what the Fed pays them to do nothing.',why:'When reserves are abundant, banks lend freely and credit flows easily. When reserves are scarce (as during Quantitative Tightening), banks become more cautious and credit tightens — another way the Fed steers the economy.'},
+  'fed_repo':{tag:'Overnight Ops',tc:'#c084fc',title:'The Fed\'s overnight lending keeps short-term rates in range',plain:'Every night, the Fed conducts "repo" operations — it lends money to banks and takes Treasury bonds as collateral, or drains money through "reverse repos." This keeps the overnight interest rate within the Fed\'s target range.',detail:'The Fed\'s Overnight Reverse Repo (ON RRP) facility allows money market funds to park cash directly with the Fed. At its 2022 peak, over $2.5 trillion was parked here — effectively removing it from the banking system and tightening conditions.',why:'Repo markets are the plumbing no one thinks about — until they break. In September 2019, repo rates suddenly spiked to 10% in hours, forcing emergency Fed intervention. Disruption here can freeze the entire financial system overnight.'},
+  'fed_treasury':{tag:'QE / Bond Buying',tc:'#c084fc',title:'The Fed buys government bonds → New money injected into system',plain:'When the Fed wants to stimulate the economy beyond just cutting rates — especially when rates are already near zero — it buys Treasury bonds directly. This "Quantitative Easing" (QE) creates new money and injects it into the financial system, pushing long-term interest rates lower.',detail:'The Fed\'s balance sheet grew from $900 billion before 2008 to $9 trillion by 2022 — almost entirely through QE. It\'s now running "QT" (Quantitative Tightening), letting bonds mature to slowly drain that money back.',why:'QE lowers long-term rates, boosts asset prices (stocks, real estate), and encourages borrowing. But critics argue it mainly enriches asset holders and can fuel inflation if pushed too far — as arguably happened in 2020-2021.'},
+  'repo_banks':{tag:'Collateral Lending',tc:'#94a3b8',title:'The repo market: banks\' nightly pawn shop for cash',plain:'Repo (repurchase agreements) is where banks borrow cash overnight by handing over Treasury bonds as collateral — like pawning your watch for one day. The next morning, they buy the bonds back at a slightly higher price. That tiny price difference is the repo rate.',detail:'The repo market processes over $4.5 trillion per day — larger than the US stock market\'s daily volume. Banks use it to manage daily cash mismatches without selling their long-term assets. Most people have never heard of it.',why:'Repo is the first pipe to seize in a financial crisis. In September 2008, repo markets froze almost overnight, cutting off funding for major banks and accelerating the financial collapse. The same nearly happened in March 2020 before Fed intervention.'},
+  'repo_moneymkt':{tag:'ST Funding',tc:'#94a3b8',title:'Repo connects to money markets → Short-term rates ripple outward',plain:'Money market funds — which millions of Americans use as a "safe" place to park cash — invest heavily in repo agreements and Treasury bills. This connection means that what happens in the repo market immediately affects money market funds and vice versa.',detail:'When money market funds "break the buck" (share price falls below $1), it triggers panic. This happened in 2008 when Lehman failed and the Reserve Primary Fund broke the buck. The Treasury and Fed had to guarantee all money market funds to stop the run.',why:'Your money market "savings" account isn\'t just sitting in a vault. It\'s being lent overnight in the repo market. That\'s why it earns a small return — and also why it\'s exposed to plumbing failures that most investors never see coming.'},
+  'moneymkt_banks':{tag:'SOFR / CP Funding',tc:'#67e8f9',title:'Money markets fund banks short-term → Daily liquidity maintained',plain:'Banks need short-term cash daily to cover mismatches between money coming in and going out. Money markets provide this through commercial paper (CP) and by setting the SOFR rate — the benchmark for trillions in floating-rate loans.',detail:'SOFR (Secured Overnight Financing Rate) replaced LIBOR in 2023 and is now the reference rate for most variable-rate loans, derivatives, and mortgages. It\'s set daily based on actual repo transactions.',why:'If SOFR spikes suddenly (as repo rates did in 2019), banks\' short-term costs jump instantly. Every floating-rate loan in the country immediately becomes more expensive — squeezing borrowers without warning or any Fed action.'},
+  'moneymkt_firms':{tag:'Commercial Paper',tc:'#67e8f9',title:'Big companies borrow directly from money markets',plain:'Large corporations can skip banks entirely and borrow short-term money directly from money market funds by issuing "commercial paper" — essentially short-term IOUs lasting 30-90 days. It\'s cheaper and faster than a traditional bank loan.',detail:'The US commercial paper market is about $1.2 trillion. Companies use CP to fund payroll, inventory, and working capital. In normal times, they simply roll it over every month. It seems routine — until it isn\'t.',why:'In March 2020, as COVID lockdowns hit, the CP market froze in days. No one wanted to lend even to blue-chip companies. The Fed created the Commercial Paper Funding Facility (CPFF) to backstop it — essentially guaranteeing corporate IOUs.'},
+  'oil_firms':{tag:'Production Costs',tc:'#f87171',title:'Oil prices raise the cost of making everything',plain:'Oil and energy are embedded in the cost of virtually every manufactured product, agricultural good, and service. When oil prices spike, the cost of making, shipping, and storing goods rises across the entire economy simultaneously.',detail:'Energy costs represent 5-15% of total production costs for manufacturers, and far more for transportation, agriculture, and chemicals. An oil spike squeezes profit margins and forces firms to either raise prices (fueling inflation) or absorb losses (leading to layoffs).',why:'The 1970s oil shocks created "stagflation" — high inflation AND recession simultaneously. The Fed\'s tools don\'t work: cutting rates helps the recession but worsens inflation, raising rates helps inflation but deepens recession. There is no good option.'},
+  'oil_households':{tag:'Energy Bills',tc:'#f87171',title:'Higher oil = your gas and heating bills go up immediately',plain:'When oil prices spike, the effects hit household budgets fast and visibly — at the gas pump, on your electricity bill, and in higher prices for food and goods that must be shipped. It\'s an invisible tax that hits every single person.',detail:'American households spend about $5,000-7,000 per year on energy. When oil doubles, that cost can jump by $2,000-4,000 per year — money that can no longer be spent on restaurants, clothing, or entertainment.',why:'Lower-income households spend a much higher percentage of their income on energy, making oil spikes deeply regressive — they hurt the poor far more than the wealthy. This directly reduces consumer spending across the economy.'},
+  'fx_foreign':{tag:'Dollar Flows',tc:'#34d399',title:'The dollar\'s value shapes capital flows worldwide',plain:'The US dollar is the world\'s reserve currency — most global trade, commodity pricing, and international borrowing is done in dollars. When the dollar strengthens, it tightens financial conditions globally. When it weakens, conditions ease worldwide.',detail:'The DXY (Dollar Index) measures the dollar against major currencies. A rising DXY from Fed rate hikes tightens financial conditions globally — it\'s effectively like the Fed raising rates for the entire world simultaneously.',why:'When the Fed hikes aggressively, the dollar surges. This triggers currency crises in emerging markets, forces foreign central banks to hike their own rates to defend their currencies, and can trigger EM debt crises like 1997-1998 Asia.'},
+  'foreign_firms':{tag:'Export Revenue',tc:'#34d399',title:'Foreign buyers purchase US goods → Money flows into the economy',plain:'When a company in Germany buys an American Boeing jet, or a retailer in Japan orders Kentucky bourbon, that\'s export revenue flowing into the US economy. Exports are an economic "injection" — money entering the domestic circular flow from outside.',detail:'US exports total about $3.1 trillion per year. A strong dollar makes US goods more expensive for foreigners, reducing export demand. A weak dollar makes US goods cheap overseas, boosting exports.',why:'The US runs a persistent trade deficit (imports exceed exports by about $700 billion). This means more money flows out via trade than in — partially offset by massive foreign investment in US financial assets.'},
+  'firms_foreign':{tag:'Import Costs',tc:'#34d399',title:'US companies buy from abroad → Money flows out of the economy',plain:'When American companies import parts, raw materials, or finished goods, money leaves the domestic economy. Imports are an economic "leakage" — the opposite of an injection. Every dollar spent on an import is a dollar not circulating domestically.',detail:'US imports total about $3.8 trillion per year — electronics, clothing, cars, pharmaceuticals, and more. This creates the trade deficit.',why:'Tariffs try to reduce imports to protect domestic industries, but they also raise costs for US companies and consumers who rely on imported goods. The 2018-2025 trade wars showed this trade-off clearly: some manufacturing jobs saved, higher prices for everyone.'}
+};
+
+// ══ NODE META ══
+const NM={
+  households:{label:'Households',icon:'🏠',color:'#00e5a0',plain:'This is you — and every other American family. Households earn wages, spend money on goods and services, save some for later, and pay taxes. Consumer spending by households drives 70% of the entire US economy.',desc:'Consumers, workers, savers, and taxpayers.',stat:'PCE: $18.8T | Savings rate: 3.8%',size:52},
+  firms:{label:'Firms',icon:'🏭',color:'#f5a623',plain:'Every business — from your corner coffee shop to Apple — is a "firm." They hire workers, borrow money to invest, produce goods and services, and sell them to generate revenue. Firms are where GDP is actually created.',desc:'Producers of GDP. Hire labor, invest capital, generate revenue.',stat:'Output: $29.2T | Investment: $4.9T',size:52},
+  banks:{label:'Banks',icon:'🏦',color:'#4db8ff',plain:'Banks take your deposits and lend them out, creating new money in the process. 97% of all money in circulation was created by banks as loans — not printed by the government. When banks stop lending, everything else eventually breaks.',desc:'Create money via loans. Channel savings to investment.',stat:'M2: $22.7T | Commercial loans: $12.1T',size:48},
+  fed:{label:'Fed Reserve',icon:'⚡',color:'#c084fc',plain:'The Federal Reserve is America\'s central bank — the most powerful economic institution in the world. It sets the interest rate that all other rates are built on, controls how much money flows through the system, and acts as the emergency backstop when things go wrong.',desc:'Sets interest rates, controls reserves, monetary policy.',stat:'Rate: 3.50–3.75% | Balance sheet: $7.0T',size:48},
+  treasury:{label:'US Treasury',icon:'🏛️',color:'#fbbf24',plain:'The US Treasury borrows money by selling bonds — government IOUs that pay interest. These Treasury bonds are the world\'s safest investment and set the baseline interest rate for everything else: mortgages, corporate bonds, car loans. They are the literal backbone of global finance.',desc:'Issues bonds, finances deficits, sets the global risk-free rate.',stat:'National debt: $36.2T | Deficit: ~$1.8T/yr',size:48},
+  government:{label:'Gov Spending',icon:'📋',color:'#ff7043',plain:'The government collects taxes and spends on Social Security, Medicare, defense, infrastructure, education, and more. During recessions, spending automatically rises as more people claim unemployment — acting as a built-in economic stabilizer that cushions the downturn.',desc:'Fiscal transfers, public services, automatic stabilizers.',stat:'Outlays: $7.1T | Tax revenue: $5.0T',size:42},
+  repo:{label:'Repo Market',icon:'🔄',color:'#94a3b8',plain:'The repo market is where banks borrow cash overnight using Treasury bonds as collateral — like a pawn shop for financial institutions. It processes $4+ trillion per day and is almost completely invisible to the public. When it seizes, the entire financial system can freeze within hours.',desc:'Overnight collateral lending. Volume: $4.5T/day.',stat:'Daily volume: ~$4.5T | Rate: 3.6%',size:38},
+  moneymkt:{label:'Money Markets',icon:'💵',color:'#67e8f9',plain:'Money market funds are where companies and investors park short-term cash — they\'re supposed to be as safe as a bank account but earn a small return. They fund banks and corporations through commercial paper. They became the epicenter of panic in 2008 when Lehman Brothers failed.',desc:'T-bills, commercial paper, SOFR. Short-term funding layer.',stat:'T-bill rate: 4.1% | SOFR: 3.58%',size:38},
+  oil:{label:'Oil / Energy',icon:'🛢️',color:'#f87171',plain:'Oil and energy are embedded in the cost of almost everything — manufacturing, shipping, farming, and heating. When oil prices spike, it\'s like an invisible tax on every business and household simultaneously. There is no easy way to avoid it.',desc:'Energy costs built into all production and transportation.',stat:'WTI: $74 | Brent: $78',size:38},
+  fx:{label:'FX / Dollar',icon:'💱',color:'#34d399',plain:'The US dollar is the world\'s reserve currency — global trade and borrowing are done in dollars. A stronger dollar tightens financial conditions across the entire planet, like the Fed raising rates for the whole world at once. A weaker dollar does the opposite.',desc:'Dollar = global reserve. DXY sets worldwide conditions.',stat:'DXY: 104.2 | EUR/USD: 1.083',size:38},
+  foreign:{label:'Foreign Sector',icon:'🌐',color:'#34d399',plain:'Other countries buy our exports (money flows in) and we buy their imports (money flows out). Foreign investors also buy US Treasury bonds, financing our deficit. The US runs a trade deficit of about $700 billion — we import far more than we export.',desc:'Trade flows, capital flows, foreign Treasury demand.',stat:'Holds $8.5T Treasuries | Trade deficit: -$700B',size:42},
+  consumers_credit:{label:'Consumer Credit',icon:'💳',color:'#60a5fa',plain:'Mortgages, car loans, credit cards, and student loans let households buy things that would take decades to save for. Consumer credit dramatically amplifies spending power — but also amplifies vulnerability when interest rates rise or income falls.',desc:'Mortgages, auto loans, credit cards. Spending amplifier.',stat:'Total: $20.1T | Mortgages: $13.1T',size:36},
+};
+
+// ══ EDGES ══
+const EDGES=[
+  {from:'households',to:'firms',      color:'#00e5a0',w:2.5,d:false},
+  {from:'firms',     to:'households', color:'#00e5a0',w:2.5,d:false},
+  {from:'households',to:'banks',      color:'#4db8ff',w:1.8,d:true },
+  {from:'banks',     to:'firms',      color:'#4db8ff',w:2.2,d:false},
+  {from:'banks',     to:'households', color:'#60a5fa',w:1.8,d:false},
+  {from:'banks',     to:'consumers_credit',color:'#60a5fa',w:1.4,d:true},
+  {from:'consumers_credit',to:'households',color:'#60a5fa',w:1.6,d:false},
+  {from:'treasury',  to:'banks',      color:'#fbbf24',w:2.0,d:false},
+  {from:'banks',     to:'treasury',   color:'#fbbf24',w:1.8,d:true },
+  {from:'foreign',   to:'treasury',   color:'#fbbf24',w:1.8,d:true },
+  {from:'treasury',  to:'government', color:'#ff7043',w:2.0,d:false},
+  {from:'government',to:'households', color:'#ff7043',w:2.0,d:false},
+  {from:'households',to:'government', color:'#ff7043',w:1.4,d:true },
+  {from:'firms',     to:'government', color:'#ff7043',w:1.2,d:true },
+  {from:'fed',       to:'banks',      color:'#c084fc',w:2.2,d:false},
+  {from:'banks',     to:'fed',        color:'#c084fc',w:1.2,d:true },
+  {from:'fed',       to:'repo',       color:'#c084fc',w:1.6,d:false},
+  {from:'fed',       to:'treasury',   color:'#c084fc',w:1.6,d:true },
+  {from:'repo',      to:'banks',      color:'#94a3b8',w:1.6,d:false},
+  {from:'repo',      to:'moneymkt',   color:'#94a3b8',w:1.4,d:false},
+  {from:'moneymkt',  to:'banks',      color:'#67e8f9',w:1.4,d:false},
+  {from:'moneymkt',  to:'firms',      color:'#67e8f9',w:1.2,d:true },
+  {from:'oil',       to:'firms',      color:'#f87171',w:1.8,d:false},
+  {from:'oil',       to:'households', color:'#f87171',w:1.4,d:false},
+  {from:'fx',        to:'foreign',    color:'#34d399',w:1.4,d:true },
+  {from:'foreign',   to:'firms',      color:'#34d399',w:1.6,d:false},
+  {from:'firms',     to:'foreign',    color:'#34d399',w:1.2,d:true },
+];
+
+const SC={
+  oil:{name:'Oil Price Spike',badge:'STAGFLATION RISK',color:'#f87171',steps:[
+    {l:'Oil surges +60%',b:'WTI hits $120+. Energy is in every supply chain — this is an invisible tax on the whole economy.',t:'warn',n:['oil'],e:[]},
+    {l:'Firm costs explode',b:'Manufacturers, truckers, farmers — anyone using energy sees margins compressed. Raise prices (inflation) or absorb losses (layoffs).',t:'stress',n:['firms'],e:[['oil','firms']]},
+    {l:'Household budgets squeezed',b:'Gas, heating, and food prices spike. Real purchasing power falls even if wages hold steady.',t:'stress',n:['households'],e:[['oil','households']]},
+    {l:'Inflation spikes 6-8%',b:'Cost-push inflation spreads. The Fed is stuck: cut rates (helps recession, worsens inflation) or hike (helps inflation, deepens recession). The classic 1970s trap.',t:'stress',n:[],e:[]},
+    {l:'Banks tighten credit',b:'Uncertainty makes banks nervous. Spreads widen. Firms that need to refinance suddenly can\'t.',t:'stress',n:['banks','consumers_credit'],e:[['banks','firms']]},
+    {l:'Stagflation — GDP falls, prices stay high',b:'GDP contracts while inflation stays elevated. Unemployment rises. The circular flow narrows. Plumbing clogged.',t:'broken',n:['firms','households','banks'],e:[['firms','households'],['banks','firms'],['banks','households']]},
+  ],macros:{gdp:'-1.8%',unemp:'5.9%',cpi:'7.2%',spread:'380 bps',oil:'$122',vix:'38',repo:'4.2%',reserves:'$3.0T',dxy:'108.4',velocity:'1.21'}},
+  credit:{name:'Private Credit Crunch',badge:'CREDIT FREEZE',color:'#60a5fa',steps:[
+    {l:'Loan delinquencies rise',b:'Auto loans, credit cards, commercial real estate start going bad. Banks see rising defaults.',t:'warn',n:['consumers_credit'],e:[]},
+    {l:'Banks slam lending standards',b:'The SLOOS survey turns sharply negative. Loans that would have been approved 6 months ago now get rejected.',t:'stress',n:['banks'],e:[['banks','firms'],['banks','households']]},
+    {l:'Business investment collapses',b:'Without credit, firms can\'t expand, hire, or maintain operations. CapEx freezes. Investment multiplier runs in reverse.',t:'stress',n:['firms'],e:[['banks','firms']]},
+    {l:'Money markets seize',b:'Firms try to borrow via commercial paper. Spreads blow out. Short-term funding dries up.',t:'stress',n:['moneymkt','repo'],e:[['moneymkt','firms'],['repo','banks']]},
+    {l:'Consumer spending implodes',b:'Credit cards cut, home equity lines frozen, car financing unavailable. Households pull back sharply.',t:'broken',n:['households'],e:[['households','firms'],['banks','households']]},
+    {l:'Deflationary spiral — 2008 playbook',b:'Less spending → less revenue → more layoffs → less spending. The circular flow shrinks. GDP contracts.',t:'broken',n:['firms','banks','consumers_credit','moneymkt'],e:[['firms','households'],['banks','firms']]},
+  ],macros:{gdp:'-3.1%',unemp:'7.4%',cpi:'0.8%',spread:'650 bps',oil:'$58',vix:'52',repo:'2.1%',reserves:'$3.8T',dxy:'112.1',velocity:'1.09'}},
+  treasury:{name:'Treasury Market Stress',badge:'LIQUIDITY CRISIS',color:'#fbbf24',steps:[
+    {l:'Foreign selling accelerates',b:'Japan and China reduce Treasury holdings. Auction demand weakens. Prices fall, yields rise.',t:'warn',n:['foreign','treasury'],e:[['foreign','treasury']]},
+    {l:'10Y yield spikes to 5.5%+',b:'Bond prices fall, yields surge. Every other interest rate — mortgages, corporate bonds — reprices higher immediately.',t:'stress',n:['treasury'],e:[['treasury','banks']]},
+    {l:'Repo market stressed',b:'Treasury collateral worth less. Repo lenders demand more margin. Banks scramble for liquidity.',t:'stress',n:['repo','moneymkt'],e:[['repo','banks'],['moneymkt','banks']]},
+    {l:'Bank balance sheets hit — SVB playbook',b:'Banks holding long-duration Treasuries see massive unrealized losses. Depositors get spooked. Bank runs begin.',t:'stress',n:['banks'],e:[['banks','treasury'],['fed','treasury']]},
+    {l:'Dollar funding freezes globally',b:'Treasury stress spills into FX swap markets. Global dollar shortage. Overseas banks can\'t get dollar funding.',t:'broken',n:['fx','foreign'],e:[['fx','foreign']]},
+    {l:'Financial plumbing frozen',b:'The backbone of global finance — US Treasuries — becomes dysfunctional. Fed forced to deploy emergency QE.',t:'broken',n:['repo','moneymkt','banks','treasury'],e:[['repo','banks'],['moneymkt','banks'],['foreign','treasury']]},
+  ],macros:{gdp:'-0.8%',unemp:'5.1%',cpi:'3.8%',spread:'290 bps',oil:'$71',vix:'44',repo:'5.8%',reserves:'$3.1T',dxy:'116.2',velocity:'1.28'}},
+  fed:{name:'Fed Over-Tightening',badge:'DEMAND SHOCK',color:'#c084fc',steps:[
+    {l:'Fed hikes 75bps every meeting',b:'FOMC raises rates aggressively. Terminal rate expectations hit 7%+. Every loan in America becomes more expensive.',t:'warn',n:['fed'],e:[['fed','banks']]},
+    {l:'Mortgage market seizes',b:'30-year rates hit 8.5%. Monthly payments on a $400K home jump $800. Home sales collapse. Construction halts.',t:'stress',n:['consumers_credit'],e:[['banks','consumers_credit'],['consumers_credit','households']]},
+    {l:'Corporate borrowing costs spike',b:'Corporate bond yields surge. Leveraged buyout financing disappears. Variable-rate debt becomes crushing.',t:'stress',n:['firms','banks'],e:[['banks','firms']]},
+    {l:'Dollar surges — global contagion',b:'Higher US rates attract global capital. DXY surges. Emerging market currencies crash. Global tightening spreads.',t:'stress',n:['fx','foreign'],e:[['fx','foreign'],['foreign','firms']]},
+    {l:'Demand collapses',b:'Household spending on rate-sensitive goods — houses, cars — crashes. Consumer confidence tanks.',t:'broken',n:['households','consumers_credit'],e:[['households','firms'],['consumers_credit','households']]},
+    {l:'Hard landing confirmed',b:'Unemployment surges to 7%+. GDP contracts. Fed reverses course but takes 12-18 months for cuts to work. Damage done.',t:'broken',n:['firms','banks','households','government'],e:[['firms','households'],['banks','firms'],['banks','households']]},
+  ],macros:{gdp:'-2.4%',unemp:'7.1%',cpi:'2.1%',spread:'420 bps',oil:'$62',vix:'48',repo:'6.8%',reserves:'$2.8T',dxy:'119.0',velocity:'1.15'}},
+  fx:{name:'Dollar Funding Squeeze',badge:'FX STRESS',color:'#34d399',steps:[
+    {l:'Global dollar shortage',b:'International banks and governments scramble for dollars. The FX swap basis blows out. This is the 2008 and March 2020 signature.',t:'warn',n:['fx'],e:[['fx','foreign']]},
+    {l:'FX swap lines stressed',b:'Cross-currency basis widens. Borrowing dollars via swapping euros or yen becomes extremely expensive.',t:'stress',n:['fx','foreign'],e:[['fx','foreign'],['foreign','treasury']]},
+    {l:'Emerging market currencies crash',b:'Countries with dollar debts face a nightmare: weaker currency, more expensive dollar repayments. Capital flees. Recessions follow.',t:'stress',n:['foreign'],e:[['foreign','firms'],['foreign','treasury']]},
+    {l:'Global trade finance freezes',b:'Letters of credit become expensive or unavailable. Ships sit in ports. Supply chains break. Trade volumes fall.',t:'stress',n:['firms','foreign'],e:[['firms','foreign'],['foreign','firms']]},
+    {l:'Treasury collateral dumped',b:'Foreign central banks sell Treasuries to raise dollars. This floods the bond market, pushing yields higher.',t:'broken',n:['repo','moneymkt'],e:[['repo','banks'],['moneymkt','banks']]},
+    {l:'Global tightening malfunction',b:'Dollar squeeze exports US monetary tightening worldwide. Fed activates swap lines with major central banks to inject dollars globally.',t:'broken',n:['fx','foreign','repo','firms'],e:[['fx','foreign'],['foreign','firms'],['repo','banks']]},
+  ],macros:{gdp:'-1.2%',unemp:'5.4%',cpi:'3.1%',spread:'310 bps',oil:'$69',vix:'41',repo:'4.9%',reserves:'$3.2T',dxy:'121.5',velocity:'1.18'}},
+  bank:{name:'Bank Run / SVB-type',badge:'BANK CONTAGION',color:'#ff7043',steps:[
+    {l:'Deposit flight begins',b:'Uninsured depositors (accounts over $250K) get spooked. Social media accelerates the panic. Billions leave in days.',t:'warn',n:['banks'],e:[['households','banks'],['firms','banks']]},
+    {l:'Bank forced to sell bonds at a loss',b:'To pay withdrawals, banks sell bond holdings — at depressed prices due to rate rises. SVB became insolvent exactly this way.',t:'stress',n:['banks','treasury'],e:[['banks','treasury'],['banks','fed']]},
+    {l:'Interbank lending freezes',b:'Banks don\'t know which counterparties have the same problem. They stop lending to each other. 2008 playbook.',t:'stress',n:['repo','moneymkt'],e:[['repo','banks'],['moneymkt','banks'],['banks','fed']]},
+    {l:'Credit channels blocked',b:'Banks in survival mode make zero new loans. Business credit lines pulled. Consumer credit frozen. Credit engine stops.',t:'broken',n:['consumers_credit'],e:[['banks','firms'],['banks','households'],['banks','consumers_credit']]},
+    {l:'Real economy hit',b:'Without credit, firms can\'t make payroll or invest. Mass layoffs. Households cut spending dramatically.',t:'broken',n:['firms','households'],e:[['firms','households'],['households','firms']]},
+    {l:'System-wide malfunction',b:'Financial system seizes. Fed deploys BTFP facility, Treasury extends FDIC coverage. Without intervention: depression.',t:'broken',n:['banks','repo','moneymkt','consumers_credit','firms'],e:[['banks','firms'],['banks','households'],['repo','banks'],['moneymkt','banks']]},
+  ],macros:{gdp:'-4.2%',unemp:'8.8%',cpi:'1.4%',spread:'780 bps',oil:'$55',vix:'71',repo:'1.8%',reserves:'$4.1T',dxy:'113.8',velocity:'1.01'}},
+};
+
+/* ---------- layout ---------- */
+const POS={
+  fed:            {x:450,y:66},
+  banks:          {x:450,y:212},
+  repo:           {x:648,y:120},
+  moneymkt:       {x:742,y:236},
+  households:     {x:236,y:352},
+  firms:          {x:664,y:390},
+  consumers_credit:{x:206,y:206},
+  oil:            {x:84 ,y:462},
+  fx:             {x:816,y:518},
+  treasury:       {x:560,y:552},
+  government:     {x:342,y:540},
+  foreign:        {x:520,y:648},
+};
+const R={households:34,firms:34,banks:30,fed:30,treasury:28,government:26,foreign:26,repo:24,moneymkt:24,oil:24,fx:24,consumers_credit:23};
+
+const svg=document.getElementById('map');
+const gE=document.getElementById('edges'), gN=document.getElementById('nodes'), gZ=document.getElementById('zones');
+const reader=document.getElementById('reader');
+const hint=document.getElementById('map-hint');
+const readCountEl=document.getElementById('read-count');
+const edgeEls={}, nodeEls={};
+const readPipes=new Set();
+let mode='idle', selNode=null, scenKey=null, scenStep=0, tourStep=0;
+
+/* orientation zones */
+gZ.innerHTML=`
+  <rect class="zone-rect" x="392" y="20" width="412" height="258" rx="14"/>
+  <text class="zone-label" x="796" y="42" text-anchor="end">THE OVERNIGHT PLUMBING</text>
+  <rect class="zone-rect" x="300" y="498" width="350" height="98" rx="14"/>
+  <text class="zone-label" x="642" y="516" text-anchor="end">GOVERNMENT &amp; DEBT</text>
+  <text class="zone-label" x="450" y="474" text-anchor="middle">THE REAL ECONOMY</text>`;
+
+function updateReadCount(){
+  readCountEl.textContent = readPipes.size ? `· ${readPipes.size}/${EDGES.length} pipes read` : '';
+}
+
+/* curved edge path with perpendicular offset so A→B and B→A don't overlap */
+function edgePath(a,b){
+  const p=POS[a],q=POS[b];
+  const mx=(p.x+q.x)/2, my=(p.y+q.y)/2;
+  const dx=q.x-p.x, dy=q.y-p.y, len=Math.hypot(dx,dy)||1;
+  const off=Math.min(34,len*.14);
+  const cx=mx-dy/len*off, cy=my+dx/len*off;
+  return `M${p.x},${p.y} Q${cx},${cy} ${q.x},${q.y}`;
+}
+EDGES.forEach(e=>{
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('class','edge');
+  path.setAttribute('d',edgePath(e.from,e.to));
+  path.setAttribute('stroke',e.color);
+  gE.appendChild(path);
+  edgeEls[e.from+'_'+e.to]=path;
+});
+Object.keys(POS).forEach(k=>{
+  const m=NM[k], p=POS[k], r=R[k];
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','nd'); g.setAttribute('tabindex','0'); g.setAttribute('role','button');
+  g.setAttribute('aria-label',m.label);
+  const below=p.y>600, above=p.y<110;
+  const ty= below? p.y-r-12 : p.y+r+18;
+  g.innerHTML=`
+    <circle class="ring" cx="${p.x}" cy="${p.y}" r="${r+7}" stroke="${m.color}"/>
+    <circle class="body" cx="${p.x}" cy="${p.y}" r="${r}" fill="rgba(232,203,150,.05)" stroke="${m.color}"/>
+    <text x="${p.x}" y="${p.y+7}" text-anchor="middle" font-size="${r*.62}">${m.icon}</text>
+    <text class="nd-name" x="${p.x}" y="${ty}" text-anchor="middle">${m.label.toUpperCase()}</text>`;
+  g.addEventListener('click',()=>selectNode(k));
+  g.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();selectNode(k)}});
+  gN.appendChild(g);
+  nodeEls[k]=g;
+});
+
+/* ---------- highlight helpers ---------- */
+function clearMap(){
+  svg.classList.remove('map-dim');
+  Object.values(edgeEls).forEach(p=>p.classList.remove('hl','st-warn','st-stress','st-broken'));
+  Object.values(nodeEls).forEach(n=>n.classList.remove('hl','st','st-warn','st-stress','st-broken'));
+}
+function dimExcept(nodeKeys,edgeKeys){
+  svg.classList.add('map-dim');
+  nodeKeys.forEach(k=>nodeEls[k]&&nodeEls[k].classList.add('hl'));
+  edgeKeys.forEach(k=>edgeEls[k]&&edgeEls[k].classList.add('hl'));
+}
+
+/* ---------- idle panel ---------- */
+function showIdle(){
+  mode='idle'; selNode=null; clearMap();
+  hint.textContent='Click a chamber to open it';
+  reader.style.setProperty('--tagc','var(--ac)');
+  reader.innerHTML=`
+    <div class="rd-tag">Reading the map</div>
+    <div class="rd-title">One system, two speeds</div>
+    <div class="rd-body">
+      <p>The <b>outer loop</b> is the economy you can see: households and firms trading spending for wages, with government and the foreign sector injecting and draining money.</p>
+      <p>The <b>inner core</b> is the part almost nobody sees: the Fed, the repo market, and money markets — the overnight plumbing that keeps everything else liquid. It's invisible right up until it seizes.</p>
+      <p>Click any chamber to read what it does. Every pipe touching it becomes clickable from there.</p>
+    </div>`;
+}
+
+/* ---------- node panel ---------- */
+function selectNode(k){
+  if(mode==='scenario') exitScenario(false);
+  if(mode==='tour') exitTour(false);
+  mode='node'; selNode=k;
+  const m=NM[k];
+  clearMap();
+  const touching=EDGES.filter(e=>e.from===k||e.to===k);
+  const nks=new Set([k]); touching.forEach(e=>{nks.add(e.from);nks.add(e.to)});
+  dimExcept([...nks], touching.map(e=>e.from+'_'+e.to));
+  hint.textContent='Click a pipe below the text to follow it';
+  reader.style.setProperty('--tagc',m.color);
+  const chips=touching.map(e=>{
+    const other=e.from===k?e.to:e.from;
+    const dir=e.from===k?'→':'←';
+    const ek=e.from+'_'+e.to;
+    const ex=EX[ek];
+    const read=readPipes.has(ek);
+    return `<button class="chip ${read?'read':''}" style="--cc:${e.color}" data-ek="${ek}"><i>${dir}</i> ${NM[other].label} · ${ex?ex.tag:''}${read?'<span class="tick">✓</span>':''}</button>`;
+  }).join('');
+  reader.innerHTML=`
+    <div class="rd-tag" style="color:${m.color}">Chamber · ${m.desc}</div>
+    <div class="rd-title">${m.icon}&ensp;${m.label}</div>
+    <div class="rd-body"><p>${m.plain}</p></div>
+    <div class="rd-stat">${m.stat}</div>
+    <div class="rd-kicker">Pipes (${touching.length})</div>
+    <div class="chips">${chips}</div>`;
+  reader.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>showFlow(c.dataset.ek)));
+}
+
+/* ---------- flow panel ---------- */
+function showFlow(ek){
+  mode='flow';
+  const ex=EX[ek]; if(!ex) return;
+  readPipes.add(ek); updateReadCount();
+  const [from,to]=ek.split('_').length>2 ? splitKey(ek) : ek.split('_');
+  clearMap();
+  dimExcept([from,to],[ek]);
+  reader.style.setProperty('--tagc',ex.tc);
+  reader.innerHTML=`
+    <button class="rd-back" id="back">← Back to ${NM[selNode]?NM[selNode].label:'map'}</button>
+    <div class="rd-tag" style="color:${ex.tc}">Pipe · ${ex.tag} · ${NM[from].label} → ${NM[to].label}</div>
+    <div class="rd-title">${ex.title}</div>
+    <div class="rd-body">
+      <p>${ex.plain}</p>
+      <p>${ex.detail}</p>
+      <div class="rd-kicker">Why this breaks in a crisis</div>
+      <p class="rd-why">${ex.why}</p>
+    </div>`;
+  document.getElementById('back').addEventListener('click',()=>selNode?selectNode(selNode):showIdle());
+}
+/* keys with underscores inside node names (consumers_credit) */
+function splitKey(ek){
+  for(const k of Object.keys(NM)){
+    if(ek.startsWith(k+'_')){
+      const rest=ek.slice(k.length+1);
+      if(NM[rest]) return [k,rest];
+    }
+  }
+  return ek.split('_');
+}
+
+/* ---------- guided tour ---------- */
+const TOUR=[
+  {k:'households',      b:'Start with you. Seven of every ten dollars in this economy begin as someone\u2019s spending.'},
+  {k:'firms',           b:'Your money\u2019s first stop. Firms turn spending into wages \u2014 and send it straight back.'},
+  {k:'banks',           b:'Both sides keep their money here \u2014 and banks quietly create most of it, as loans.'},
+  {k:'consumers_credit',b:'Credit is the amplifier: it lets households spend years of future income today.'},
+  {k:'fed',             b:'Above the banks sits the rate-setter. One number, and every loan on Earth adjusts.'},
+  {k:'repo',            b:'That rate is enforced nightly here \u2014 a $4.5-trillion-a-day market almost nobody has heard of.'},
+  {k:'moneymkt',        b:'Repo feeds the money markets, which fund banks and blue-chip firms one day at a time.'},
+  {k:'treasury',        b:'The government borrows here \u2014 setting the risk-free rate the whole world prices from.'},
+  {k:'government',      b:'What\u2019s borrowed and taxed flows back out as transfers \u2014 the economy\u2019s shock absorber.'},
+  {k:'foreign',         b:'The rest of the world buys the bonds and the exports, financing the whole arrangement.'},
+  {k:'fx',              b:'The dollar transmits it all globally: when it strengthens, the entire world tightens.'},
+  {k:'oil',             b:'And underneath everything: energy, embedded in every price on this map.'},
+];
+const tourBtn=document.getElementById('tour-btn');
+tourBtn.addEventListener('click',()=>mode==='tour'?exitTour(true):startTour());
+function startTour(){
+  if(mode==='scenario') exitScenario(false);
+  mode='tour'; tourStep=0; selNode=null;
+  tourBtn.textContent='✕ Exit tour';
+  hint.textContent='Following the money, stop by stop';
+  renderTour();
+}
+function exitTour(redraw){
+  tourBtn.textContent='▶ Guided tour · 12 stops';
+  if(redraw!==false){ showIdle(); hint.textContent='Tour ended — click freely or run a shock'; }
+}
+function renderTour(){
+  const stop=TOUR[tourStep], m=NM[stop.k], n=TOUR.length;
+  clearMap();
+  const touching=EDGES.filter(e=>e.from===stop.k||e.to===stop.k);
+  const nks=new Set([stop.k]); touching.forEach(e=>{nks.add(e.from);nks.add(e.to)});
+  dimExcept([...nks], touching.map(e=>e.from+'_'+e.to));
+  reader.style.setProperty('--tagc',m.color);
+  const dots=TOUR.map((_,i)=>`<span class="stp-dot ${i<=tourStep?'done':''}" style="--sc:${m.color}"></span>`).join('');
+  const last=tourStep===n-1;
+  reader.innerHTML=`
+    <div class="rd-tag" style="color:${m.color}">Guided tour · stop ${tourStep+1} of ${n}</div>
+    <div class="stepper">
+      <button class="stp-btn" id="t-prev" ${tourStep===0?'disabled':''}>← Prev</button>
+      <div class="stp-dots">${dots}</div>
+      <button class="stp-btn" id="t-next">${last?'Finish ✓':'Next →'}</button>
+    </div>
+    <p class="rd-bridge">${stop.b}</p>
+    <div class="rd-title">${m.icon}&ensp;${m.label}</div>
+    <div class="rd-body"><p>${m.plain}</p></div>
+    <div class="rd-stat">${m.stat}</div>`;
+  document.getElementById('t-prev').addEventListener('click',()=>{tourStep=Math.max(0,tourStep-1);renderTour()});
+  document.getElementById('t-next').addEventListener('click',()=>{
+    if(last){ mode='idle'; exitTour(false); showIdle(); hint.textContent='Tour complete — click freely or run a shock'; }
+    else { tourStep++; renderTour(); }
+  });
+}
+
+/* ---------- scenarios ---------- */
+const bar=document.getElementById('scen-bar');
+Object.keys(SC).forEach(key=>{
+  const s=SC[key];
+  const b=document.createElement('button');
+  b.className='scen'; b.textContent=s.name; b.style.setProperty('--sc',s.color);
+  b.dataset.k=key;
+  b.addEventListener('click',()=>scenKey===key?exitScenario(true):startScenario(key));
+  bar.appendChild(b);
+});
+function startScenario(key){
+  if(mode==='tour') exitTour(false);
+  mode='scenario'; scenKey=key; scenStep=0; selNode=null;
+  document.querySelectorAll('.scen').forEach(x=>x.classList.toggle('on',x.dataset.k===key));
+  hint.textContent='Watch stress spread as you step forward';
+  renderStep();
+}
+function exitScenario(redraw){
+  scenKey=null;
+  document.querySelectorAll('.scen').forEach(x=>x.classList.remove('on'));
+  if(redraw!==false) showIdle();
+}
+function renderStep(){
+  const sc=SC[scenKey], n=sc.steps.length, st=sc.steps[scenStep];
+  /* cumulative state up to current step */
+  clearMap(); svg.classList.add('map-dim');
+  const sev={};
+  const rank={warn:1,stress:2,broken:3};
+  for(let i=0;i<=scenStep;i++){
+    const s=sc.steps[i];
+    s.n.forEach(k=>{ if(!sev[k]||rank[s.t]>rank[sev[k]]) sev[k]=s.t; });
+    s.e.forEach(pair=>{
+      const ek=pair[0]+'_'+pair[1];
+      if(edgeEls[ek]) {edgeEls[ek].classList.remove('st-warn','st-stress','st-broken'); edgeEls[ek].classList.add('st-'+s.t);}
+    });
+  }
+  Object.keys(sev).forEach(k=>{ if(nodeEls[k]){ nodeEls[k].classList.add('st','st-'+sev[k]); } });
+
+  reader.style.setProperty('--tagc',sc.color);
+  const dots=Array.from({length:n},(_,i)=>`<span class="stp-dot ${i<=scenStep?'done':''}" style="--sc:${sc.color}"></span>`).join('');
+  const last=scenStep===n-1;
+  const macros=last?`
+    <div class="macros">
+      <div class="rd-kicker">Where it lands</div>
+      <div class="mac-grid">
+        <span>GDP</span><b>${sc.macros.gdp}</b>
+        <span>Unemployment</span><b>${sc.macros.unemp}</b>
+        <span>Inflation (CPI)</span><b>${sc.macros.cpi}</b>
+        <span>HY spread</span><b>${sc.macros.spread}</b>
+        <span>Dollar (DXY)</span><b>${sc.macros.dxy}</b>
+        <span>M2 velocity</span><b>${sc.macros.velocity}</b>
+      </div>
+    </div>`:'';
+  reader.innerHTML=`
+    <div class="rd-tag" style="color:${sc.color}">Shock · ${sc.name} · ${sc.badge}</div>
+    <div class="stepper">
+      <button class="stp-btn" id="prev" ${scenStep===0?'disabled':''}>← Prev</button>
+      <div class="stp-dots">${dots}</div>
+      <button class="stp-btn" id="next" ${last?'disabled':''}>Next →</button>
+    </div>
+    <span class="sev ${st.t}">${st.t==='warn'?'Warning':st.t==='stress'?'Stress':'Breakage'} · step ${scenStep+1} of ${n}</span>
+    <div class="rd-title">${st.l}</div>
+    <div class="rd-body"><p>${st.b}</p></div>
+    ${macros}
+    <button class="exit-scen" id="exit">Reset the map</button>`;
+  const pv=document.getElementById('prev'), nx=document.getElementById('next');
+  pv.addEventListener('click',()=>{scenStep=Math.max(0,scenStep-1);renderStep()});
+  nx.addEventListener('click',()=>{scenStep=Math.min(n-1,scenStep+1);renderStep()});
+  document.getElementById('exit').addEventListener('click',()=>exitScenario(true));
+}
+
+showIdle();
+</script>
+
+
+<div class="hub-tail">
+<p>This sequence is why moral campaigns aimed solely at the residual holders of assets often miss the mechanism. The larger transfer has already occurred upstream.</p>
+
+<div class="res-block">
+  <div class="res-label">Further watching & reading</div>
+  <a href="https://youtu.be/jk_HWmmwiAs" target="_blank" rel="noopener">How the banking machine actually moves money<span class="res-meta">Video · Plumbing, reserves, and the credit cycle</span></a>
+</div>
+</div>
+</body>
+</html>

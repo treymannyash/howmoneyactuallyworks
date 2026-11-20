@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter III — The Trap</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15100A; --bg2:#1B1410; --panel:#221A12; --line:rgba(232,203,150,.15);
+  --grid:rgba(232,203,150,.045);
+  --text:#F0EAE0; --sub:#B5A78F; --faint:#7A6D58;
+  --ac:#F2545B; --ac-soft:rgba(242,84,91,.14); --amber:#E0B458;
+  --serif:'Fraunces',Georgia,serif; --sans:'Archivo',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:56px 56px}
+::selection{background:rgba(242,84,91,.3)}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:2px}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 26px}
+
+/* header */
+header{padding:64px 0 30px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ac);display:inline-flex;align-items:center;gap:12px}
+.eyebrow::after{content:'';width:44px;height:1px;background:var(--line)}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(40px,6.5vw,68px);line-height:1.0;letter-spacing:-.015em;margin:16px 0 18px}
+.lede{color:var(--sub);font-size:17px;max-width:60ch}
+blockquote{margin:26px 0 0;padding-left:20px;border-left:2px solid var(--ac);font-family:var(--serif);font-style:italic;font-size:18px;color:var(--sub);max-width:52ch}
+blockquote footer{font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:10px}
+
+/* section scaffolding */
+section{padding:44px 0 8px}
+.sec-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,3.6vw,36px);letter-spacing:-.01em;margin-bottom:10px}
+.sec-lede{color:var(--sub);font-size:15.5px;max-width:62ch;margin-bottom:26px}
+
+/* context strip */
+.ctx{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;background:var(--bg2);overflow:hidden;flex-wrap:wrap}
+.ctx>div{padding:22px 24px;flex:1;min-width:200px}
+.ctx>div+div{border-left:1px solid var(--line)}
+.ctx .big{font-family:var(--serif);font-weight:600;font-size:34px;color:var(--text);line-height:1.1}
+.ctx .cap{font-size:13px;color:var(--sub);margin-top:6px}
+.ctx .cap b{color:var(--text);font-weight:500}
+.spark{display:block;margin-top:4px}
+.spark path{fill:none;stroke:var(--ac);stroke-width:2}
+.spark circle{fill:var(--ac)}
+.spark text{font-family:var(--mono);font-size:9px;fill:var(--faint)}
+
+/* steps accordion */
+.step{border-bottom:1px solid var(--line)}
+.step:first-of-type{border-top:1px solid var(--line)}
+.step-head{
+  width:100%;display:grid;grid-template-columns:64px 110px 1fr 26px;gap:14px;align-items:baseline;
+  background:none;border:none;color:var(--text);text-align:left;padding:20px 4px;
+  transition:background .2s;
+}
+.step-head:hover{background:rgba(232,203,150,.04)}
+.step-num{font-family:var(--serif);font-style:italic;font-weight:600;font-size:24px;color:var(--ac)}
+.step-year{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--faint);padding-top:4px}
+.step-title{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.25}
+.step-caret{font-family:var(--mono);color:var(--faint);font-size:14px;justify-self:end;transition:transform .25s}
+.step.open .step-caret{transform:rotate(90deg)}
+.step-body{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.step-body-in{padding:0 4px 24px 78px}
+.step-body-in p{color:var(--sub);font-size:15px;max-width:60ch}
+.step-body-in .ctxnote{margin-top:12px;font-size:13px;color:var(--ac);opacity:.85;max-width:60ch}
+@media (max-width:640px){
+  .step-head{grid-template-columns:44px 1fr 20px}
+  .step-year{display:none}
+  .step-body-in{padding-left:4px}
+}
+
+/* chain */
+.chain-box{border:1px solid var(--line);border-radius:10px;background:var(--bg2);padding:26px 20px 8px}
+.mode{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.mode button{
+  background:none;border:none;color:var(--sub);font-family:var(--mono);font-size:11.5px;
+  letter-spacing:.12em;text-transform:uppercase;padding:9px 18px;transition:background .2s,color .2s;
+}
+.mode button.on{background:var(--ac);color:var(--bg)}
+svg#chain{width:100%;height:auto;display:block}
+.ch-rail{stroke:var(--line);stroke-width:1.5}
+.ch-flow{stroke:var(--ac);stroke-width:2.5;stroke-dasharray:3 9;opacity:0;transition:opacity .4s}
+.crisis .ch-flow{opacity:.9;animation:sweep .9s linear infinite}
+@keyframes sweep{to{stroke-dashoffset:-12}}
+@media (prefers-reduced-motion:reduce){.crisis .ch-flow{animation:none}}
+.cnode circle{transition:fill .4s,stroke .4s,opacity .4s}
+.cnode text{transition:opacity .4s}
+.cn-name{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;fill:var(--text)}
+.cn-claim{font-family:var(--sans);font-size:11.5px;fill:var(--sub)}
+.crisis .dim circle{opacity:.35}
+.crisis .dim .cn-name{opacity:.45}
+.chain-read{min-height:66px;padding:14px 6px 20px;color:var(--sub);font-size:14.5px;max-width:66ch;transition:opacity .3s}
+.chain-read b{color:var(--text);font-weight:500}
+.chain-read .red{color:var(--ac)}
+
+/* who gets taken */
+.taken{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.taken-row{display:grid;grid-template-columns:180px 92px 1fr;gap:18px;padding:20px 22px;background:var(--bg2)}
+.taken-row+.taken-row{border-top:1px solid var(--line)}
+.taken-row h3{font-family:var(--serif);font-weight:600;font-size:17px;line-height:1.3}
+.risk{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding-top:3px}
+.risk.high{color:var(--ac)} .risk.mod{color:var(--amber)}
+.taken-row p{color:var(--sub);font-size:14px}
+.prec{margin-top:8px;font-size:12.5px;color:var(--amber);opacity:.9}
+.prec b{font-weight:500;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+@media (max-width:680px){.taken-row{grid-template-columns:1fr;gap:6px}}
+
+/* actors */
+.actors{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.actor{border:1px solid var(--line);border-radius:10px;background:var(--bg2);padding:22px 24px}
+.actor h3{font-family:var(--serif);font-weight:600;font-size:18px}
+.actor .role{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ac);margin:4px 0 12px;text-transform:uppercase}
+.actor p{color:var(--sub);font-size:13.5px}
+@media (max-width:680px){.actors{grid-template-columns:1fr}}
+
+.srcnote{padding:40px 0 60px;color:var(--faint);font-size:12px;max-width:66ch}
+
+/* ===== neat resource / video block ===== */
+.res-block{
+  margin: 36px 0 20px;
+  padding: 18px 20px;
+  background: var(--panel, #221A12);
+  border: 1px solid var(--line, rgba(232,203,150,.15));
+  border-radius: 10px;
+}
+.res-block .res-label{
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint, #7A6D58);
+  margin-bottom: 12px;
+}
+.res-block a{
+  display: block;
+  color: var(--text, #F0EAE0);
+  text-decoration: none;
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line, rgba(232,203,150,.1));
+  transition: color .2s;
+}
+.res-block a:last-child{ border-bottom: none; }
+.res-block a:hover{ color: var(--ac, #E0B458); }
+.res-block a .res-meta{
+  display: block;
+  font-size: 11.5px;
+  color: var(--sub, #B5A78F);
+  margin-top: 3px;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+</style>
+<style>/* hub fix: keep the closing note + resources inside the page column */
+.hub-tail{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 26px 72px;box-sizing:border-box}
+.hub-tail>p{color:var(--sub,#B5A78F);font-size:15.5px;line-height:1.75;max-width:68ch;margin:40px 0 0}
+.hub-tail .res-block{margin-top:32px}
+</style>
+</head>
+<body>
+<a href="../trap.html" style="position:fixed;z-index:99999;left:12px;bottom:12px;background:#F5EEE1;color:#2A2118;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.4)">← Back to the new interactive chapter</a>
+<script>addEventListener('message',function(e){if(e.data&&e.data.hubOpen)location.href=e.data.hubOpen+'.html'});</script>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Chapter III — The Trap</span>
+  <h1>The Great Taking</h1>
+  <p class="lede">A calm walk through the legal infrastructure, built over six decades, that could route "your" assets upward — automatically and with legal priority — in the next systemic crisis. Based on the thesis of David Rogers Webb.</p>
+  <blockquote>
+    "It is about the taking of collateral, all of it… the greatest conquest and subjugation in world history."
+    <footer>— David Rogers Webb</footer>
+  </blockquote>
+</header>
+
+<section id="context">
+  <div class="sec-eyebrow">The setting</div>
+  <h2>A fragile foundation</h2>
+  <p class="sec-lede">Money velocity — how actively each dollar circulates — has fallen below Great Depression levels. Historically, collapses like this precede a systemic reset. Meanwhile, nearly all U.S. securities sit under one custodial roof.</p>
+  <div class="ctx">
+    <div>
+      <div class="big">~1.4</div>
+      <div class="cap"><b>M2 velocity</b> — near the lowest on record</div>
+      <svg class="spark" viewBox="0 0 260 74" width="260" height="74" aria-label="Velocity of money, 1933 to 2025">
+        <path id="spark-path" d=""/>
+        <g id="spark-pts"></g>
+      </svg>
+    </div>
+    <div>
+      <div class="big">$100T+</div>
+      <div class="cap"><b>Assets custodied at DTC / DTCC</b> — one legal choke point for nearly every U.S. security</div>
+    </div>
+  </div>
+</section>
+
+<section id="mechanism">
+  <div class="sec-eyebrow">The engineered blueprint</div>
+  <h2>Eight steps built the mechanism</h2>
+  <p class="sec-lede">Each change looked technical and boring on its own. Read in sequence, they describe a single trajectory: from direct ownership to subordinated claims. Open each step for the detail and the context.</p>
+  <div id="steps"></div>
+</section>
+
+<section id="chain">
+  <div class="sec-eyebrow">The consequence</div>
+  <h2>Tracing the collateral chain</h2>
+  <p class="sec-lede">Your assets don't sit in "your" account. They pass through a chain of legal relationships. Switch views to see what the same chain does in normal times versus a crisis.</p>
+  <div class="chain-box" id="chain-box">
+    <div class="mode" role="group" aria-label="Chain view mode">
+      <button id="m-normal" class="on">Normal times</button>
+      <button id="m-crisis">In crisis</button>
+    </div>
+    <svg id="chain" viewBox="0 0 820 190" aria-label="Collateral chain from investor to protected institutions">
+      <line class="ch-rail" x1="70" y1="86" x2="750" y2="86"/>
+      <line class="ch-flow" x1="70" y1="86" x2="750" y2="86"/>
+      <g id="chain-nodes"></g>
+    </svg>
+    <p class="chain-read" id="chain-read"></p>
+  </div>
+</section>
+
+<section id="taken">
+  <div class="sec-eyebrow">Real-world parallels</div>
+  <h2>Who gets taken</h2>
+  <p class="sec-lede">Each asset class below already has a precedent — a moment when the mechanism, or an early version of it, actually ran.</p>
+  <div class="taken" id="taken-list"></div>
+</section>
+
+<section id="actors">
+  <div class="sec-eyebrow">The people</div>
+  <h2>Key actors and their roles</h2>
+  <div class="actors" id="actors-grid" style="margin-top:20px"></div>
+</section>
+
+<p class="srcnote">Educational visualization based on "The Great Taking" by David Rogers Webb. Primary sources include UCC Article 8 &amp; 9 revisions, NY Fed correspondence, BIS reports, and bankruptcy court rulings. Not financial advice — think critically and verify.</p>
+
+</div>
+
+<script>
+const steps = [
+    {num:"01", year:"1960s–1973", title:"Dematerialization", detail:"Physical stock certificates were phased out and replaced with electronic book-entry records held centrally by the Depository Trust Company (DTC). This removed direct ownership proof for investors.", context:"Led by William Dentzer Jr. (CIA background, appointed by Nelson Rockefeller). Investors now hold claims against intermediaries instead of direct title."},
+    {num:"02", year:"1994", title:"Security Entitlement Replaces Ownership", detail:"Uniform Commercial Code (UCC) Articles 8 & 9 were rewritten in all 50 U.S. states. 'Ownership' of securities became a 'security entitlement' — a contractual right, not property.", context:"Drafted by a very small group of experts. This change subordinated investor claims to those of secured creditors in insolvency."},
+    {num:"03", year:"2002–2014", title:"Global Legal Harmonization", detail:"The U.S. model spread worldwide via the Hague Securities Convention, EU Financial Collateral Directive, and Central Securities Depositories Regulation (CSDR).", context:"Even countries with strong property rights traditions (e.g., Sweden, Finland) adjusted laws, often through obscure cross-references."},
+    {num:"04", year:"2010s–present", title:"Automated Collateral Management Systems", detail:"Central clearing parties (CCPs) and international central securities depositories (ICSDs like Euroclear, Clearstream) gained real-time visibility and automated sweeping capabilities for collateral.", context:"In stress, collateral moves 'free of payment' to meet margin calls at CCP level."},
+    {num:"05", year:"2005", title:"Bankruptcy Safe Harbor Provisions", detail:"U.S. Bankruptcy Code amended (BAPCPA) to protect transfers of securities and derivatives to 'protected' counterparties from being clawed back as fraudulent conveyances.", context:"Only large financial institutions qualify. Client assets can be moved without challenge."},
+    {num:"06", year:"Ongoing", title:"Deliberately Undercapitalized CCPs", detail:"DTCC (which clears nearly all U.S. trades) holds limited equity relative to the trillions in securities it custodians. New CCPs can be pre-positioned.", context:"The design allows failure and orderly transfer of collateral to surviving secured parties."},
+    {num:"07", year:"2009–present", title:"Derivatives Loaded into Deposit-Taking Banks", detail:"Major banks (JPMorgan, Bank of America) moved tens of trillions in derivatives into their FDIC-insured retail banking subsidiaries with regulatory approval.", context:"In failure, FDIC insurance is tiny compared to exposure. Derivatives have super-priority."},
+    {num:"08", year:"Now", title:"CBDC as the Control Layer", detail:"Over 137 countries (representing ~98% of global GDP) are exploring or piloting Central Bank Digital Currencies.", context:"BIS has stated CBDC gives central banks 'absolute control' over rules and enforcement technology."}
+];
+
+const scenariosData = [
+    {risk:"High", title:"Retail Brokerage Accounts", parallel:"MF Global (2011) — $1.6B client funds swept; Lehman (2008) — client assets used by JPM as secured creditor", desc:"You hold a security entitlement, not titled property. Assets are pooled at DTC and can be used to satisfy higher-priority claims."},
+    {risk:"High", title:"Bank Deposits", parallel:"Cyprus 2013 bail-in; SVB/First Republic 2023", desc:"You are an unsecured creditor. Derivatives moved into deposit subsidiaries create massive exposure far beyond FDIC coverage (~2¢ on the dollar in systemic failure)."},
+    {risk:"High", title:"Pensions & 401(k)s", parallel:"UK LDI crisis 2022 near-miss; Argentina pension nationalization", desc:"Underlying securities go through the same DTC/CCP chain. 'Segregated' offers limited real protection."},
+    {risk:"Moderate", title:"Mortgaged Real Estate", parallel:"2008–2012 U.S. foreclosure wave (robo-signing, Blackstone bulk purchases)", desc:"Deflation increases real debt burden. Financed assets are vulnerable to margin/foreclosure cascades."}
+];
+
+const actorsData = [
+    {name:"William Dentzer Jr.", role:"CIA operative → DTC Chairman (22 years)", context:"Oversaw full dematerialization with no prior banking experience. Appointed via Nelson Rockefeller influence."},
+    {name:"James S. Rogers", role:"Principal drafter of UCC Article 8 (1994)", context:"Rewrote property law for securities across the U.S. and helped export it globally via Hague Convention."},
+    {name:"Jamie Dimon", role:"CEO JPMorgan Chase", context:"JPM acted as prime broker, custodian, and secured creditor in Lehman collapse — ruled 'protected class' with priority."},
+    {name:"Augustin Carstens", role:"BIS General Manager", context:"Publicly described CBDC as giving central banks 'absolute control' with enforcement technology."}
+];
+
+/* velocity sparkline */
+(function(){
+  const labels=['1933','1946','1997','2008','2020','2025'];
+  const data=[2.4,1.8,2.2,1.7,1.13,1.4];
+  const W=250,H=48,T=8,min=1.0,max=2.5;
+  const pts=data.map((v,i)=>[8+i*(W-16)/(data.length-1), T+(1-(v-min)/(max-min))*H]);
+  document.getElementById('spark-path').setAttribute('d','M'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' L'));
+  const g=document.getElementById('spark-pts');
+  pts.forEach((p,i)=>{
+    g.innerHTML+=`<circle cx="${p[0]}" cy="${p[1]}" r="2.5"/><text x="${p[0]}" y="70" text-anchor="middle">${labels[i]}</text>`;
+  });
+})();
+
+/* steps accordion */
+const stepsEl=document.getElementById('steps');
+steps.forEach((s,i)=>{
+  const d=document.createElement('div');
+  d.className='step';
+  d.innerHTML=`
+    <button class="step-head" aria-expanded="false">
+      <span class="step-num">${s.num}</span>
+      <span class="step-year">${s.year}</span>
+      <span class="step-title">${s.title}</span>
+      <span class="step-caret">›</span>
+    </button>
+    <div class="step-body"><div class="step-body-in">
+      <p>${s.detail}</p>
+      <p class="ctxnote">${s.context}</p>
+    </div></div>`;
+  const head=d.querySelector('.step-head'), body=d.querySelector('.step-body');
+  head.addEventListener('click',()=>{
+    const open=d.classList.toggle('open');
+    head.setAttribute('aria-expanded',open);
+    body.style.maxHeight=open?body.scrollHeight+'px':0;
+  });
+  stepsEl.appendChild(d);
+});
+
+/* collateral chain */
+const CHAIN=[
+  {name:'You',      normal:'security entitlement', crisis:'claim subordinated', dim:true,  x:70},
+  {name:'Broker',   normal:'street name',          crisis:'claim subordinated', dim:true,  x:240},
+  {name:'DTC/DTCC', normal:'sole registered owner',crisis:'collateral pooled',  dim:true,  x:410},
+  {name:'CCP',      normal:'clearing',             crisis:'priority claims',    dim:false, x:580},
+  {name:'Protected',normal:'secured parties',      crisis:'JPM · Goldman · BIS',dim:false, x:750},
+];
+const READ={
+  normal:'In normal times the chain is invisible. You see holdings in an app; legally you hold a <b>security entitlement</b> against your broker, who holds in <b>street name</b>, while <b>DTC</b> is the sole registered owner of nearly everything. It works — until it\u2019s stressed.',
+  crisis:'In a crisis the arrows turn on. Collateral sweeps <span class="red">upward, automatically and with legal priority</span>: entitlement holders become unsecured creditors, while CCPs and the <b>protected class</b> of secured parties take first — a hierarchy written into law decades in advance.'
+};
+const cn=document.getElementById('chain-nodes');
+CHAIN.forEach(c=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','cnode'+(c.dim?' dim-t':''));
+  g.dataset.dim=c.dim?'1':'0';
+  g.innerHTML=`
+    <circle cx="${c.x}" cy="86" r="9" fill="${c.dim?'#B5A78F':'#F2545B'}"/>
+    <text class="cn-name" x="${c.x}" y="46" text-anchor="middle">${c.name.toUpperCase()}</text>
+    <text class="cn-claim" x="${c.x}" y="126" text-anchor="middle">${c.normal}</text>`;
+  cn.appendChild(g);
+});
+const box=document.getElementById('chain-box'), read=document.getElementById('chain-read');
+const bN=document.getElementById('m-normal'), bC=document.getElementById('m-crisis');
+function setMode(crisis){
+  box.classList.toggle('crisis',crisis);
+  bN.classList.toggle('on',!crisis); bC.classList.toggle('on',crisis);
+  read.innerHTML=crisis?READ.crisis:READ.normal;
+  document.querySelectorAll('.cnode').forEach((g,i)=>{
+    const c=CHAIN[i];
+    g.classList.toggle('dim', crisis && c.dim);
+    g.querySelector('.cn-claim').textContent=crisis?c.crisis:c.normal;
+    g.querySelector('circle').setAttribute('fill', crisis ? (c.dim?'#7A6D58':'#F2545B') : (c.dim?'#B5A78F':'#F2545B'));
+  });
+}
+bN.addEventListener('click',()=>setMode(false));
+bC.addEventListener('click',()=>setMode(true));
+setMode(false);
+
+/* who gets taken */
+const tl=document.getElementById('taken-list');
+scenariosData.forEach(sc=>{
+  const high=sc.risk.includes('High');
+  const r=document.createElement('div');
+  r.className='taken-row';
+  r.innerHTML=`
+    <h3>${sc.title}</h3>
+    <span class="risk ${high?'high':'mod'}">${sc.risk} risk</span>
+    <div><p>${sc.desc}</p><p class="prec"><b>Precedent</b> — ${sc.parallel}</p></div>`;
+  tl.appendChild(r);
+});
+
+/* actors */
+const ag=document.getElementById('actors-grid');
+actorsData.forEach(a=>{
+  const d=document.createElement('div');
+  d.className='actor';
+  d.innerHTML=`<h3>${a.name}</h3><div class="role">${a.role}</div><p>${a.context}</p>`;
+  ag.appendChild(d);
+});
+</script>
+
+
+
+<section>
+  <div class="sec-eyebrow">The protective layer</div>
+  <h2>The Language Layer</h2>
+  <p class="sec-lede">The legal architecture is rarely defended in its own technical terms. It is protected by a layer of moral language that reframes extraction as fairness and concentration as protection.</p>
+  <p>The pattern is consistent. A visible symptom is named (high prices, measured inequality, housing scarcity). The monetary or regulatory root is omitted. A prescription is offered that further concentrates discretion. Critics are answered with moral characterization rather than mechanism. The residual is expanded administrative or political power.</p>
+  <p>You have already seen versions of this pattern in the vigilance section on the map. The same structure appears in calls for living wages that price out the least experienced, in “greed” explanations that ignore first-receiver effects, and in rights language that restricts supply while leaving elastic money untouched.</p>
+  <p>The language does not create the trap. It makes the trap harder to name. Once the pattern is recognizable, the phrases lose much of their protective function. The underlying legal and monetary mechanisms remain visible on their own terms.</p>
+</section>
+
+<div class="hub-tail">
+<div class="res-block">
+  <div class="res-label">Further watching & reading</div>
+  <a href="https://youtu.be/T2IaJwkqgPk" target="_blank" rel="noopener">Inside Job (2010)<span class="res-meta">Full documentary · Systemic corruption and the architects of the 2008 crisis</span></a>
+  <a href="https://en.wikipedia.org/wiki/Too_Big_to_Fail_(film)" target="_blank" rel="noopener">Too Big to Fail (HBO, 2011)<span class="res-meta">Film · Treasury and Fed during the Lehman weekend, based on Sorkin’s book</span></a>
+  <a href="https://www.thegreattaking.com/" target="_blank" rel="noopener">David Webb — The Great Taking<span class="res-meta">Primary document · The legal architecture that routes “your” assets upward</span></a>
+  <a href="https://www.imdb.com/title/tt1742683/" target="_blank" rel="noopener">Too Big to Fail on IMDb<span class="res-meta">Cast, details, and where to watch</span></a>
+</div>
+</div>
+</body>
+</html>

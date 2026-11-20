@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter IV — The Exit</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Archivo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#15100A; --bg2:#1B1410; --panel:#221A12; --line:rgba(232,203,150,.15);
+  --grid:rgba(232,203,150,.045);
+  --text:#F0EAE0; --sub:#B5A78F; --faint:#7A6D58;
+  --ac:#F7931A; --ac-soft:rgba(247,147,26,.12);
+  --liq:#4CC9F0; --fedi:#7FC69A; --fiat:#F2545B; --fiat-soft:rgba(242,84,91,.07);
+  --serif:'Fraunces',Georgia,serif; --sans:'Archivo',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;line-height:1.65;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:56px 56px}
+::selection{background:rgba(247,147,26,.28)}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:2px}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 26px}
+
+header{padding:62px 0 26px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--ac);display:inline-flex;align-items:center;gap:12px}
+.eyebrow::after{content:'';width:44px;height:1px;background:var(--line)}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(38px,6.2vw,64px);line-height:1.0;letter-spacing:-.015em;margin:16px 0 16px}
+.lede{color:var(--sub);font-size:16.5px;max-width:62ch}
+.lede b{color:var(--text);font-weight:500}
+
+section{padding:42px 0 6px}
+.sec-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(25px,3.4vw,34px);letter-spacing:-.01em;margin-bottom:10px}
+.sec-lede{color:var(--sub);font-size:15px;max-width:62ch;margin-bottom:24px}
+.sec-lede b{color:var(--text);font-weight:500}
+
+/* the stack */
+.stack{display:flex;flex-direction:column;gap:10px}
+.stack-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tier{
+  display:block;text-align:left;background:var(--bg2);border:1px solid var(--line);
+  border-left:3px solid var(--tc);border-radius:10px;padding:18px 22px;
+  color:inherit;text-decoration:none;transition:border-color .2s,transform .2s;
+}
+.tier:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--tc) 45%,var(--line))}
+.tier .t-k{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tc);display:block;margin-bottom:5px}
+.tier .t-n{font-family:var(--serif);font-weight:600;font-size:19px;display:block}
+.tier .t-d{font-size:13px;color:var(--sub);display:block;margin-top:4px}
+.tier.base{background:linear-gradient(180deg,var(--panel),var(--bg2))}
+.spectrum{margin-top:18px}
+.spec-bar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--ac),var(--liq),var(--fedi))}
+.spec-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+.spec-labels b{color:var(--sub);font-weight:400}
+@media(max-width:640px){.stack-row{grid-template-columns:1fr}}
+
+/* fiat contrast strip — the recurring device */
+.fiat-note{
+  margin-top:14px;border:1px dashed rgba(242,84,91,.4);border-radius:8px;
+  padding:11px 15px;background:var(--fiat-soft);
+}
+.fiat-note .fk{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fiat);display:block;margin-bottom:5px}
+.fiat-note p{color:var(--sub);font-size:13px;max-width:58ch}
+.fiat-note b{color:var(--text);font-weight:500}
+
+/* bedrock properties */
+.prop{border:1px solid var(--line);border-radius:10px;background:var(--bg2);padding:20px 24px;margin-bottom:14px}
+.prop-head{display:flex;gap:14px;align-items:baseline;margin-bottom:8px}
+.prop-num{font-family:var(--serif);font-style:italic;font-weight:600;font-size:19px;color:var(--ac);flex:none}
+.prop-title{font-family:var(--serif);font-weight:600;font-size:19px}
+.prop-what{color:var(--sub);font-size:14px;max-width:60ch}
+.prop b{color:var(--text);font-weight:500}
+
+/* L2 sections */
+.l2-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.l2-badge{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:4px 10px;border-radius:3px;border:1px solid var(--lc);color:var(--lc)}
+.steps{counter-reset:st;margin:20px 0 6px}
+.st{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);counter-increment:st}
+.st:last-child{border-bottom:none}
+.st::before{content:counter(st);font-family:var(--serif);font-style:italic;font-weight:600;font-size:22px;color:var(--lc)}
+.st h3{font-family:var(--serif);font-weight:600;font-size:16px;margin-bottom:4px}
+.st p{color:var(--sub);font-size:13.5px;max-width:58ch}
+.st b{color:var(--text);font-weight:500}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0 4px}
+.feat>div{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:12px 14px}
+.feat .fl{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.feat .fv{font-family:var(--mono);font-size:13px;color:var(--lc);margin-top:4px}
+@media(max-width:640px){.feat{grid-template-columns:1fr 1fr}}
+.trust{margin-top:16px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:18px 22px}
+.trust .tk{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--lc);margin-bottom:8px;display:block}
+.trust p{color:var(--sub);font-size:14px;max-width:60ch}
+.trust p+p{margin-top:8px}
+.trust b{color:var(--text);font-weight:500}
+.tradeoff{margin-top:10px;font-family:var(--serif);font-style:italic;font-size:15.5px;color:var(--text)}
+.tradeoff i{color:var(--lc)}
+
+/* envelope analogy */
+.analogy{border:1px dashed rgba(127,198,154,.45);border-radius:10px;background:rgba(127,198,154,.05);padding:18px 22px;margin:18px 0 4px}
+.analogy .ak{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fedi);display:block;margin-bottom:8px}
+.analogy p{color:var(--sub);font-size:13.5px;max-width:60ch}
+.analogy p+p{margin-top:8px}
+.analogy b{color:var(--text);font-weight:500}
+
+/* comparison table */
+.cmp{border:1px solid var(--line);border-radius:10px;overflow-x:auto;background:var(--bg2)}
+table{border-collapse:collapse;width:100%;min-width:620px}
+th,td{padding:11px 14px;text-align:left;font-size:12.5px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text)}
+td:first-child{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);white-space:nowrap}
+td{color:var(--sub);font-family:var(--mono)}
+th.c-btc{color:var(--ac)} th.c-liq{color:var(--liq)} th.c-fedi{color:var(--fedi)}
+th.c-fiat{color:var(--fiat);background:var(--fiat-soft)}
+td.f{background:var(--fiat-soft);color:#D9A0A3}
+.cmp-foot{font-size:12.5px;color:var(--faint);margin-top:10px;max-width:66ch}
+.cmp-foot b{color:var(--sub);font-weight:500}
+
+/* glossary */
+.gloss{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:18px}
+.g-row{display:grid;grid-template-columns:190px 1fr;gap:16px;padding:14px 20px;background:var(--bg2)}
+.g-row+.g-row{border-top:1px solid var(--line)}
+.g-row .gt{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ac);padding-top:2px}
+.g-row p{color:var(--sub);font-size:13px}
+@media(max-width:600px){.g-row{grid-template-columns:1fr;gap:4px}}
+
+.closer{margin:44px 0 0;border-left:2px solid var(--ac);padding-left:18px;max-width:60ch}
+.closer p{font-family:var(--serif);font-style:italic;font-size:17.5px;color:var(--text);line-height:1.55}
+.closer .c2{margin-top:8px;font-family:var(--sans);font-style:normal;font-size:13.5px;color:var(--sub)}
+.srcnote{padding:40px 0 60px;color:var(--faint);font-size:12px;max-width:66ch}
+
+/* ===== neat resource / video block ===== */
+.res-block{
+  margin: 36px 0 20px;
+  padding: 18px 20px;
+  background: var(--panel, #221A12);
+  border: 1px solid var(--line, rgba(232,203,150,.15));
+  border-radius: 10px;
+}
+.res-block .res-label{
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 10px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--faint, #7A6D58);
+  margin-bottom: 12px;
+}
+.res-block a{
+  display: block;
+  color: var(--text, #F0EAE0);
+  text-decoration: none;
+  font-family: var(--mono, 'IBM Plex Mono', monospace);
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line, rgba(232,203,150,.1));
+  transition: color .2s;
+}
+.res-block a:last-child{ border-bottom: none; }
+.res-block a:hover{ color: var(--ac, #E0B458); }
+.res-block a .res-meta{
+  display: block;
+  font-size: 11.5px;
+  color: var(--sub, #B5A78F);
+  margin-top: 3px;
+  font-family: var(--sans, system-ui, sans-serif);
+  font-weight: 300;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+</style>
+</head>
+<body>
+<a href="../exit.html" style="position:fixed;z-index:99999;left:12px;bottom:12px;background:#F5EEE1;color:#2A2118;font:500 12px/1 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;padding:10px 16px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.4)">← Back to the new interactive chapter</a>
+<script>addEventListener('message',function(e){if(e.data&&e.data.hubOpen)location.href=e.data.hubOpen+'.html'});</script>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Chapter IV — The Exit</span>
+  <h1>Rails built outside the system</h1>
+  <p class="lede">Chapters I–III described the fiat machine: managed by experts, plumbed through banks, with a trap in the legal basement. This chapter is the parallel stack, engineered on the opposite premises. Read it bottom-up: <b>the bedrock first, then the two rooms built on top of it.</b> Every element carries a note on how the fiat world does the same job — because the differences are the whole point.</p>
+</header>
+
+<section id="stack">
+  <div class="sec-eyebrow">Orientation</div>
+  <h2>The stack, bottom to top</h2>
+  <p class="sec-lede">One foundation, two rooms. Bitcoin's base layer settles ~7 transactions per second, globally, with every transaction verified by thousands of independent nodes — maximally trustworthy, deliberately slow. The layers above trade a measured amount of trust for speed, privacy, and usability, while the base layer remains <b>the final arbiter of truth underneath everything</b>.</p>
+  <div class="stack">
+    <div class="stack-row">
+      <a class="tier" href="#liquid" style="--tc:var(--liq)">
+        <span class="t-k">Layer 2 · Sidechain · the institutional room</span>
+        <span class="t-n">💧 Liquid Network</span>
+        <span class="t-d">Fast, confidential settlement for exchanges and brokers — trust a known federation of 15.</span>
+      </a>
+      <a class="tier" href="#fedimint" style="--tc:var(--fedi)">
+        <span class="t-k">Layer 2 · E-cash · the community room</span>
+        <span class="t-n">🔐 Fedimint</span>
+        <span class="t-d">Private community custody — a "bank" that mathematically cannot see your balance.</span>
+      </a>
+    </div>
+    <a class="tier base" href="#bedrock" style="--tc:var(--ac)">
+      <span class="t-k">Layer 1 · The foundation</span>
+      <span class="t-n">₿ Bitcoin base layer</span>
+      <span class="t-d">Proof of work, ~15,000 verifying nodes, rules nobody can change alone. Everything above anchors here.</span>
+    </a>
+  </div>
+  <div class="spectrum">
+    <div class="spec-bar"></div>
+    <div class="spec-labels"><b>← more trustless</b><span>each layer up trades trust for features</span><b>more features →</b></div>
+  </div>
+  <div class="fiat-note">
+    <span class="fk">Meanwhile, in the fiat world</span>
+    <p>The fiat stack runs the other way up: the "bedrock" is a committee. The Fed sets rules at the top, banks build on the Fed, and you sit at the bottom holding IOUs — with <b>no layer you can verify and no floor you can exit to</b>. This stack puts the unchangeable part at the bottom and the trust at the top, where you can see it.</p>
+  </div>
+</section>
+
+<section id="bedrock">
+  <div class="sec-eyebrow">Layer 1</div>
+  <h2>The bedrock — five properties</h2>
+  <p class="sec-lede">Every Layer 2 inherits its security from these five. Understanding why the base layer has each property explains both why the L2s exist and what they sacrifice.</p>
+
+  <div class="prop">
+    <div class="prop-head"><span class="prop-num">1.</span><span class="prop-title">Proof of work — history costs energy</span></div>
+    <p class="prop-what">Miners expend real electricity to propose blocks; rewriting history means redoing all that work. No block producer can be cheaply bribed or threatened, and when an L2 "pegs" to the base layer, its final settlement is protected by the full hash rate of the network.</p>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>The ledger is secured by legal authority, not energy — so rewriting it is <b>a policy decision</b>. Bail-ins, account freezes, and the collateral sweep from Chapter III are all "valid transactions" there.</p></div>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="prop-num">2.</span><span class="prop-title">The UTXO model — coins with a lineage</span></div>
+    <p class="prop-what">Bitcoin doesn't track account balances; it tracks unspent outputs, each with a traceable history. That makes pegs precise: lock a UTXO on L1, receive L2 credit; burn the credit, unlock the UTXO. Ownership is a fact on the chain, not an entry in someone else's book.</p>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>You don't hold money or securities — you hold <b>claims on intermediaries</b>: bank IOUs, "security entitlements" in street name. Chapter III walked that chain of claims. Here the chain of custody is one link long: you.</p></div>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="prop-num">3.</span><span class="prop-title">Full nodes — rules by consensus</span></div>
+    <p class="prop-what">Roughly 15,000 public nodes independently verify every rule on every transaction. The rule set can't change without broad consensus — which is why L2s can rely on the peg: the rules guaranteeing your locked coin can't be altered by any single actor.</p>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>The rules are set by committee and can change overnight — a rate decision, an emergency facility, a UCC revision. Chapter I explained who trained the committee. Here, <b>there is no committee</b>.</p></div>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="prop-num">4.</span><span class="prop-title">Ten-minute blocks — slow, then final</span></div>
+    <p class="prop-what">A block every ~10 minutes; irreversible settlement after ~6 blocks (~60 minutes). Too slow for coffee — and that's the honest price of global finality. It's the main reason L2s exist: fast "local" finality on top, with disputes ultimately settled on the base layer's slower clock.</p>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>Payments <b>feel</b> instant but settle days later through ACH, Fedwire, and the DTCC — and stay reversible and freezable throughout. Fiat is fast provisionally and never quite final; Bitcoin is slow provisionally and then absolutely final.</p></div>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="prop-num">5.</span><span class="prop-title">Script &amp; Taproot — the toolbox</span></div>
+    <p class="prop-what">Multisig, timelocks, and hash locks are the primitives every L2 is assembled from: multisig lets a federation collectively hold funds, timelocks let users reclaim coins if a federation vanishes, hash locks enable atomic swaps between layers.</p>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>The equivalent machinery is contract law — enforced by courts, after the fact, if you can afford them. Here the contract <b>enforces itself</b>: a timelock doesn't need a judge.</p></div>
+  </div>
+</section>
+
+<section id="liquid">
+  <div class="sec-eyebrow" style="color:var(--liq)">Layer 2 · first room</div>
+  <div class="l2-head"><h2>💧 Liquid — the institutional room</h2><span class="l2-badge" style="--lc:var(--liq)">Sidechain · est. 2018</span></div>
+  <p class="sec-lede">A separate blockchain pegged to Bitcoin, built by Blockstream for exchanges, brokers, and OTC desks that need fast, confidential settlement. Think of it as <b>a high-performance settlement layer for bitcoin-native financial institutions</b>.</p>
+
+  <div style="--lc:var(--liq)">
+    <div class="sec-eyebrow">The peg — how BTC becomes L-BTC and back</div>
+    <div class="steps">
+      <div class="st"><div><h3>Peg-in: lock on L1</h3><p>Send BTC to a multisig address controlled by the federation. After 102 Bitcoin confirmations (~17 hours), the lock is considered final.</p></div></div>
+      <div class="st"><div><h3>L-BTC issued</h3><p>Functionaries confirm the lock and issue an equal amount of L-BTC on the sidechain. <b>1 L-BTC = 1 BTC, always.</b></p></div></div>
+      <div class="st"><div><h3>Settle at Liquid speed</h3><p>Blocks every ~1 minute; two-block finality ≈ 2 minutes. Amounts and asset types are hidden by default with confidential transactions.</p></div></div>
+      <div class="st"><div><h3>Peg-out: reclaim on L1</h3><p>Burn L-BTC; the federation co-signs the release of your BTC. If the federation goes unresponsive, <b>an emergency timelock lets users withdraw anyway</b>.</p></div></div>
+    </div>
+    <div class="feat">
+      <div><div class="fl">Block time</div><div class="fv">~1 min</div></div>
+      <div><div class="fl">Final settlement</div><div class="fv">~2 min</div></div>
+      <div><div class="fl">Privacy</div><div class="fv">Confidential txs</div></div>
+      <div><div class="fl">Trust model</div><div class="fv">11-of-15 multisig</div></div>
+      <div><div class="fl">Asset issuance</div><div class="fv">Yes — stablecoins etc.</div></div>
+      <div><div class="fl">Who uses it</div><div class="fv">Exchanges, OTC desks</div></div>
+    </div>
+    <div class="trust">
+      <span class="tk">The trust model, honestly stated</span>
+      <p>Liquid is run by ~65 functionary companies; peg operations need 11 of 15 active signers. This is <b>not trustless</b>: if 11 of 15 collude, pegged funds can in theory be stolen. But these are known businesses with legal identities, reputations, and hardware security modules — the attack is possible in theory and economically irrational in practice.</p>
+      <p class="tradeoff">The trade: trust a <i>known federation</i> → gain speed, privacy, and assets.</p>
+    </div>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>Liquid resembles correspondent banking — a club of institutions settling among themselves — with two differences: the trust is <b>quantified and published</b> (exactly 11-of-15; inspect the contract), and there's a <b>unilateral exit</b>: the timelock escape hatch. Your bank's terms of service contain neither.</p></div>
+  </div>
+</section>
+
+<section id="fedimint">
+  <div class="sec-eyebrow" style="color:var(--fedi)">Layer 2 · second room</div>
+  <div class="l2-head"><h2>🔐 Fedimint — the community room</h2><span class="l2-badge" style="--lc:var(--fedi)">Federated e-cash</span></div>
+  <p class="sec-lede">A federated e-cash protocol: a community bank — a local circular economy, a savings group, a family — whose guardians hold the bitcoin but <b>mathematically cannot see who holds what</b>. The trick is blind signatures, invented by David Chaum in the 1980s.</p>
+
+  <div class="analogy">
+    <span class="ak">The carbon-paper envelope — how the bank signs what it can't read</span>
+    <p><b>Analogy:</b> put a note inside a carbon-paper envelope. A bank official signs the outside — the signature transfers through to the note — but never sees what's written. Open the envelope and you hold a validly signed note the bank cannot link to you.</p>
+    <p><b>In Fedimint:</b> you "blind" your token request before sending it to the guardians; they sign it without seeing the serial number; you unblind it into a valid e-cash note. When it's spent, guardians verify their signature but can't connect it to the issuance. Complete unlinkability.</p>
+  </div>
+
+  <div style="--lc:var(--fedi)">
+    <div class="sec-eyebrow">The flow — deposit to spend</div>
+    <div class="steps">
+      <div class="st"><div><h3>Deposit via Lightning</h3><p>Send sats to the mint over Lightning. Guardians hold the underlying BTC in a threshold multisig — your coins are now in federation custody.</p></div></div>
+      <div class="st"><div><h3>Receive blinded notes</h3><p>The mint issues denominated e-cash notes (1, 2, 4, 8 sats…). They're <b>bearer instruments</b> — whoever holds the note can spend it. No accounts, no addresses.</p></div></div>
+      <div class="st"><div><h3>Spend privately</h3><p>Hand notes to anyone; the recipient redeems them for fresh ones. The mint cannot link new notes to old. Fully private inside the federation.</p></div></div>
+      <div class="st"><div><h3>Withdraw via Lightning</h3><p>Redeem notes back to sats any time — the federation co-signs an outbound Lightning payment and you're back on the open network.</p></div></div>
+    </div>
+    <div class="feat">
+      <div><div class="fl">Privacy</div><div class="fv">Blind signatures</div></div>
+      <div><div class="fl">Settlement</div><div class="fv">Instant, off-chain</div></div>
+      <div><div class="fl">Trust model</div><div class="fv">Guardian threshold</div></div>
+      <div><div class="fl">Custody</div><div class="fv">Federated — not yours</div></div>
+      <div><div class="fl">Lightning</div><div class="fv">Native</div></div>
+      <div><div class="fl">Who uses it</div><div class="fv">Communities, NGOs</div></div>
+    </div>
+    <div class="trust">
+      <span class="tk">The trust model, honestly stated</span>
+      <p>Guardians are typically people the community knows. Unlike a bank, they <b>cannot see</b> your balance or transactions — the cryptography guarantees it — but if all guardians collude, they can abscond with the deposited bitcoin. The custody risk is real, and so is the privacy.</p>
+      <p class="tradeoff">The trade: give up <i>self-custody</i> → gain privacy, ease of use, and community resilience.</p>
+    </div>
+    <div class="fiat-note"><span class="fk">Meanwhile, in the fiat world</span>
+      <p>Fedimint is the exact inverse of fiat banking. Your bank <b>sees everything and owes you an IOU</b>; a Fedimint sees <b>nothing</b> and holds real coins for a federation you chose. Similar custody risk — opposite information flow.</p></div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="sec-eyebrow">The reckoning</div>
+  <h2>Four columns, one honest table</h2>
+  <p class="sec-lede">The three bitcoin rails side by side — with the system from Chapters II–III in the fourth column, judged by the same criteria.</p>
+  <div class="cmp"><table>
+    <tr><th></th><th class="c-btc">₿ Bitcoin L1</th><th class="c-liq">💧 Liquid</th><th class="c-fedi">🔐 Fedimint</th><th class="c-fiat">🏛 Fiat system</th></tr>
+    <tr><td>Speed</td><td>~60 min, final</td><td>~2 min, final</td><td>Instant</td><td class="f">Feels instant; settles T+1/T+2</td></tr>
+    <tr><td>Finality</td><td>Irreversible</td><td>Irreversible</td><td>Within federation</td><td class="f">Reversible &amp; freezable</td></tr>
+    <tr><td>Fees</td><td>Variable, visible</td><td>Low, fixed</td><td>Near zero</td><td class="f">Hidden — spreads &amp; inflation</td></tr>
+    <tr><td>Privacy</td><td>Pseudonymous</td><td>Confidential</td><td>Blind signatures</td><td class="f">None — full KYC surveillance</td></tr>
+    <tr><td>Trust required</td><td>None</td><td>11-of-15 federation</td><td>Guardian federation</td><td class="f">Total — committee &amp; courts</td></tr>
+    <tr><td>Custody</td><td>Self-custody</td><td>Self-custody</td><td>Federated</td><td class="f">IOUs &amp; street name</td></tr>
+    <tr><td>Rule changes</td><td>Global consensus</td><td>Federation</td><td>Federation</td><td class="f">Committee vote, overnight</td></tr>
+    <tr><td>Censorship</td><td>Resistant</td><td>Federation could</td><td>Federation could</td><td class="f">Routine — freezes, de-banking</td></tr>
+    <tr><td>Built for</td><td>Everyone</td><td>Institutions</td><td>Communities</td><td class="f">Everyone, by default</td></tr>
+  </table></div>
+  <p class="cmp-foot">Read the fiat column against Chapter III: <b>"reversible &amp; freezable"</b> and <b>"IOUs &amp; street name"</b> are precisely the properties the collateral chain exploits in a crisis. The bitcoin rails don't eliminate trust — they make it <b>chosen, bounded, and visible</b>.</p>
+</section>
+
+<section id="glossary">
+  <div class="sec-eyebrow">Reference</div>
+  <h2>Glossary</h2>
+  <div class="gloss">
+    <div class="g-row"><span class="gt">Peg-in / peg-out</span><p>Locking BTC on Layer 1 to receive an equivalent token on a Layer 2, and burning that token to reclaim the BTC.</p></div>
+    <div class="g-row"><span class="gt">Blind signature</span><p>A scheme where a signer validly signs a message without seeing its content — how Fedimint guardians issue tokens they can't trace.</p></div>
+    <div class="g-row"><span class="gt">Functionary</span><p>A Liquid federation member — typically an exchange or broker — running hardware signing modules that co-sign peg operations.</p></div>
+    <div class="g-row"><span class="gt">Guardian</span><p>A Fedimint federation member holding a share of the multisig key protecting deposits. Usually known to the community.</p></div>
+    <div class="g-row"><span class="gt">Confidential transactions</span><p>Liquid's cryptographic commitments that hide amounts and asset types from on-chain observers.</p></div>
+    <div class="g-row"><span class="gt">E-cash note</span><p>A Fedimint bearer token denominated in sats — like physical cash, spendable by whoever holds it. No accounts, no addresses.</p></div>
+  </div>
+</section>
+
+<div class="closer">
+  <p>The exit isn't a place. It's a property set: rules no committee can change, settlement no court can reverse, and trust you can count on one hand.</p>
+  <p class="c2">Whether these rails carry the world or stay a lifeboat is undecided — but after Chapters I–III, you can evaluate them on the mechanics, not the marketing.</p>
+</div>
+
+<p class="srcnote">Educational overview of Bitcoin L1, the Liquid Network, and Fedimint. Figures (block times, federation thresholds, node counts) as commonly published by the respective projects. Not financial advice.</p>
+
+
+
+
+<p>The parallel stack does not require victory in a semantic argument about what “capitalism” means. It only requires rules that cannot be rewritten by the people who benefit from the rewriting. Settlement that is costly to reverse, issuance that is capped by design, and custody that does not depend on institutional permission operate independently of the surrounding moral vocabulary.</p>
+
+<div class="res-block">
+  <div class="res-label">Further watching & reading</div>
+  <a href="https://bitcoin.org/bitcoin.pdf" target="_blank" rel="noopener">Bitcoin White Paper — Satoshi Nakamoto (2008)<span class="res-meta">Primary source · Nine pages that solve double-spending with scarcity by algorithm</span></a>
+  <a href="https://nakamotoinstitute.org/" target="_blank" rel="noopener">Nakamoto Institute<span class="res-meta">Primary texts · Szabo, Finney, Dai, and the cypherpunk prehistory</span></a>
+  <a href="https://planb.academy/en/learn-anytime" target="_blank" rel="noopener">Plan B Academy<span class="res-meta">Courses & data · Structured learning on the parallel stack</span></a>
+  <a href="https://youtu.be/JXdT9lQgf_Y" target="_blank" rel="noopener">The 3 Layers of Bitcoin — Michael Saylor & Lex Fridman<span class="res-meta">Video · Layer 1 settlement, Layer 2 speed, Layer 3 custody</span></a>
+  <a href="https://youtu.be/YtFOxNbmD38" target="_blank" rel="noopener">What’s the Problem? — Joe Bryan<span class="res-meta">Video · Accessible story of why money is broken and what sound money changes</span></a>
+</div>
+</div>
+</body>
+</html>
