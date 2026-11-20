@@ -81,7 +81,7 @@ export function createHero(container, opts = {}) {
   let size = { w: 1, h: 1 }, dirty = true, visible = true, time = 0, last = performance.now(), elastic = 1, uPhase = 0;
   function place() {
     const aspect = size.w / size.h; const th = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-    const dist = Math.max(10.4 / (th * aspect), 7.4 / th) * 1.0 + (mobile ? 0 : 0);
+    const dist = Math.max((mobile ? 12 : 10.4) / (th * aspect), 7.4 / th) * 1.0 + (mobile ? 0 : 0);
     const pitch = .86; controls.target.set(-.2, 0, 1.2);
     camera.position.set(controls.target.x, Math.sin(pitch) * dist, controls.target.z + Math.cos(pitch) * dist);
     camera.clearViewOffset(); /* stage is its own framed box: centre the map in it */

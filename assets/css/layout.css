@@ -53,3 +53,10 @@ html{scroll-padding-top:72px}
 .mini .nlabel.tank{display:none}
 @media (max-width:900px){.mini .nlabel{font-size:8.5px;padding:2px 5px}}
 @media (max-width:1300px){.mini .nlabel{font-size:9.5px;padding:3px 6px}}
+/* phones: labels shrink to numeral chips / are dropped from the teaser stage so nothing collides */
+@media (max-width:640px){
+  .hero .stn-label b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .hero .stn-label{padding:5px 10px;border-radius:12px}.hero .stn-label .num{font-size:15px}
+  .hero .scene{height:clamp(280px,78vw,340px)}
+  .mini .nlabel{display:none}
+}
