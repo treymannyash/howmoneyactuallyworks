@@ -218,3 +218,7 @@ h1 em{background:linear-gradient(90deg,#F5BE57 0%,#7FB0FF 36%,#FF7B8F 68%,#FFA64
 .nlabel[data-state=broken] .nm{background:#C42B2E;color:#fff}
 .nlabel.dim[data-state]{opacity:1}
 .nlabel .st{background:transparent;color:inherit}
+/* the orbit hint has done its job after a few seconds; it never sits on top of a label for long */
+@keyframes hintfade{to{opacity:0;visibility:hidden}}
+.hint3d{animation:hintfade .8s ease 7s forwards}.hint3d:hover{animation:none;opacity:1;visibility:visible}
+@media (prefers-reduced-motion:reduce){.hint3d{animation:hintfade .01s linear 7s forwards}}
