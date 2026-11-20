@@ -2,7 +2,7 @@
 // Used by every chapter widget. Respects prefers-reduced-motion (render-on-demand, no autorotate, instant camera).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { THEMES, Mats, lighten, darken } from './clay.js';
+import { THEMES, Mats, lighten, darken, mute } from './clay.js';
 
 export const isMobile = () => matchMedia('(pointer:coarse)').matches || innerWidth < 720;
 export const prefersReduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).get('rm') === '1';
@@ -38,14 +38,14 @@ export function createStage(container, o = {}) {
   const camera = new THREE.PerspectiveCamera(o.fov || 30, 1, .5, 220);
   const hemi = new THREE.HemisphereLight(T.sky, T.gnd, T.hemi); const sun = new THREE.DirectionalLight(T.sun, T.sunI);
   sun.position.set(-7, 14, 9); sun.castShadow = !mobile; sun.shadow.mapSize.set(mobile ? 512 : 2048, mobile ? 512 : 2048);
-  Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 11, bottom: -11, near: 2, far: 45 }); sun.shadow.bias = -.0004; sun.shadow.radius = 5;
+  Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 11, bottom: -11, near: 2, far: 45 }); sun.shadow.bias = -.0004; sun.shadow.radius = 8;
   scene.add(hemi, sun);
   const root = new THREE.Group(); scene.add(root);
   const mats = new Mats(T);
   let tray = null;
   if (o.tray !== false) {
     const t = o.tray || {};
-    tray = new THREE.Mesh(new THREE.ExtrudeGeometry(rrect(t.w || 16, t.d || 12, t.r || 1.6), { depth: .22, bevelEnabled: true, bevelThickness: .1, bevelSize: .12, bevelSegments: 3, curveSegments: 10 }), mats.clay(T.ground));
+    tray = new THREE.Mesh(new THREE.ExtrudeGeometry(rrect(t.w || 16, t.d || 12, t.r || .5), { depth: .22, bevelEnabled: true, bevelThickness: .035, bevelSize: .05, bevelSegments: 1, curveSegments: 8 }), mats.clay(T.ground));
     tray.rotation.x = -Math.PI / 2; tray.position.set(t.x || 0, -.32, t.z || 0); tray.receiveShadow = true; root.add(tray);
   }
   const controls = new OrbitControls(camera, canvas);
@@ -122,4 +122,4 @@ export function clayMesh(stage, geo, hex, { x = 0, y = 0, z = 0, rx = 0, ry = 0,
   const m = new THREE.Mesh(geo, stage.mats.clay(hex)); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.castShadow = cast; m.receiveShadow = true; (parent || stage.root).add(m); return m;
 }
 export const smoothTo = (o, k, target, s) => { const d = target - o[k]; if (Math.abs(d) > .002) { o[k] += d * s; return true; } o[k] = target; return false; };
-export { THREE, lighten, darken, THEMES };
+export { THREE, lighten, darken, THEMES, mute };

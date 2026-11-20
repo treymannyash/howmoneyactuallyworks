@@ -1,9 +1,9 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute } from '../lib/stage3d.js';
 import { mountChapter, $, $$, esc, segmented } from '../lib/kit.js';
 import { DETOUR as D } from '../content/detour-data.js';
 
-const GREEN = '#5FA37C', AMBER = '#E58353', GOLD = '#E5BD54';
-const COINCOL = ['#E5BD54', '#E58353', '#6FA3CC', '#5FBBA0', '#A58BD0'];
+const GREEN = mute('#5FA37C'), AMBER = mute('#E58353'), GOLD = mute('#E5BD54');
+const COINCOL = ['#E5BD54', '#E58353', '#6FA3CC', '#5FBBA0', '#A58BD0'].map(mute);
 let S = null, sc = null, view = 'scales', silver = 0, thesis = 0, line = 'sala', pt = 0, tokenOn = false;
 const fork = (() => { const m = D.fork.html; const el = document.createElement('div'); el.innerHTML = m; return { sala: [...el.querySelectorAll('.f-sala li')].map(x => x.innerHTML), heid: [...el.querySelectorAll('.f-heid li')].map(x => x.innerHTML), sh: el.querySelector('.f-sala .fh').textContent, hh: el.querySelector('.f-heid .fh').textContent }; })();
 
@@ -17,7 +17,7 @@ function buildScene(el) {
   const pan = (x) => { const g = new THREE.Group(); g.position.set(x, 0, 0); beam.add(g); [-.5, .5].forEach(z => clayMesh(st, new THREE.CylinderGeometry(.025, .025, 2.6, 6), '#5B4B3B', { y: -1.3, z: z * 1.2, parent: g, cast: false })); clayMesh(st, new THREE.CylinderGeometry(1.7, 1.5, .22, 32), '#CBB892', { y: -2.7, parent: g }); const items = new THREE.Group(); items.position.y = -2.55; g.add(items); return { g, items }; };
   const L = pan(-3.7), R = pan(3.7);
   const chests = []; for (let i = 0; i < 12; i++) { const m = new THREE.Group(); const a = clayMesh(st, new THREE.BoxGeometry(.7, .45, .5), '#8A6A4C', { y: .22, parent: m }); clayMesh(st, new THREE.BoxGeometry(.72, .12, .52), GOLD, { y: .5, parent: m }); const col = i % 4, row = Math.floor(i / 4); m.position.set(-.85 + col * .55 - (row % 2) * .1, row * .55, ((i % 2) - .5) * .5); m.scale.setScalar(.001); L.items.add(m); chests.push(m); }
-  const goods = []; const GC = ['#C98B4A', '#6FA3CC', '#86B58F', '#DE7068', '#A58BD0', '#E8A94B'];
+  const goods = []; const GC = ['#C98B4A', '#6FA3CC', '#86B58F', '#DE7068', '#A58BD0', '#E8A94B'].map(mute);
   for (let i = 0; i < 6; i++) { const g = new THREE.Group(); const m = clayMesh(st, i % 2 ? new THREE.BoxGeometry(.6, .6, .6) : new THREE.SphereGeometry(.38, 18, 12), GC[i], { y: .3, parent: g }); g.position.set(-.85 + (i % 3) * .85, 0, (Math.floor(i / 3) - .5) * .8); R.items.add(g); goods.push(g); }
   const tagMats = new THREE.MeshStandardMaterial({ color: '#FBF4E6', roughness: .9 }); const tags = goods.map(g => { const t = new THREE.Group(); const stick = new THREE.Mesh(new THREE.CylinderGeometry(.02, .02, 1, 6), mats.clay('#5B4B3B')); stick.position.y = .5; const card = new THREE.Mesh(new THREE.BoxGeometry(.5, .3, .04), tagMats); card.position.y = 1; card.castShadow = true; t.add(stick, card); t.position.set(0, .6, .3); g.add(t); t.userData = { stick, card }; return t; });
   const lL = st.addLabel(() => new THREE.Vector3(-3.7, .3, 1.9), '<b>Silver arriving</b><span class="st">treasure fleets from the Americas</span>', { cls: 'tw', anchor: 'below' });

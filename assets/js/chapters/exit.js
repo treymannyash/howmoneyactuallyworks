@@ -1,9 +1,9 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, mute } from '../lib/stage3d.js';
 import { EXTRAS } from '../content/extras-data.js';
 import { mountChapter, $, $$, esc, segmented } from '../lib/kit.js';
 import { EXIT as X } from '../content/exit-data.js';
 
-const C = { l1: '#EDA04B', liq: '#6FA3CC', fed: '#5FBBA0', fiat: '#DE7068', coin: '#F2C14E' };
+const C = Object.fromEntries(Object.entries({ l1: '#EDA04B', liq: '#6FA3CC', fed: '#5FBBA0', fiat: '#DE7068', coin: '#F2C14E' }).map(([k, v]) => [k, mute(v)]));
 let S = null, sc = null, view = 'cake', fiat = false, prop = -1, hlLayer = 'all', room = 'liquid', phase = 0, cmpCol = -1;
 const COLX = [-4, -2, 0, 2, 4];
 

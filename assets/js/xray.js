@@ -1,8 +1,8 @@
 // "Phrase X-Ray": nine slogans as clay speech bubbles that crack open to show the real-driver chain from the site's own text.
-import { createStage, THREE, clayMesh, smoothTo, lighten, darken, rrect } from './lib/stage3d.js';
+import { createStage, THREE, clayMesh, smoothTo, lighten, darken, rrect, mute } from './lib/stage3d.js';
 import { NUGGETS } from './content/site-data.js';
 
-const HUES = ['#E58353', '#E8A94B', '#DE7068', '#6FA3CC', '#A58BD0', '#5FBBA0', '#86B58F', '#E5BD54', '#72C4C7'];
+const HUES = ['#E58353', '#E8A94B', '#DE7068', '#6FA3CC', '#A58BD0', '#5FBBA0', '#86B58F', '#E5BD54', '#72C4C7'].map(mute);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const parse = n => { const m = n.body.match(/<div class="mech">([\s\S]*?)<\/div>/); const b = m && m[1].match(/<b>([\s\S]*?)<\/b>/); const chain = b ? b[1].split(/\s*→\s*|\s+—\s+/).map(s => s.replace(/\.$/, '')) : []; return { chain, mech: m ? m[0] : '' }; };
 
@@ -32,7 +32,7 @@ export function createXray(stageEl, panel, listEl, { gl, reduced }) {
   const bubbles = items.map((n, i) => {
     const g = new THREE.Group(); const col = i % 3, row = Math.floor(i / 3); g.position.set(-4.2 + col * 4.2, 2.7 + (2 - row) * 2.05, -3.2); st.root.add(g);
     const hex = HUES[i]; const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 512; paint(cv, n, hex, i);
-    const half = (dx, side) => { const m = new THREE.Mesh(new THREE.ExtrudeGeometry(rrect(1.9, 1.7, .4), { depth: .5, bevelEnabled: true, bevelThickness: .08, bevelSize: .08, bevelSegments: 2, curveSegments: 6 }), st.mats.clay(hex)); m.position.set(dx, 0, 0); m.castShadow = m.receiveShadow = true; g.add(m);
+    const half = (dx, side) => { const m = new THREE.Mesh(new THREE.ExtrudeGeometry(rrect(1.9, 1.7, .1), { depth: .5, bevelEnabled: true, bevelThickness: .03, bevelSize: .03, bevelSegments: 1, curveSegments: 4 }), st.mats.clay(hex)); m.position.set(dx, 0, 0); m.castShadow = m.receiveShadow = true; g.add(m);
       const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4; tex.repeat.set(.5, 1); tex.offset.set(side * .5, 0);
       const f = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 1.7 * .9), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false })); f.position.set(0, 0, .6); m.add(f); m.userData = { i, tex, cv }; hit.push(m); return m; };
     const L = half(-.96, 0), R = half(.96, 1); clayMesh(st, new THREE.ConeGeometry(.3, .6, 4), hex, { x: -1.1, y: -1.1, z: .2, rz: Math.PI, parent: g });

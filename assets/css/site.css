@@ -109,3 +109,12 @@ h1{font-size:clamp(44px,5.6vw,84px);letter-spacing:-.02em}
   .stn-label{padding:4px 8px;border-radius:10px}.stn-label small{display:none}.stn-label .num{font-size:13px}.stn-label b{font-size:9px;letter-spacing:.08em}
   .hero .scene{height:50vh}
 }
+
+/* modernised scene labels: hairline, small radius, light type */
+.nlabel{font:400 10.5px var(--mono);letter-spacing:.1em;padding:3px 9px;border-radius:5px;background:rgba(251,246,234,.92);border:1px solid rgba(42,33,24,.22);box-shadow:none;backdrop-filter:none}
+.nlabel b{font-weight:500}
+.nlabel:hover{background:var(--ink);color:var(--btn-ink)}
+.stn-label{border-radius:6px;padding:6px 12px;background:rgba(251,246,234,.94);border:1px solid rgba(42,33,24,.22);box-shadow:none;backdrop-filter:none}
+.stn-label b{font:500 11px var(--mono);letter-spacing:.14em}
+.stn-label small{font:400 12px var(--sans)}
+.zlabel{font-weight:400;letter-spacing:.2em;color:var(--ink3)}

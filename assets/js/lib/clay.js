@@ -2,12 +2,12 @@
 import * as THREE from 'three';
 
 export const THEMES = {
-  A: { // warm paper + soft clay
-    name:'A', bg:'#F5EEE1', ground:'#F3EADA', zone:'#F7F0E2', ink:'#2A2118', cream:'#FBF4E6', creamDark:'#E9DCC3', door:'#8A6A4C',
-    rough:.95, pipeOpacity:.62, shadow:.20,
-    sky:'#FFF4E0', gnd:'#CDB791', hemi:1.8, sun:'#FFF3E0', sunI:1.5,
-    stress:{warn:'#E9AE3F', stress:'#E36F55', broken:'#B93B4A'},
-    hue:{green:'#86B58F',amber:'#E8A94B',blue:'#6FA3CC',credit:'#8DB3E0',gold:'#E5BD54',orange:'#E58353',purple:'#A58BD0',slate:'#9AA5B1',cyan:'#72C4C7',red:'#DE7068',teal:'#5FBBA0'}
+  A: { // warm paper + stone + ink, restrained accents (modernised)
+    name:'A', bg:'#F5EEE1', ground:'#F0EADD', zone:'#EEE6D6', ink:'#2A2118', cream:'#F1EBDD', creamDark:'#D3C9B5', door:'#6E5C48',
+    rough:.8, pipeOpacity:.5, shadow:.20,
+    sky:'#FFF8EC', gnd:'#B9AB92', hemi:1.3, sun:'#FFF6E8', sunI:1.8,
+    stress:{warn:'#C79A45', stress:'#B8573F', broken:'#8A3141'},
+    hue:{green:'#6F8F7C',amber:'#B38F4E',blue:'#5D7E99',credit:'#7C97B0',gold:'#B59B5C',orange:'#B3603A',purple:'#7D7490',slate:'#7E8890',cyan:'#6A989A',red:'#A4504A',teal:'#5E8E84'}
   },
   B: { // cool airy pastel / glass
     name:'B', bg:'#E8F1FB', ground:'#DCE9F8', zone:'#EBF3FC', ink:'#13233A', cream:'#FFFFFF', creamDark:'#D6E3F3', door:'#5A7396',
@@ -21,9 +21,17 @@ export const LEGACY_HUE = {'#00e5a0':'green','#f5a623':'amber','#4db8ff':'blue',
 export const hueOf = (T,legacy)=>T.hue[LEGACY_HUE[legacy.toLowerCase()]||'blue'];
 
 /* Material registry so we can re-tint/dim/emit per object */
+/* mute(): cap saturation + clamp lightness so every scene reads tonal (paper / stone / ink) with only a few accents. Idempotent. */
+export function mute(hex){
+  const c=new THREE.Color(hex), hsl={}; c.getHSL(hsl);
+  const terracotta = hsl.h>.01 && hsl.h<.09;
+  hsl.s=Math.min(hsl.s, terracotta?.5:.3); hsl.l=Math.min(.88,Math.max(.22,hsl.l));
+  return '#'+new THREE.Color().setHSL(hsl.h,hsl.s,hsl.l).getHexString();
+}
 export class Mats {
   constructor(T){ this.T=T; this.list=[]; }
   clay(hex,{rough,metal=0,emissive=0}={}){
+    hex=mute(hex);
     const m = new THREE.MeshStandardMaterial({color:hex, roughness:rough??this.T.rough, metalness:metal});
     m.userData.base = new THREE.Color(hex);
     this.list.push(m); return m;
@@ -37,11 +45,11 @@ const darken =(hex,a)=>'#'+new THREE.Color(hex).lerp(new THREE.Color('#2a2118'),
 function mesh(g,m,{x=0,y=0,z=0,rx=0,ry=0,rz=0,cast=true}={}){ const o=new THREE.Mesh(g,m); o.position.set(x,y,z); o.rotation.set(rx,ry,rz); o.castShadow=cast; o.receiveShadow=true; return o; }
 const box=(w,h,d)=>geo(`b${w},${h},${d}`,()=>roundBox(w,h,d));
 function roundBox(w,h,d){ // chunky bevel look via slightly rounded extrude
-  const r=Math.min(w,h,d)*0.14, s=new THREE.Shape();
+  const r=Math.min(w,h,d)*0.035, s=new THREE.Shape();
   const x0=-w/2,x1=w/2,y0=-d/2,y1=d/2;
   s.moveTo(x0+r,y0); s.lineTo(x1-r,y0); s.quadraticCurveTo(x1,y0,x1,y0+r); s.lineTo(x1,y1-r); s.quadraticCurveTo(x1,y1,x1-r,y1); s.lineTo(x0+r,y1); s.quadraticCurveTo(x0,y1,x0,y1-r); s.lineTo(x0,y0+r); s.quadraticCurveTo(x0,y0,x0+r,y0);
-  const bev=Math.min(r*.6,h*.2);
-  const g=new THREE.ExtrudeGeometry(s,{depth:Math.max(h-2*bev,0.001),bevelEnabled:true,bevelThickness:bev,bevelSize:bev*.9,bevelSegments:2,curveSegments:4});
+  const bev=Math.min(.02,h*.1);
+  const g=new THREE.ExtrudeGeometry(s,{depth:Math.max(h-2*bev,0.001),bevelEnabled:true,bevelThickness:bev,bevelSize:bev*.9,bevelSegments:1,curveSegments:2});
   g.rotateX(-Math.PI/2); g.translate(0,bev,0); // sits on y=0
   // extrude goes +z -> after rotateX(-90) goes +y? (z->y). ok; shape y -> -z
   g.computeVertexNormals(); return g;

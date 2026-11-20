@@ -1,10 +1,10 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute } from '../lib/stage3d.js';
 import { mountChapter, $, $$, esc, segmented } from '../lib/kit.js';
 import { steps as MECH, scenariosData as SCEN, actorsData as ACT, CHAIN, READ } from '../content/trap-data.js';
 import { TRAP } from '../content/trap-prose.js';
 
-const FLOOR_COL = ['#86B58F', '#6FA3CC', '#A58BD0', '#E8A94B', '#DE7068'];
-const GRP_COL = ['#E5BD54', '#4F86B8', '#8E6FC4', '#4F9F7A'];
+const FLOOR_COL = ['#86B58F', '#6FA3CC', '#A58BD0', '#E8A94B', '#DE7068'].map(mute);
+const GRP_COL = ['#E5BD54', '#4F86B8', '#8E6FC4', '#4F9F7A'].map(mute);
 const FH = 1.4, FW = 4.6, FD = 3.2;
 let S = null, sc = null, build = 8, mode = 'normal', asset = -1, actor = -1, view = 'tower', pat = -1;
 const ACT_FLOOR = [2, 1, 4, 4];     // illustrative: which floor each actor's pawn points at
@@ -31,7 +31,7 @@ function buildScene(el) {
   const valve = new THREE.Mesh(new THREE.TorusGeometry(2.45, .07, 10, 48), mats.clay('#C0392B')); valve.rotation.x = Math.PI / 2; valve.position.y = 4 * (FH + .12) + FH + .06; tower.add(valve);
   // orbs (3 per asset group)
   const orbs = []; const names = SCEN.map(s => s.title);
-  for (let g = 0; g < 4; g++) for (let k = 0; k < 3; k++) { const o = new THREE.Mesh(new THREE.SphereGeometry(.3, 20, 14), new THREE.MeshStandardMaterial({ color: GRP_COL[g], roughness: .45, emissive: GRP_COL[g], emissiveIntensity: .0 })); o.castShadow = true; tower.add(o); orbs.push({ o, g, k, p: new THREE.Vector3(), t: 0 }); }
+  for (let g = 0; g < 4; g++) for (let k = 0; k < 3; k++) { const o = new THREE.Mesh(new THREE.CylinderGeometry(.32, .32, .14, 40), new THREE.MeshStandardMaterial({ color: GRP_COL[g], roughness: .6, emissive: GRP_COL[g], emissiveIntensity: .0 })); o.castShadow = true; tower.add(o); orbs.push({ o, g, k, p: new THREE.Vector3(), t: 0 }); }
   const rest = (g, k) => new THREE.Vector3(-2.7 + (g * 3 + k) * .5 + (g * .1), .3, FD / 2 + 1.0);
   const crisisPos = (g, k) => { const a = (g * 3 + k) / 12 * Math.PI * 2; return new THREE.Vector3(Math.cos(a) * 1.0, 5 * (FH + .12) + .95 + Math.sin(a * 2) * .1, Math.sin(a) * 1.0); };
   orbs.forEach(r => r.o.position.copy(rest(r.g, r.k)));

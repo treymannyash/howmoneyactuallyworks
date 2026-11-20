@@ -21,11 +21,11 @@ export function createHero(container, opts = {}) {
   const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(30, 1, .5, 200);
   scene.add(new THREE.HemisphereLight(T.sky, T.gnd, T.hemi));
   const sun = new THREE.DirectionalLight(T.sun, T.sunI); sun.position.set(-7, 14, 9); sun.castShadow = !mobile; sun.shadow.mapSize.set(mobile ? 512 : 2048, mobile ? 512 : 2048);
-  Object.assign(sun.shadow.camera, { left: -13, right: 13, top: 10, bottom: -10, near: 2, far: 40 }); sun.shadow.radius = 5; scene.add(sun);
+  Object.assign(sun.shadow.camera, { left: -13, right: 13, top: 10, bottom: -10, near: 2, far: 40 }); sun.shadow.radius = 8; scene.add(sun);
   const mats = new Mats(T);
   const rrect = (w, d, r) => { const s = new THREE.Shape(); const x0 = -w / 2, x1 = w / 2, y0 = -d / 2, y1 = d / 2;
     s.moveTo(x0 + r, y0); s.lineTo(x1 - r, y0); s.quadraticCurveTo(x1, y0, x1, y0 + r); s.lineTo(x1, y1 - r); s.quadraticCurveTo(x1, y1, x1 - r, y1); s.lineTo(x0 + r, y1); s.quadraticCurveTo(x0, y1, x0, y1 - r); s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0); return s; };
-  const tray = new THREE.Mesh(new THREE.ExtrudeGeometry(rrect(19.4, 11.2, 2.2), { depth: .22, bevelEnabled: true, bevelThickness: .1, bevelSize: .12, bevelSegments: 3, curveSegments: 12 }), mats.clay(T.ground));
+  const tray = new THREE.Mesh(new THREE.ExtrudeGeometry(rrect(17.6, 10.6, 1.0), { depth: .22, bevelEnabled: true, bevelThickness: .035, bevelSize: .05, bevelSegments: 1, curveSegments: 8 }), mats.clay(T.ground));
   tray.rotation.x = -Math.PI / 2; tray.position.set(-.2, -.32, 1.5); tray.receiveShadow = true; scene.add(tray);
 
   const P = STN.map(s => new THREE.Vector3(s.pos[0], 0, s.pos[1]));
@@ -42,22 +42,22 @@ export function createHero(container, opts = {}) {
   for (let s = 0; s < 3; s++) {
     const seg = new THREE.CatmullRomCurve3(pts.slice(idxs[s], idxs[s + 1] + 1));
     const c0 = new THREE.Color(hueOf(T, segCols[s])), c1 = new THREE.Color(hueOf(T, segCols[s + 1]));
-    const g = new THREE.TubeGeometry(seg, 60, .14, 10, false); const cols = []; const pc = g.attributes.position.count;
+    const g = new THREE.TubeGeometry(seg, 60, .075, 8, false); const cols = []; const pc = g.attributes.position.count;
     for (let i = 0; i < pc; i++) { const u = Math.floor(i / 11) / 61; const c = c0.clone().lerp(c1, u); cols.push(c.r, c.g, c.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
     const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: T.rough })); m.scale.y = .55; m.position.y = .04; m.castShadow = m.receiveShadow = true; route.add(m);
   }
-  if (idxs[0] > 3) { const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.slice(0, idxs[0] + 1)), 20, .14, 10); const m = new THREE.Mesh(g, mats.clay(hueOf(T, '#f5a623'))); m.scale.y = .55; m.position.y = .04; route.add(m); }
+  if (idxs[0] > 3) { const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.slice(0, idxs[0] + 1)), 20, .075, 8); const m = new THREE.Mesh(g, mats.clay(hueOf(T, '#f5a623'))); m.scale.y = .55; m.position.y = .04; route.add(m); }
   // detour: dotted green branch
   const dCurve = new THREE.CatmullRomCurve3([main[0].clone().setY(.12), new THREE.Vector3(-4.0, .12, 4.3), new THREE.Vector3(-2.3, .12, 4.5), P[4].clone().setY(.12)]);
-  const dotGeo = new THREE.SphereGeometry(.1, 10, 8), dotMat = mats.clay(hueOf(T, '#00e5a0'));
+  const dotGeo = new THREE.SphereGeometry(.055, 10, 8), dotMat = mats.clay(hueOf(T, '#00e5a0'));
   for (let i = 0; i <= 14; i++) { const d = new THREE.Mesh(dotGeo, dotMat); d.position.copy(dCurve.getPoint(i / 14)); d.position.y = .13; d.castShadow = true; scene.add(d); }
 
   const stations = {};
   STN.forEach((s, i) => {
     const hue = hueOf(T, s.legacy); const g = new THREE.Group(); g.position.copy(P[i]); scene.add(g);
     const r = s.key === 'detour' ? .72 : .95;
-    const ped = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.08, .2, 40), mats.clay(lighten(hue, .2))); ped.castShadow = ped.receiveShadow = true; g.add(ped);
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.02, .12, 48), mats.clay(lighten(hue, .2))); ped.castShadow = ped.receiveShadow = true; g.add(ped);
     const top = new THREE.Mesh(new THREE.CylinderGeometry(r * .88, r * .88, .05, 40), mats.clay(lighten(hue, .6))); top.position.y = .12; top.receiveShadow = true; g.add(top);
     const ic = makeChapterIcon(s.key, hue, T, mats); ic.scale.setScalar(r / .5 * (s.key === 'detour' ? .85 : .95)); ic.position.y = .02; g.add(ic);
     stations[s.key] = { g, ic, r };

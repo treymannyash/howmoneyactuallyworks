@@ -1,11 +1,11 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute } from '../lib/stage3d.js';
 import { mountChapter, quiz, quizHTML, segmented, $, $$, esc } from '../lib/kit.js';
 import { IDEAS as I } from '../content/ideas-data.js';
 import { EXTRAS } from '../content/extras-data.js';
 
 const ERA_OF = [0, 1, 1, 3, 3, 4, 4, 6];            // which era each pipeline node falls in, by its year (derived from the era ranges on the page)
 const NODE_X = [-7.2, -3.3, -1.5, .6, 2.4, 4.0, 5.6, 7.4];
-const COLS = ['#E5BD54', '#E58353', '#DE7068', '#A58BD0', '#6FA3CC', '#5FBBA0', '#86B58F', '#E8A94B'];
+const COLS = ['#E5BD54', '#E58353', '#DE7068', '#A58BD0', '#6FA3CC', '#5FBBA0', '#86B58F', '#E8A94B'].map(mute);
 let S = null, sc = null, pos = 0, era = 0, mythI = 0, quizSel = -1;
 
 function build(el) {
@@ -50,7 +50,7 @@ function build(el) {
   st.onFrame((dt, t, k) => {
     let mv = false; const reveal = pos;
     nodes.forEach((g, i) => { const u = g.userData; const on = i <= reveal; const inEra = era < 0 || ERA_OF[i] === era; u.tgt = on ? (i === Math.round(reveal) ? .9 : .45) : 0; if (smoothTo(u, 'h', u.tgt, k)) mv = true; u.ped.scale.y = 1 + u.h * 1.3; u.top.position.y = 1 + u.h * 1.3; u.ped.material.emissive.set(inEra && eraMode ? '#FFD28A' : '#000'); u.ped.material.emissiveIntensity = inEra && eraMode ? .35 : 0; u.L.el.classList.toggle('dim', !on); u.L.el.classList.toggle('sel', i === Math.round(reveal)); });
-    segs.forEach((m, i) => { m.material.color.set(i < reveal ? '#E58353' : '#E9DCC3'); });
+    segs.forEach((m, i) => { m.material.color.set(i < reveal ? mute('#E58353') : '#D3C9B5'); });
     const idx = THREE.MathUtils.clamp(pos, 0, 7); const i0 = Math.floor(idx), i1 = Math.min(7, i0 + 1), f = idx - i0;
     const p0 = nodes[i0].position, p1 = nodes[i1].position; const hh = 1 + nodes[i0].userData.h * 1.3;
     orb.position.set(p0.x + (p1.x - p0.x) * f, hh + .55 + (S.reduced ? 0 : Math.sin(t * 3) * .05), p0.z + (p1.z - p0.z) * f);
