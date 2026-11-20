@@ -207,3 +207,14 @@ h1 em{background:linear-gradient(90deg,#F5BE57 0%,#7FB0FF 36%,#FF7B8F 68%,#FFA64
   .nlabel[data-k] .nm{padding:1px 4px}
 }
 @media (max-width:640px){.nlabel.plab,.nlabel.plab b{font-size:8px!important;letter-spacing:0!important}.nlabel.plab{padding:2px 5px!important}.nlabel.tw b,.nlabel.mlab b{font-size:9px}}
+.chamber[data-k] .sub{color:var(--chx)}
+.seg2.crisis button[aria-pressed=true]{background:var(--bad);color:var(--btn-ink)}
+.chain-list li.dimmed{opacity:1}.chain-list li.dimmed>div,.chain-list li.dimmed b,.chain-list li.dimmed em{color:var(--ink2)}
+.chain-list li .flag{color:var(--bad)}
+/* stage labels always sit on a dark render: fixed colours so a light section's tokens can never invert them */
+.nlabel[data-k]:hover .nm,.stn-label:hover b,.nlabel.sel,.nlabel.sel .nm,.nlabel.sel .st{background:#F2F4F6!important;color:#0A0B0D!important}
+.nlabel[data-k] .nm{color:#F2F4F6}
+.nlabel[data-state=warn] .nm{color:#E8B04A}.nlabel[data-state=stress] .nm{color:#FF6B6B}
+.nlabel[data-state=broken] .nm{background:#C42B2E;color:#fff}
+.nlabel.dim[data-state]{opacity:1}
+.nlabel .st{background:transparent;color:inherit}

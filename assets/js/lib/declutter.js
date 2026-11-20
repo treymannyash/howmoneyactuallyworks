@@ -18,21 +18,25 @@ export function declutter(container, entries) {
   // quick exit: nothing collides
   let bad = false;
   for (let i = 0; i < items.length && !bad; i++) { if (!inside(items[i].r)) bad = true; for (const o of obst) if (hit(items[i].r, o)) bad = true; for (let j = i + 1; j < items.length && !bad; j++) if (hit(items[i].r, items[j].r)) bad = true; }
-  for (const i of items) { i.e.dx = 0; i.e.dy = 0; }
-  if (!bad) { for (const i of items) if (i.e.applied) { i.e.el.style.transform = i.e.base; i.e.applied = false; } return; }
+  const settling = items.some(i => i.e.sx || i.e.sy);
+  if (!bad && !settling) return;
+  const ease = e => { // glide the shown offset toward the target so labels never jump
+    e.sx = (e.sx || 0) + (e.dx - (e.sx || 0)) * .3; e.sy = (e.sy || 0) + (e.dy - (e.sy || 0)) * .3;
+    if (Math.abs(e.sx - e.dx) < .5 && Math.abs(e.sy - e.dy) < .5) { e.sx = e.dx; e.sy = e.dy; }
+    e.el.style.transform = (e.sx || e.sy) ? `translate(${e.sx.toFixed(1)}px,${e.sy.toFixed(1)}px) ${e.base}` : e.base;
+  };
   items.sort((a, b) => (a.e.pri - b.e.pri));
   const placed = [];
+  const free = (r, placedList) => { if (!inside(r)) return false; for (const o of obst) if (hit(r, o)) return false; for (const p of placedList) if (hit(r, p)) return false; return true; };
   for (const it of items) {
-    const base = it.r; let best = null;
-    for (const [dx, dy] of OFFS) {
-      const r = { l: base.l + dx, t: base.t + dy, r: base.r + dx, b: base.b + dy };
-      if (!inside(r)) continue; let ok = true;
-      for (const o of obst) if (hit(r, o)) { ok = false; break; }
-      if (ok) for (const p of placed) if (hit(r, p)) { ok = false; break; }
-      if (ok) { best = [dx, dy, r]; break; }
-    }
-    if (best) { placed.push(best[2]); it.e.dx = best[0]; it.e.dy = best[1]; } else placed.push(base);
-    if (it.e.dx || it.e.dy) { it.e.el.style.transform = `translate(${it.e.dx}px,${it.e.dy}px) ${it.e.base}`; it.e.applied = true; }
-    else if (it.e.applied) { it.e.el.style.transform = it.e.base; it.e.applied = false; }
+    const base = it.r; // callers reset the transform to its natural value just before calling, so this is the un-nudged box
+    const at = (dx, dy) => ({ l: base.l + dx, t: base.t + dy, r: base.r + dx, b: base.b + dy });
+    let best = null;
+    if (free(at(0, 0), placed)) best = [0, 0];
+    else if (it.e.dx || it.e.dy) { if (free(at(it.e.dx, it.e.dy), placed)) best = [it.e.dx, it.e.dy]; }  // hysteresis: keep last spot if still valid
+    if (!best) for (const [dx, dy] of OFFS) { if (free(at(dx, dy), placed)) { best = [dx, dy]; break; } }
+    it.e.dx = best ? best[0] : 0; it.e.dy = best ? best[1] : 0;
+    placed.push(at(it.e.dx, it.e.dy));
+    ease(it.e);
   }
 }
