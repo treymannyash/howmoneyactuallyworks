@@ -11,7 +11,7 @@ export function declutter(container, entries) {
   // entries: [{ el, base (the transform string just applied), pri }]; lower pri number = placed first
   const cr = container.getBoundingClientRect(); if (cr.width < 2) return;
   const live = entries.filter(e => !e.el.hidden && !e.el.classList.contains('hide'));
-  const items = live.map(e => { const r = e.el.getBoundingClientRect(); return { e, r: { l: r.left, t: r.top, r: r.right, b: r.bottom }, w: r.width, h: r.height }; }).filter(i => i.w > 2).filter(i => { const cx = (i.r.l + i.r.r) / 2, cy = (i.r.t + i.r.b) / 2; const on = cx > cr.left && cx < cr.right && cy > cr.top && cy < cr.bottom; if (!on) { i.e.dx = i.e.dy = i.e.sx = i.e.sy = 0; } return on; }); // labels whose object is off-screen stay with their object
+  const items = live.map(e => { const r = e.el.getBoundingClientRect(); return { e, r: { l: r.left, t: r.top, r: r.right, b: r.bottom }, w: r.width, h: r.height }; }).filter(i => i.w > 2).filter(i => { const cx = (i.r.l + i.r.r) / 2, cy = (i.r.t + i.r.b) / 2; const on = cx > cr.left && cx < cr.right && cy > cr.top && cy < cr.bottom; i.e.el.style.visibility = on ? '' : 'hidden'; if (!on) { i.e.dx = i.e.dy = i.e.sx = i.e.sy = 0; } return on; }); // labels whose object is off-screen stay with their object
   if (!items.length) return;
   const obst = []; document.querySelectorAll(OBST).forEach(o => { if (container.contains(o) && o.closest('.nlabel')) return; const r = vis(o); if (r) obst.push({ l: r.left, t: r.top, r: r.right, b: r.bottom }); });
   const inside = r => r.l >= cr.left + 2 && r.r <= cr.right - 2 && r.t >= cr.top + 2 && r.b <= cr.bottom - 2;

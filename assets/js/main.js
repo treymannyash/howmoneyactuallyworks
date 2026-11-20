@@ -69,6 +69,7 @@ function machineChamber(el) {
   return eco;
 }
 { const t = document.querySelector('.chamber[data-k=machine] .txt .btns'); if (t) t.parentNode.insertBefore(legendEl(), t); }
+if (!gl) { const r = $('#run'); if (r) r.style.display = 'none'; const c = $('#cap-machine'); if (c) c.textContent = 'The interactive 3D flow model is switched off here. Open Chapter II for the full text version, including all six shock walk-throughs.'; document.querySelectorAll('.flow-legend').forEach(l => l.style.display = 'none'); }
 const made = {};
 const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const k = e.target.dataset.k; if (made[k] || !gl) return; made[k] = 1; const c = ALL.find(x => x.key === k); const el = $('#sc-' + k); try { (k === 'machine' ? machineChamber(el) : iconStage(c, el)); } catch (er) { console.warn(er); } }), { rootMargin: '400px' });
 document.querySelectorAll('.chamber').forEach(s => io.observe(s));
