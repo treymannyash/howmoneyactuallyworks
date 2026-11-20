@@ -1,4 +1,4 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute, ACCENT } from '../lib/stage3d.js';
 import { mountChapter, quiz, quizHTML, segmented, $, $$, esc } from '../lib/kit.js';
 import { IDEAS as I } from '../content/ideas-data.js';
 import { EXTRAS } from '../content/extras-data.js';
@@ -31,14 +31,14 @@ function build(el) {
   const segs = []; const toks = [];
   for (let i = 0; i < nodes.length - 1; i++) {
     const a = nodes[i].position.clone().setY(.55), b = nodes[i + 1].position.clone().setY(.55); const len = a.distanceTo(b);
-    const m = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, len, 12), mats.clay('#E9DCC3')); m.castShadow = true; m.position.copy(a.clone().add(b).multiplyScalar(.5)); m.lookAt(b); m.rotateX(Math.PI / 2); pipeG.add(m); segs.push(m);
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, len, 12), mats.clay('#9AA4AE')); m.castShadow = true; m.position.copy(a.clone().add(b).multiplyScalar(.5)); m.lookAt(b); m.rotateX(Math.PI / 2); pipeG.add(m); segs.push(m);
   }
-  const orb = new THREE.Mesh(new THREE.SphereGeometry(.26, 20, 14), new THREE.MeshStandardMaterial({ color: T.cream, emissive: '#E58353', emissiveIntensity: .6, roughness: .3 })); orb.position.y = 1.2; orb.castShadow = true; pipeG.add(orb);
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(.26, 20, 14), new THREE.MeshStandardMaterial({ color: T.cream, emissive: ACCENT, emissiveIntensity: .6, roughness: .3 })); orb.position.y = 1.2; orb.castShadow = true; pipeG.add(orb);
   // myth crystals (12)
   const crystals = I.myths.map((m, i) => {
     const c = new THREE.Mesh(new THREE.OctahedronGeometry(.5, 0), mats.clay(['#E5BD54', '#DE7068', '#6FA3CC', '#A58BD0', '#5FBBA0', '#E58353'][i % 6])); c.scale.y = 1.35; c.castShadow = true;
     const col = i % 6, row = Math.floor(i / 6); c.position.set(-5.6 + col * 2.24, .9, -4.1 + row * 2.3 - 0.4); c.userData = { y0: .9, sel: 0 };
-    mythG.add(c); const base = clayMesh(st, new THREE.CylinderGeometry(.5, .6, .22, 24), '#E9DCC3', { x: c.position.x, y: .11, z: c.position.z, parent: mythG });
+    mythG.add(c); const base = clayMesh(st, new THREE.CylinderGeometry(.5, .6, .22, 24), '#9AA4AE', { x: c.position.x, y: .11, z: c.position.z, parent: mythG });
     const L = st.addLabel(() => new THREE.Vector3(c.position.x, .15, c.position.z + .75), `#${i + 1}`, { cls: 'mlab', onClick: () => { setMyth(i); } }); c.userData.L = L; return c;
   });
   // quiz plinths (decades)
@@ -49,15 +49,15 @@ function build(el) {
   // frame loop
   st.onFrame((dt, t, k) => {
     let mv = false; const reveal = pos;
-    nodes.forEach((g, i) => { const u = g.userData; const on = i <= reveal; const inEra = era < 0 || ERA_OF[i] === era; u.tgt = on ? (i === Math.round(reveal) ? .9 : .45) : 0; if (smoothTo(u, 'h', u.tgt, k)) mv = true; u.ped.scale.y = 1 + u.h * 1.3; u.top.position.y = 1 + u.h * 1.3; u.ped.material.emissive.set(inEra && eraMode ? '#FFD28A' : '#000'); u.ped.material.emissiveIntensity = inEra && eraMode ? .35 : 0; u.L.el.classList.toggle('dim', !on); u.L.el.classList.toggle('sel', i === Math.round(reveal)); });
-    segs.forEach((m, i) => { m.material.color.set(i < reveal ? mute('#E58353') : '#D3C9B5'); });
+    nodes.forEach((g, i) => { const u = g.userData; const on = i <= reveal; const inEra = era < 0 || ERA_OF[i] === era; u.tgt = on ? (i === Math.round(reveal) ? .9 : .45) : 0; if (smoothTo(u, 'h', u.tgt, k)) mv = true; u.ped.scale.y = 1 + u.h * 1.3; u.top.position.y = 1 + u.h * 1.3; u.ped.material.emissive.set(inEra && eraMode ? ACCENT : '#000'); u.ped.material.emissiveIntensity = inEra && eraMode ? .35 : 0; u.L.el.classList.toggle('dim', !on); u.L.el.classList.toggle('sel', i === Math.round(reveal)); });
+    segs.forEach((m, i) => { m.material.color.set(i < reveal ? mute('#E58353') : '#262A30'); });
     const idx = THREE.MathUtils.clamp(pos, 0, 7); const i0 = Math.floor(idx), i1 = Math.min(7, i0 + 1), f = idx - i0;
     const p0 = nodes[i0].position, p1 = nodes[i1].position; const hh = 1 + nodes[i0].userData.h * 1.3;
     orb.position.set(p0.x + (p1.x - p0.x) * f, hh + .55 + (S.reduced ? 0 : Math.sin(t * 3) * .05), p0.z + (p1.z - p0.z) * f);
-    crystals.forEach((c, i) => { const u = c.userData, sel = i === mythI && mythMode; if (smoothTo(u, 'sel', sel ? 1 : 0, k)) mv = true; c.position.y = u.y0 + u.sel * .9 + (S.reduced ? 0 : Math.sin(t * 1.5 + i) * .05); if (!S.reduced || sel) c.rotation.y += S.reduced ? 0 : dt * (.4 + u.sel * 2); c.material.emissive.set('#FFB36B'); c.material.emissiveIntensity = u.sel * .55; c.scale.setScalar(1 + u.sel * .25); c.scale.y *= 1.35; u.L.el.classList.toggle('sel', sel); });
+    crystals.forEach((c, i) => { const u = c.userData, sel = i === mythI && mythMode; if (smoothTo(u, 'sel', sel ? 1 : 0, k)) mv = true; c.position.y = u.y0 + u.sel * .9 + (S.reduced ? 0 : Math.sin(t * 1.5 + i) * .05); if (!S.reduced || sel) c.rotation.y += S.reduced ? 0 : dt * (.4 + u.sel * 2); c.material.emissive.set(ACCENT); c.material.emissiveIntensity = u.sel * .55; c.scale.setScalar(1 + u.sel * .25); c.scale.y *= 1.35; u.L.el.classList.toggle('sel', sel); });
     qcard.position.x += (qcard.userData.tx - qcard.position.x) * k; qcard.position.y += (qcard.userData.ty - qcard.position.y) * k; qcard.position.z += (qcard.userData.tz - qcard.position.z) * k;
     if (Math.abs(qcard.userData.tx - qcard.position.x) > .01) mv = true;
-    plinths.forEach((p, i) => { p.material.emissive.set(i === quizSel ? '#8DD6A5' : '#000'); p.material.emissiveIntensity = i === quizSel ? .5 : 0; });
+    plinths.forEach((p, i) => { p.material.emissive.set(i === quizSel ? ACCENT : '#000'); p.material.emissiveIntensity = i === quizSel ? .5 : 0; });
     const pv = !(viewMode === 'myth' || viewMode === 'quiz'); pipeG.visible = pv; nodes.forEach(g => g.userData.L.el.hidden = !pv); crystals.forEach(c => c.userData.L.el.hidden = viewMode !== 'myth'); quizLabels.forEach(L => L.el.hidden = viewMode !== 'quiz'); zl.forEach(L => L.el.hidden = !pv); mythG.visible = viewMode === 'myth'; quizG.visible = viewMode === 'quiz';
     return mv || !S.reduced;
   });

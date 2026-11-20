@@ -1,9 +1,11 @@
 // Generic clay-diorama stage: renderer, soft lighting, tray, orbit controls, labels, camera tweening.
 // Used by every chapter widget. Respects prefers-reduced-motion (render-on-demand, no autorotate, instant camera).
+import { declutter } from './declutter.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { THEMES, Mats, lighten, darken, mute } from './clay.js';
+import { THEMES, Mats, lighten, darken, mute, studio } from './clay.js';
 
+export const ACCENT = ({ ideas: '#F2B13C', machine: '#4C8DFF', trap: '#F04F6B', exit: '#F7931A', detour: '#A78BFA' })[document.body && document.body.dataset.ch] || '#7FB2FF';
 export const isMobile = () => matchMedia('(pointer:coarse)').matches || innerWidth < 720;
 export const prefersReduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).get('rm') === '1';
 
@@ -39,7 +41,7 @@ export function createStage(container, o = {}) {
   const hemi = new THREE.HemisphereLight(T.sky, T.gnd, T.hemi); const sun = new THREE.DirectionalLight(T.sun, T.sunI);
   sun.position.set(-7, 14, 9); sun.castShadow = !mobile; sun.shadow.mapSize.set(mobile ? 512 : 2048, mobile ? 512 : 2048);
   Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 11, bottom: -11, near: 2, far: 45 }); sun.shadow.bias = -.0004; sun.shadow.radius = 8;
-  scene.add(hemi, sun);
+  scene.add(hemi, sun); studio(renderer, scene, mobile, o.rims);
   const root = new THREE.Group(); scene.add(root);
   const mats = new Mats(T);
   let tray = null;
@@ -102,7 +104,8 @@ export function createStage(container, o = {}) {
     const smooth = reduced ? 1 : 1 - Math.exp(-dt * 6);
     for (const f of updaters) if (f(dt, time, smooth)) moving = true;
     const hw = size.w / 2, hh = size.h / 2;
-    for (const L of labels) { if (L.el.hidden) continue; const p = L.getPos(); v3.copy(p).project(camera); L.el.style.transform = `translate(${(v3.x * hw + hw).toFixed(1)}px,${(-v3.y * hh + hh).toFixed(1)}px) ${L.anchor === 'right' ? 'translate(14px,-50%)' : L.anchor === 'left' ? 'translate(calc(-100% - 14px),-50%)' : `translate(-50%,${L.anchor === 'above' ? '-100%' : '0'})`}`; }
+    for (const L of labels) { if (L.el.hidden) continue; const p = L.getPos(); v3.copy(p).project(camera); L.base = `translate(${(v3.x * hw + hw).toFixed(1)}px,${(-v3.y * hh + hh).toFixed(1)}px) ${L.anchor === 'right' ? 'translate(14px,-50%)' : L.anchor === 'left' ? 'translate(calc(-100% - 14px),-50%)' : `translate(-50%,${L.anchor === 'above' ? '-100%' : '0'})`}`; L.el.style.transform = L.base; L.pri = (L.el.classList.contains('sel') ? 0 : 1) + labels.indexOf(L) / 1000; }
+    declutter(container, labels.filter(L => !L.el.hidden));
     if (!reduced || dirty || moving) { renderer.render(scene, camera); dirty = false; }
   }
   requestAnimationFrame(frame);

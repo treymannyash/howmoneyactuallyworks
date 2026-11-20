@@ -2,7 +2,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { NM, EDGES, POS, R } from './data.js';
-import { THEMES, hueOf, Mats, makeChamber, lighten, darken } from './clay.js';
+import { THEMES, hueOf, Mats, makeChamber, lighten, darken, studio } from './clay.js';
+import { declutter } from './declutter.js';
+import { FLOW, NODE_FLOW, flowType, flowColor } from './flows.js';
 
 const S = 58;                                   // 2D map units -> world units
 const W = (p) => new THREE.Vector3((p.x - 450) / S, 0, (p.y - 340) / S);
@@ -38,7 +40,7 @@ export function createEconomy(container, opts = {}) {
   sun.shadow.mapSize.set(mobile ? 512 : 2048, mobile ? 512 : 2048);
   Object.assign(sun.shadow.camera, { left: -13, right: 13, top: 10, bottom: -10, near: 2, far: 40 });
   sun.shadow.bias = -0.0004; sun.shadow.radius = 5;
-  scene.add(hemi, sun);
+  scene.add(hemi, sun); studio(renderer, scene, mobile, ['#6C95FF', '#34D1E6']);
 
   const root = new THREE.Group(); scene.add(root);
   const mats = new Mats(T);
@@ -66,11 +68,14 @@ export function createEconomy(container, opts = {}) {
     const pos = W(POS[key]);
     const pedR = R[key] / S * 1.18;
     const g = new THREE.Group(); g.position.copy(pos); root.add(g);
-    const hue = hueOf(T, NM[key].color);
-    const pedMat = mats.clay(lighten(hue, .15)), topMat = mats.clay(lighten(hue, .55));
+    const hue = FLOW[NODE_FLOW[key] || 'external'].c;
+    const pedMat = mats.clay('#8A9097'), topMat = mats.clay('#C9CED4');
     const ped = new THREE.Mesh(new THREE.CylinderGeometry(pedR, pedR * 1.07, .16, 32), pedMat); ped.position.y = .0; ped.castShadow = ped.receiveShadow = true; g.add(ped);
     const top = new THREE.Mesh(new THREE.CylinderGeometry(pedR * .9, pedR * .9, .04, 32), topMat); top.position.y = .09; top.receiveShadow = true; g.add(top);
-    const ill = makeChamber(key, hue, T, mats); ill.scale.setScalar(pedR / .55 * .92); ill.position.y = 0; g.add(ill);
+    const ill = makeChamber(key, hue, T, mats); ill.scale.setScalar(pedR / .55 * 1.12); ill.position.y = 0; g.add(ill);
+    { const gm = new THREE.MeshBasicMaterial({ color: hue, transparent: true, opacity: .95 }); gm.userData.base = new THREE.Color(hue); mats.list.push(gm);
+      const gr = new THREE.Mesh(new THREE.TorusGeometry(pedR * 1.04, .016, 6, 64), gm); gr.rotation.x = Math.PI / 2; gr.position.y = .1; g.add(gr);
+      const gl = new THREE.Mesh(new THREE.CircleGeometry(pedR * 2.1, 40), new THREE.MeshBasicMaterial({ color: hue, transparent: true, opacity: .13, blending: THREE.AdditiveBlending, depthWrite: false })); gl.rotation.x = -Math.PI / 2; gl.position.y = -.05; g.add(gl); }
     const halo = new THREE.Mesh(new THREE.TorusGeometry(pedR * 1.32, .045, 8, 48), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0 }));
     halo.rotation.x = Math.PI / 2; halo.position.y = .1; g.add(halo);
     const ring = new THREE.Mesh(new THREE.TorusGeometry(pedR * 1.15, .03, 8, 48), new THREE.MeshBasicMaterial({ color: T.ink, transparent: true, opacity: 0 }));
@@ -81,10 +86,10 @@ export function createEconomy(container, opts = {}) {
   // deposit tank next to the bank
   const bn = nodes.banks;
   const tank = new THREE.Group(); tank.position.set(bn.pedR + .75, 0, -.05); bn.g.add(tank);
-  const glassM = new THREE.MeshStandardMaterial({ color: '#ffffff', transparent: true, opacity: .28, roughness: .1 });
+  const glassM = new THREE.MeshPhysicalMaterial({ color: '#ffffff', transparent: true, opacity: .22, roughness: .12, metalness: 0, clearcoat: 1, envMapIntensity: 1.4 });
   const glass = new THREE.Mesh(new THREE.CylinderGeometry(.2, .2, .9, 24, 1, true), glassM); glass.position.y = .55; tank.add(glass);
   const tbase = new THREE.Mesh(new THREE.CylinderGeometry(.24, .26, .1, 24), mats.clay(T.cream)); tbase.position.y = .05; tbase.castShadow = true; tank.add(tbase);
-  const liq = new THREE.Mesh(new THREE.CylinderGeometry(.165, .165, .86, 24), mats.clay(hueOf(T, '#fbbf24'))); liq.geometry.translate(0, .43, 0); liq.position.y = .1; liq.castShadow = true; tank.add(liq);
+  const liq = new THREE.Mesh(new THREE.CylinderGeometry(.165, .165, .86, 24), new THREE.MeshStandardMaterial({ color: '#34D1E6', emissive: '#34D1E6', emissiveIntensity: .7, roughness: .3 })); liq.geometry.translate(0, .43, 0); liq.position.y = .1; liq.castShadow = true; tank.add(liq);
   const tcap = new THREE.Mesh(new THREE.CylinderGeometry(.23, .23, .06, 24), mats.clay(T.cream)); tcap.position.y = 1.02; tank.add(tcap);
 
   /* ---------- pipes ---------- */
@@ -101,8 +106,8 @@ export function createEconomy(container, opts = {}) {
     const mid = p0.clone().lerp(p1, .5); mid.y = .46 + .34 + len * .085; mid.addScaledVector(perp, off * 1.5);
     const curve = new THREE.QuadraticBezierCurve3(p0, mid, p1);
     const rad = (.036 + E.w * .0095) * (E.d ? .9 : 1);
-    const hue = hueOf(T, E.color);
-    const mat = new THREE.MeshStandardMaterial({ color: hue, roughness: T.rough * .8, transparent: true, opacity: T.pipeOpacity, depthWrite: false });
+    const hue = flowColor(E.from, E.to);
+    const mat = new THREE.MeshStandardMaterial({ color: hue, emissive: hue, emissiveIntensity: .55, roughness: .35, metalness: .5, transparent: true, opacity: T.pipeOpacity, depthWrite: false });
     mat.userData.base = new THREE.Color(hue);
     const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 36, rad, 8, false), mat);
     tube.renderOrder = 2; tube.userData.edge = ekey(E.from, E.to); root.add(tube);
@@ -112,24 +117,25 @@ export function createEconomy(container, opts = {}) {
   });
   const edgeBy = Object.fromEntries(edges.map(e => [e.key, e]));
   const total = edges.reduce((s, e) => s + e.n, 0);
-  const pMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(.058, 10, 8), new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: .5 }), total);
+  const pMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(.058, 10, 8), new THREE.MeshBasicMaterial({ color: '#ffffff' }), total);
   pMesh.castShadow = false; pMesh.frustumCulled = false; pMesh.renderOrder = 3; root.add(pMesh);
   const parts = []; let pi = 0;
   edges.forEach(e => { for (let k = 0; k < e.n; k++) parts.push({ e, k, idx: pi++, ph: (k / e.n) + (e.i * .137) % .2 }); });
   const tmpC = new THREE.Color();
-  const setPartColors = () => parts.forEach(p => { tmpC.copy(p.e.mat.userData.base).lerp(new THREE.Color(T.ink), .12); pMesh.setColorAt(p.idx, tmpC); }); setPartColors();
+  const setPartColors = () => parts.forEach(p => { tmpC.copy(p.e.mat.userData.base).lerp(new THREE.Color('#ffffff'), .35); pMesh.setColorAt(p.idx, tmpC); }); setPartColors();
 
   /* ---------- labels ---------- */
   const labelLayer = document.createElement('div'); labelLayer.className = 'eco-labels'; container.appendChild(labelLayer);
   const ICON = { warn: '!', stress: '▲', broken: '✕' };
   for (const k of Object.keys(nodes)) {
     const n = nodes[k]; const b = document.createElement('button');
-    b.className = 'nlabel'; b.type = 'button'; b.dataset.k = k;
+    b.className = 'nlabel'; b.type = 'button'; b.dataset.k = k; b.style.setProperty('--nc', FLOW[NODE_FLOW[k] || 'external'].c);
     b.innerHTML = `<span class="nm">${NM[k].label}</span><span class="st" aria-hidden="true"></span>`;
     b.addEventListener('click', e => { e.stopPropagation(); opts.onPick && opts.onPick({ type: 'node', key: k }); });
     labelLayer.appendChild(b); n.label = b;
   }
-  const tankLabel = document.createElement('div'); tankLabel.className = 'nlabel tank'; tankLabel.innerHTML = '<span class="nm">Deposits</span>'; labelLayer.appendChild(tankLabel);
+  const tankE = { el: null, pri: 20 };
+  const tankLabel = document.createElement('div'); tankLabel.className = 'nlabel tank'; tankLabel.innerHTML = '<span class="nm">Deposits</span>'; labelLayer.appendChild(tankLabel); tankE.el = tankLabel;
   const zoneLabels = [['THE OVERNIGHT PLUMBING', 596, 40], ['GOVERNMENT & DEBT', 475, 590]].map(([t, x, y]) => { const d = document.createElement('div'); d.className = 'zlabel'; d.textContent = t; d.dataset.x = x; d.dataset.y = y; labelLayer.appendChild(d); return d; });
 
   /* ---------- controls + camera ---------- */
@@ -236,7 +242,7 @@ export function createEconomy(container, opts = {}) {
         cB.copy(m.userData.base);
         if (m === n.pedMat || m === n.topMat) cB.lerp(cA, n.state * .65);
         cB.lerp(cG, n.dim * .62); m.color.copy(cB);
-        if (m.emissive) { m.emissive.copy(cA); m.emissiveIntensity = n.state * pulse * .28; }
+        if (m.emissive) { if (n.state > .01) { m.emissive.copy(cA); m.emissiveIntensity = n.state * pulse * .6; } else if (m.userData.emBase) { m.emissive.copy(m.userData.emBase); m.emissiveIntensity = m.userData.emI * (1 - n.dim * .8); } else m.emissiveIntensity = 0; }
       }
       n.halo.material.color.copy(cA); n.halo.material.opacity = n.state > .01 ? (.35 + .45 * pulse) * (1 - n.dim * .5) : 0;
       n.halo.scale.setScalar(1 + (reduced ? 0 : .06 * Math.sin(time * 4 + n.pos.z)) * n.state);
@@ -253,7 +259,7 @@ export function createEconomy(container, opts = {}) {
     for (const e of edges) {
       lerpv(e, 'f', 'fT'); lerpv(e, 'rev', 'revT'); lerpv(e, 'tint', 'tintT'); lerpv(e, 'dim', 'dimT'); lerpv(e, 'hl', 'hlT');
       cA.copy(e.mat.userData.base); if (e.tint > .01) cA.lerp(cB.set(T.stress[e.tintName]), e.tint * .85);
-      cA.lerp(cG, e.dim * .55); e.mat.color.copy(cA);
+      cA.lerp(cG, e.dim * .55); e.mat.color.copy(cA); e.mat.emissive.copy(cA);
       e.mat.opacity = clamp(T.pipeOpacity * (1 - e.dim * .55) + e.hl * .28, .08, .95);
     }
     for (const p of parts) {
@@ -268,9 +274,10 @@ export function createEconomy(container, opts = {}) {
     // labels
     const hw = size.w / 2, hh = size.h / 2;
     const proj = (x, y, z) => { v3.set(x, y, z).project(camera); return [v3.x * hw + hw, -v3.y * hh + hh, v3.z]; };
-    for (const k in nodes) { const n = nodes[k]; const [x, y] = proj(n.pos.x, 0, n.pos.z + n.pedR + .12); n.label.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,0)`; }
-    { const w = bn.g.localToWorld(tank.position.clone().add(new THREE.Vector3(0, -.02, .42))); const [x, y] = proj(w.x, w.y, w.z); tankLabel.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,0)`; }
-    zoneLabels.forEach(z => { const p = W({ x: +z.dataset.x, y: +z.dataset.y }); const [x, y] = proj(p.x, .02, p.z); z.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`; });
+    for (const k in nodes) { const n = nodes[k]; const [x, y] = proj(n.pos.x, 0, n.pos.z + n.pedR + .12); n.lbase = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,0)`; n.label.style.transform = n.lbase; }
+    { const w = bn.g.localToWorld(tank.position.clone().add(new THREE.Vector3(0, -.02, .42))); const [x, y] = proj(w.x, w.y, w.z); tankE.base = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,0)`; tankLabel.style.transform = tankE.base; }
+    zoneLabels.forEach(z => { const p = W({ x: +z.dataset.x, y: +z.dataset.y }); const [x, y] = proj(p.x, .02, p.z); z.__e = z.__e || { el: z, pri: 50 }; z.__e.base = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%)`; z.style.transform = z.__e.base; });
+    { const ents = []; let pi = 0; for (const k in nodes) { const n = nodes[k]; n.__e = n.__e || { el: n.label }; n.__e.base = n.lbase; n.__e.pri = (n.label.classList.contains('sel') || n.label.matches(':hover') ? 0 : 1) + (pi++) / 100; ents.push(n.__e); } tankE.pri = 20; ents.push(tankE); zoneLabels.forEach(z => ents.push(z.__e)); declutter(container, ents); }
     if (!reduced || dirty || moving) { renderer.render(scene, camera); dirty = false; }
   }
   requestAnimationFrame(frame);

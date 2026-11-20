@@ -1,4 +1,5 @@
 import { createEconomy, ekey } from '../lib/economy.js';
+import { flowColor, legendEl } from '../lib/flows.js';
 import { EX, NM, EDGES, SC } from '../lib/data.js';
 import { THEMES, hueOf } from '../lib/clay.js';
 import { shockFrames, SHOCK_ORDER } from '../lib/shock.js';
@@ -20,7 +21,7 @@ const STEPS = [
 ];
 let selPipe = {}, drain = 0, rate = 50, sIdx = -1, sKey = 'bank', frames = shockFrames('bank'), timer = null, inspecting = false, anim = null;
 
-const pc = key => hueOf(T, EX[key].tc);
+const pc = key => { const e = EDGES.find(e => ekey(e.from, e.to) === key); return e ? flowColor(e.from, e.to) : '#6C95FF'; };
 function renderPipe(card, key) {
   const x = EX[key]; const box = $('[data-read]', card);
   box.style.setProperty('--pc', pc(key));
@@ -35,7 +36,7 @@ function inspect(p) {
   const info = $('#info'); inspecting = true;
   if (p.type === 'node') {
     const n = NM[p.key]; const nbr = EDGES.filter(e => e.from === p.key || e.to === p.key);
-    info.innerHTML = `<button aria-label="Close" type="button">×</button><h4>${n.icon} ${n.label}</h4><div>${n.plain}</div><div class="stat">${n.stat}</div>`;
+    info.innerHTML = `<button aria-label="Close" type="button">×</button><h4>${n.label}</h4><div>${n.plain}</div><div class="stat">${n.stat}</div>`;
     eco.setFocus([p.key, ...new Set(nbr.flatMap(e => [e.from, e.to]))], nbr.map(e => E(e.from, e.to)));
   } else {
     const x = EX[p.key]; const e = EDGES.find(e => E(e.from, e.to) === p.key);
@@ -90,7 +91,7 @@ const QS = [
 ];
 
 function fullText() {
-  const nodes = Object.entries(NM).map(([k, n]) => `<article class="ft-item" id="ft-node-${k}"><h4>${n.icon} ${n.label}</h4><p>${n.plain}</p><p class="ft-meta">${n.desc} · ${n.stat}</p></article>`).join('');
+  const nodes = Object.entries(NM).map(([k, n]) => `<article class="ft-item" id="ft-node-${k}"><h4>${n.label}</h4><p>${n.plain}</p><p class="ft-meta">${n.desc} · ${n.stat}</p></article>`).join('');
   const pipes = EDGES.map(e => { const x = EX[E(e.from, e.to)]; return `<article class="ft-item" id="ft-pipe-${E(e.from, e.to)}" style="--pc:${pc(E(e.from, e.to))}"><div class="tag">${x.tag}</div><h4>${x.title}</h4><p>${x.plain}</p>${x.detail ? `<p>${x.detail}</p>` : ''}<p class="ft-why"><b>Why it matters:</b> ${x.why}</p></article>`; }).join('');
   const shocks = SHOCK_ORDER.map(k => { const s = SC[k]; return `<article class="ft-item"><h4>${s.name} <small>${s.badge}</small></h4><ol>${s.steps.map(st => `<li><b>${st.l}.</b> ${st.b}</li>`).join('')}</ol><p class="ft-meta">GDP ${s.macros.gdp} · Unemployment ${s.macros.unemp} · CPI ${s.macros.cpi} · VIX ${s.macros.vix}</p></article>`; }).join('');
   return `<h3>The 12 chambers</h3><div class="ft-grid">${nodes}</div><h3>The 27 pipes</h3><div class="ft-grid">${pipes}</div><h3>The 6 shock scenarios</h3><div class="ft-grid">${shocks}</div>`;
@@ -116,7 +117,7 @@ mountChapter({
   build: el => createEconomy(el, { theme: 'A', reduced: matchMedia('(prefers-reduced-motion: reduce)').matches || new URLSearchParams(location.search).get('rm') === '1', shiftRight: true, shiftX: .19, shiftScale: .72, autoRotate: true, onPick: p => inspect(p) }),
   resetView: () => { closeInfo(); eco.flyTo(STEPS[Math.max(0, cur)].nodes); },
   init: ctx => {
-    eco = ctx.scene; reducedMode = ctx.reduced;
+    eco = ctx.scene; reducedMode = ctx.reduced; $('#stage').appendChild(legendEl());
     const drainEl = $('#drain'); drainEl.addEventListener('input', () => setDrain(+drainEl.value)); setDrain(0);
     $('#panic').onclick = () => {
       cancelAnimationFrame(anim); if (reducedMode) { setDrain(100); return; }

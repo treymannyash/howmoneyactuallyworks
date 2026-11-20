@@ -1,4 +1,4 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, rrect, mute, ACCENT } from '../lib/stage3d.js';
 import { mountChapter, $, $$, esc, segmented } from '../lib/kit.js';
 import { steps as MECH, scenariosData as SCEN, actorsData as ACT, CHAIN, READ } from '../content/trap-data.js';
 import { TRAP } from '../content/trap-prose.js';
@@ -37,7 +37,7 @@ function buildScene(el) {
   orbs.forEach(r => r.o.position.copy(rest(r.g, r.k)));
   // pawns
   const pawns = ACT.map((a, i) => { const g = new THREE.Group(); g.position.set(-5.4 + (i % 2) * 1.1, 0, -1.5 + i * 1.1); tower.add(g);
-    clayMesh(st, new THREE.CylinderGeometry(.28, .4, .8, 18), '#7A6957', { y: .4, parent: g }); clayMesh(st, new THREE.SphereGeometry(.3, 18, 14), '#E9CDA6', { y: 1.05, parent: g });
+    clayMesh(st, new THREE.BoxGeometry(.5, .08, .5), '#34383E', { y: .04, parent: g }); clayMesh(st, new THREE.BoxGeometry(.08, 1.0, .08), '#6A7179', { y: .55, parent: g }); const mk = clayMesh(st, new THREE.OctahedronGeometry(.24, 0), ACCENT, { y: 1.2, parent: g }); mk.material.emissiveIntensity = .5;
     const beam = clayMesh(st, new THREE.CylinderGeometry(.03, .03, 1, 6), '#2A2118', { parent: tower, cast: false }); beam.visible = false;
     const L = st.addLabel(() => new THREE.Vector3(g.position.x, 1.5, g.position.z), `<b>${esc(a.name.split(' ').slice(-1)[0])}</b>`, { cls: 'tw', onClick: () => window.__pickActor && window.__pickActor(i) });
     g.userData = { beam, L }; return g; });
@@ -45,14 +45,14 @@ function buildScene(el) {
   const conv = new THREE.Group(); conv.position.set(0, 0, 7.4); root.add(conv);
   clayMesh(st, new THREE.BoxGeometry(11, .25, 1.4), '#CBB892', { y: .12, parent: conv });
   const stat = [0, 1, 2, 3, 4].map(i => { const m = clayMesh(st, new THREE.BoxGeometry(1.5, .9, 1.1), lighten(FLOOR_COL[i], .2), { x: -4.4 + i * 2.2, y: .7, parent: conv }); const L = st.addLabel(() => new THREE.Vector3(-4.4 + i * 2.2, 1.3, 7.4), String(i + 1), { cls: 'mlab' }); return { m, L }; });
-  const tok = new THREE.Mesh(new THREE.SphereGeometry(.38, 20, 14), new THREE.MeshStandardMaterial({ color: '#FBF4E6', emissive: '#E58353', emissiveIntensity: .6, roughness: .4 })); tok.position.set(-4.4, 1.5, 7.4); tok.castShadow = true; root.add(tok); tok.userData.x = -4.4;
-  const tint = new THREE.Color(), grey = new THREE.Color('#C8BCA6');
+  const tok = new THREE.Mesh(new THREE.SphereGeometry(.38, 20, 14), new THREE.MeshStandardMaterial({ color: '#FBF4E6', emissive: ACCENT, emissiveIntensity: .6, roughness: .4 })); tok.position.set(-4.4, 1.5, 7.4); tok.castShadow = true; root.add(tok); tok.userData.x = -4.4;
+  const tint = new THREE.Color(), grey = new THREE.Color('#262A30');
   st.onFrame((dt, t, k) => {
     let mv = false; const showTower = view !== 'lang';
     floors.forEach((g, i) => { const u = g.userData; const want = (view === 'build' ? (i < Math.min(5, build) ? 1 : 0) : 1) * (build >= 1 || view !== 'build' ? 1 : 0);
       const v = view === 'build' ? (build > i ? 1 : 0) : 1; if (smoothTo(u, 'vis', v, k)) mv = true; g.scale.y = Math.max(.001, u.vis) * (i === 3 && build >= 6 && (view === 'build' || true) && buildCCP() ? .62 : 1); g.visible = showTower && u.vis > .02; u.L.el.hidden = !(showTower && u.vis > .6);
       const crisisDim = mode === 'crisis' && CHAIN[i].dim ? 1 : 0; if (smoothTo(u, 'dim', crisisDim, k)) mv = true; tint.copy(u.base).lerp(grey, u.dim * .75); u.m.material.color.copy(tint);
-      const hl = (asset >= 0 && i === 0) || (actor >= 0 && ACT_FLOOR[actor] === i); u.m.material.emissive.set('#FFD28A'); u.m.material.emissiveIntensity = hl ? .45 + (S.reduced ? 0 : .15 * Math.sin(t * 4)) : 0; if (hl && !S.reduced) mv = true;
+      const hl = (asset >= 0 && i === 0) || (actor >= 0 && ACT_FLOOR[actor] === i); u.m.material.emissive.set(ACCENT); u.m.material.emissiveIntensity = hl ? .45 + (S.reduced ? 0 : .15 * Math.sin(t * 4)) : 0; if (hl && !S.reduced) mv = true;
       const txt = mode === 'crisis' ? CHAIN[i].crisis : CHAIN[i].normal; const sp = u.L.el.querySelector('.st'); if (sp.textContent !== txt) sp.textContent = txt; u.L.el.classList.toggle('crisis', mode === 'crisis'); });
     const bs = view === 'build' ? build : 0;
     crate.visible = showTower && bs >= 7; crateLab.el.hidden = !crate.visible; crown.visible = showTower && bs >= 8; crownLab.el.hidden = !crown.visible; valve.visible = showTower && bs >= 5;
@@ -63,7 +63,7 @@ function buildScene(el) {
     // pawns
     pawns.forEach((g, i) => { const on = view === 'actors'; g.visible = on; g.userData.L.el.hidden = !on; const b = g.userData.beam; b.visible = on && actor === i; if (b.visible) { const f = floors[ACT_FLOOR[i]]; const a = new THREE.Vector3(g.position.x, 1.3, g.position.z), c = new THREE.Vector3(-FW / 2 + .2, f.position.y + FH / 2, 0); const len = a.distanceTo(c); b.scale.y = len; b.position.copy(a.clone().add(c).multiplyScalar(.5)); b.lookAt(c); b.rotateX(Math.PI / 2); } g.scale.setScalar(actor === i ? 1.25 : 1); });
     // conveyor
-    conv.visible = view === 'lang'; stat.forEach((s, i) => { s.L.el.hidden = view !== 'lang'; s.m.scale.y = pat === i ? 1.35 : 1; s.m.material.emissive.set('#FFD28A'); s.m.material.emissiveIntensity = pat === i ? .5 : 0; });
+    conv.visible = view === 'lang'; stat.forEach((s, i) => { s.L.el.hidden = view !== 'lang'; s.m.scale.y = pat === i ? 1.35 : 1; s.m.material.emissive.set(ACCENT); s.m.material.emissiveIntensity = pat === i ? .5 : 0; });
     tok.visible = view === 'lang'; if (smoothTo(tok.userData, 'x', -4.4 + Math.max(0, pat) * 2.2, k)) mv = true; tok.position.x = tok.userData.x; tok.position.y = 1.5 + (S.reduced ? 0 : Math.sin(t * 3) * .08);
     pawns.forEach(() => 0); if (view === 'actors' || view === 'lang') mv = mv || !S.reduced;
     return mv;

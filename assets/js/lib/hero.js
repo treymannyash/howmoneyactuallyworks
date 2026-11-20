@@ -1,14 +1,15 @@
 // Living-map hero as a 3D clay diorama: the four chapters + the Detour on a winding route.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { THEMES, hueOf, Mats, makeChapterIcon, lighten, darken } from './clay.js';
+import { declutter } from './declutter.js';
+import { THEMES, hueOf, Mats, makeChapterIcon, lighten, darken, studio } from './clay.js';
 
 const STN = [
   { key: 'ideas',  pos: [-5.2, 3.0],  legacy: '#f5a623' },
   { key: 'machine',pos: [-1.5, 1.2],   legacy: '#4db8ff' },
   { key: 'trap',   pos: [2.6, -.7],  legacy: '#f87171' },
   { key: 'exit',   pos: [6.2, -2.7],  legacy: '#ff7043' },
-  { key: 'detour', pos: [-.8, 4.3],  legacy: '#00e5a0' },
+  { key: 'detour', pos: [-.8, 4.3],  legacy: '#c084fc' },
 ];
 export function createHero(container, opts = {}) {
   const reduced = !!opts.reduced, mobile = innerWidth < 720 || matchMedia('(pointer:coarse)').matches;
@@ -21,7 +22,7 @@ export function createHero(container, opts = {}) {
   const scene = new THREE.Scene(); const camera = new THREE.PerspectiveCamera(30, 1, .5, 200);
   scene.add(new THREE.HemisphereLight(T.sky, T.gnd, T.hemi));
   const sun = new THREE.DirectionalLight(T.sun, T.sunI); sun.position.set(-7, 14, 9); sun.castShadow = !mobile; sun.shadow.mapSize.set(mobile ? 512 : 2048, mobile ? 512 : 2048);
-  Object.assign(sun.shadow.camera, { left: -13, right: 13, top: 10, bottom: -10, near: 2, far: 40 }); sun.shadow.radius = 8; scene.add(sun);
+  Object.assign(sun.shadow.camera, { left: -13, right: 13, top: 10, bottom: -10, near: 2, far: 40 }); sun.shadow.radius = 8; scene.add(sun); studio(renderer, scene, mobile, ['#6C95FF', '#FFA24C']);
   const mats = new Mats(T);
   const rrect = (w, d, r) => { const s = new THREE.Shape(); const x0 = -w / 2, x1 = w / 2, y0 = -d / 2, y1 = d / 2;
     s.moveTo(x0 + r, y0); s.lineTo(x1 - r, y0); s.quadraticCurveTo(x1, y0, x1, y0 + r); s.lineTo(x1, y1 - r); s.quadraticCurveTo(x1, y1, x1 - r, y1); s.lineTo(x0 + r, y1); s.quadraticCurveTo(x0, y1, x0, y1 - r); s.lineTo(x0, y0 + r); s.quadraticCurveTo(x0, y0, x0 + r, y0); return s; };
@@ -41,29 +42,31 @@ export function createHero(container, opts = {}) {
   const idxs = main.map(m => pts.reduce((bi, p, i) => (p.distanceTo(m) < pts[bi].distanceTo(m) ? i : bi), 0));
   for (let s = 0; s < 3; s++) {
     const seg = new THREE.CatmullRomCurve3(pts.slice(idxs[s], idxs[s + 1] + 1));
-    const c0 = new THREE.Color(hueOf(T, segCols[s])), c1 = new THREE.Color(hueOf(T, segCols[s + 1]));
+    const c0 = new THREE.Color(lighten(hueOf(T, segCols[s]), .15)), c1 = new THREE.Color(lighten(hueOf(T, segCols[s + 1]), .15));
     const g = new THREE.TubeGeometry(seg, 60, .075, 8, false); const cols = []; const pc = g.attributes.position.count;
     for (let i = 0; i < pc; i++) { const u = Math.floor(i / 11) / 61; const c = c0.clone().lerp(c1, u); cols.push(c.r, c.g, c.b); }
     g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
-    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: T.rough })); m.scale.y = .55; m.position.y = .04; m.castShadow = m.receiveShadow = true; route.add(m);
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .32, metalness: .85 })); m.scale.y = .55; m.position.y = .04; m.castShadow = m.receiveShadow = true; route.add(m);
   }
   if (idxs[0] > 3) { const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.slice(0, idxs[0] + 1)), 20, .075, 8); const m = new THREE.Mesh(g, mats.clay(hueOf(T, '#f5a623'))); m.scale.y = .55; m.position.y = .04; route.add(m); }
   // detour: dotted green branch
   const dCurve = new THREE.CatmullRomCurve3([main[0].clone().setY(.12), new THREE.Vector3(-4.0, .12, 4.3), new THREE.Vector3(-2.3, .12, 4.5), P[4].clone().setY(.12)]);
-  const dotGeo = new THREE.SphereGeometry(.055, 10, 8), dotMat = mats.clay(hueOf(T, '#00e5a0'));
+  const dotGeo = new THREE.SphereGeometry(.055, 10, 8), dotMat = mats.clay(hueOf(T, '#c084fc'));
   for (let i = 0; i <= 14; i++) { const d = new THREE.Mesh(dotGeo, dotMat); d.position.copy(dCurve.getPoint(i / 14)); d.position.y = .13; d.castShadow = true; scene.add(d); }
 
   const stations = {};
   STN.forEach((s, i) => {
     const hue = hueOf(T, s.legacy); const g = new THREE.Group(); g.position.copy(P[i]); scene.add(g);
-    const r = s.key === 'detour' ? .72 : .95;
-    const ped = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.02, .12, 48), mats.clay(lighten(hue, .2))); ped.castShadow = ped.receiveShadow = true; g.add(ped);
-    const top = new THREE.Mesh(new THREE.CylinderGeometry(r * .88, r * .88, .05, 40), mats.clay(lighten(hue, .6))); top.position.y = .12; top.receiveShadow = true; g.add(top);
-    const ic = makeChapterIcon(s.key, hue, T, mats); ic.scale.setScalar(r / .5 * (s.key === 'detour' ? .85 : .95)); ic.position.y = .02; g.add(ic);
+    const r = s.key === 'detour' ? .8 : 1.1;
+    const ped = new THREE.Mesh(new THREE.CylinderGeometry(r, r * 1.02, .12, 48), mats.clay('#8A9097')); ped.castShadow = ped.receiveShadow = true; g.add(ped);
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(r * .88, r * .88, .05, 40), mats.clay('#C9CED4')); top.position.y = .12; top.receiveShadow = true; g.add(top);
+    { const rim = new THREE.Mesh(new THREE.TorusGeometry(r * 1.02, .02, 6, 72), new THREE.MeshBasicMaterial({ color: hue })); rim.rotation.x = Math.PI / 2; rim.position.y = .08; g.add(rim);
+      const gl = new THREE.Mesh(new THREE.CircleGeometry(r * 1.9, 48), new THREE.MeshBasicMaterial({ color: hue, transparent: true, opacity: .1, blending: THREE.AdditiveBlending, depthWrite: false })); gl.rotation.x = -Math.PI / 2; gl.position.y = -.02; g.add(gl); }
+    const ic = makeChapterIcon(s.key, hue, T, mats); ic.scale.setScalar(r / .5 * (s.key === 'detour' ? 1.0 : 1.2)); ic.position.y = .02; g.add(ic);
     stations[s.key] = { g, ic, r };
   });
   // travelling orb along the route
-  const orb = new THREE.Mesh(new THREE.SphereGeometry(.2, 20, 14), new THREE.MeshStandardMaterial({ color: T.cream, emissive: hueOf(T, '#f5a623'), emissiveIntensity: .55, roughness: .3 })); orb.castShadow = true; scene.add(orb);
+  const orb = new THREE.Mesh(new THREE.SphereGeometry(.2, 20, 14), new THREE.MeshStandardMaterial({ color: T.cream, emissive: '#ffffff', emissiveIntensity: .9, roughness: .3 })); orb.castShadow = true; scene.add(orb);
   const halo = new THREE.Mesh(new THREE.SphereGeometry(.34, 20, 14), new THREE.MeshBasicMaterial({ color: hueOf(T, '#f5a623'), transparent: true, opacity: .22 })); orb.add(halo);
 
   // labels (real links)
@@ -72,13 +75,13 @@ export function createHero(container, opts = {}) {
     ideas: ['I.', 'The Ideas', 'Where the doctrine came from', '#ch-ideas'], machine: ['II.', 'The Machine', 'How money actually moves', '#chamber-machine'],
     trap: ['III.', 'The Trap', 'What the plumbing does in a crisis', '#ch-trap'], exit: ['IV.', 'The Exit', 'Rails built outside the system', '#ch-exit'], detour: ['◆', 'The Detour', 'School of Salamanca, 1544–1605', '#ch-detour']
   };
-  const AX = mobile ? {} : { ideas: '-70%', detour: '-12%' }, AY = mobile ? {} : { ideas: '-6px', detour: '4px' }; /* keep neighbouring labels from colliding */
+  const AX = mobile ? {} : { ideas: '-70%', detour: '-12%' }, AY = mobile ? { detour: '18px' } : { ideas: '-6px', detour: '4px' }; /* keep neighbouring labels from colliding */
   const labels = {};
   for (const k in LAB) { const a = document.createElement('a'); a.href = (opts.hrefs && opts.hrefs[k]) || LAB[k][3]; a.className = 'stn-label ' + k; a.innerHTML = `<span class="num">${LAB[k][0]}</span> <b>${LAB[k][1]}</b><small>${LAB[k][2]}</small>`; layer.appendChild(a); labels[k] = a; }
 
   const controls = new OrbitControls(camera, canvas);
   Object.assign(controls, { enableDamping: !reduced, dampingFactor: .08, enablePan: false, enableZoom: false, rotateSpeed: .5, minPolarAngle: .62, maxPolarAngle: 1.0, minAzimuthAngle: -.5, maxAzimuthAngle: .5 });
-  let size = { w: 1, h: 1 }, dirty = true, visible = true, time = 0, last = performance.now(), elastic = 1, uPhase = 0;
+  const stationE = {}; let swayPrev = 0; let size = { w: 1, h: 1 }, dirty = true, visible = true, time = 0, last = performance.now(), elastic = 1, uPhase = 0;
   function place() {
     const aspect = size.w / size.h; const th = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
     const dist = Math.max((mobile ? 12 : 10.4) / (th * aspect), 7.4 / th) * 1.0 + (mobile ? 0 : 0);
@@ -88,7 +91,7 @@ export function createHero(container, opts = {}) {
     camera.aspect = aspect; camera.updateProjectionMatrix(); controls.update(); dirty = true;
   }
   const ro = new ResizeObserver(() => { const r = container.getBoundingClientRect(); size = { w: Math.max(2, r.width | 0), h: Math.max(2, r.height | 0) }; renderer.setSize(size.w, size.h, false); place(); }); ro.observe(container);
-  controls.addEventListener('change', () => dirty = true);
+  controls.addEventListener('change', () => dirty = true); let sway = true; controls.addEventListener('start', () => sway = false);
   new IntersectionObserver(es => visible = es[0].isIntersecting).observe(container);
   const v = new THREE.Vector3();
   function frame(now) {
@@ -96,9 +99,11 @@ export function createHero(container, opts = {}) {
     if (!reduced) time += dt; let moving = false;
     uPhase += reduced ? 0 : dt * .045 * (elastic ? 1.7 : .6); const u = reduced ? idxs[1] / N : uPhase % 1; orb.position.copy(routeCurve.getPointAt(u)); orb.position.y = .5 + (reduced ? 0 : Math.sin(time * 3) * .04);
     if (!reduced) { for (const k in stations) { const ud = stations[k].ic.userData; ud.spin.forEach(([o, s]) => o.rotation.y += dt * s); ud.bob.forEach(([o, a]) => o.position.y = (o.userData.y0 ??= o.position.y) + Math.sin(time * 2) * a); } moving = true; }
+    if (sway && !reduced) { const t0 = controls.target, o = camera.position.clone().sub(t0); const az = Math.sin(time * .12) * .09 - (swayPrev || 0); swayPrev = Math.sin(time * .12) * .09; o.applyAxisAngle(new THREE.Vector3(0, 1, 0), az); camera.position.copy(t0).add(o); }
     if (controls.update()) moving = true;
     const hw = size.w / 2, hh = size.h / 2;
-    for (const k in stations) { const g = stations[k].g; v.set(g.position.x, 0, g.position.z + stations[k].r + .18).project(camera); labels[k].style.transform = `translate(${(v.x * hw + hw).toFixed(1)}px,${(-v.y * hh + hh).toFixed(1)}px) translate(${AX[k] || '-50%'},${AY[k] || '0px'})`; }
+    for (const k in stations) { const g = stations[k].g; v.set(g.position.x, 0, g.position.z + stations[k].r + .18).project(camera); (stationE[k] = stationE[k] || { el: labels[k], pri: Object.keys(stations).indexOf(k) }).base = `translate(${(v.x * hw + hw).toFixed(1)}px,${(-v.y * hh + hh).toFixed(1)}px) translate(${AX[k] || '-50%'},${AY[k] || '0px'})`; labels[k].style.transform = stationE[k].base; }
+    declutter(container, Object.values(stationE));
     if (!reduced || dirty || moving) { renderer.render(scene, camera); dirty = false; }
   }
   requestAnimationFrame(frame);

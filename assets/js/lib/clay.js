@@ -2,12 +2,12 @@
 import * as THREE from 'three';
 
 export const THEMES = {
-  A: { // warm paper + stone + ink, restrained accents (modernised)
-    name:'A', bg:'#F5EEE1', ground:'#F0EADD', zone:'#EEE6D6', ink:'#2A2118', cream:'#F1EBDD', creamDark:'#D3C9B5', door:'#6E5C48',
-    rough:.8, pipeOpacity:.5, shadow:.20,
-    sky:'#FFF8EC', gnd:'#B9AB92', hemi:1.3, sun:'#FFF6E8', sunI:1.8,
-    stress:{warn:'#C79A45', stress:'#B8573F', broken:'#8A3141'},
-    hue:{green:'#6F8F7C',amber:'#B38F4E',blue:'#5D7E99',credit:'#7C97B0',gold:'#B59B5C',orange:'#B3603A',purple:'#7D7490',slate:'#7E8890',cyan:'#6A989A',red:'#A4504A',teal:'#5E8E84'}
+  A: { // HARDWARE: graphite, anodised metal, brushed aluminium, studio-lit. One signal accent (red) for state only.
+    name:'A', hw:true, bg:'#0A0B0D', ground:'#13151A', zone:'#1C1F25', ink:'#E9ECEF', cream:'#D5D9DE', creamDark:'#8A9097', door:'#2B2F35',
+    rough:.4, pipeOpacity:.9, shadow:.5,
+    sky:'#8d9bb0', gnd:'#05060a', hemi:.22, sun:'#ffffff', sunI:2.1,
+    stress:{warn:'#E0A030', stress:'#E5483A', broken:'#FF2A1F'},
+    hue:{green:'#2FBF8A',amber:'#EBA82E',blue:'#4C8DFF',credit:'#6C95FF',gold:'#EBA82E',orange:'#F7931A',purple:'#A78BFA',slate:'#8A939D',cyan:'#34D1E6',red:'#E5586A',teal:'#2FBFB0'}
   },
   B: { // cool airy pastel / glass
     name:'B', bg:'#E8F1FB', ground:'#DCE9F8', zone:'#EBF3FC', ink:'#13233A', cream:'#FFFFFF', creamDark:'#D6E3F3', door:'#5A7396',
@@ -22,20 +22,52 @@ export const hueOf = (T,legacy)=>T.hue[LEGACY_HUE[legacy.toLowerCase()]||'blue']
 
 /* Material registry so we can re-tint/dim/emit per object */
 /* mute(): cap saturation + clamp lightness so every scene reads tonal (paper / stone / ink) with only a few accents. Idempotent. */
-export function mute(hex){
-  const c=new THREE.Color(hex), hsl={}; c.getHSL(hsl);
-  const terracotta = hsl.h>.01 && hsl.h<.09;
-  hsl.s=Math.min(hsl.s, terracotta?.5:.3); hsl.l=Math.min(.88,Math.max(.22,hsl.l));
-  return '#'+new THREE.Color().setHSL(hsl.h,hsl.s,hsl.l).getHexString();
+const mixHex=(a,b,t)=>'#'+new THREE.Color(a).lerp(new THREE.Color(b),t).getHexString();
+const DONE=new Map();   // colours already converted by mute(): hwMat must not convert them twice
+/* hardware material ramp: lightness of the requested tone picks the material family */
+export function hwSpec(hex){
+  const c=new THREE.Color(hex), hsl={}; c.getHSL(hsl); const l=hsl.l;
+  let col,metal,r,ei=1.0,em=null,emI=0;
+  if(hsl.s>.32 && l>.12){                                           // chromatic accent: deep anodised colour + a little emitted light
+    const light=l>.72, hl={}; c.getHSL(hl,THREE.SRGBColorSpace);
+    const cc=new THREE.Color().setHSL(hsl.h,Math.min(.44,hsl.s*.7),light?.58:Math.min(.38,Math.max(.27,hl.l*.62)),THREE.SRGBColorSpace);
+    col='#'+cc.getHexString(); metal=light?.55:.9; r=light?.3:.28; em=col; emI=light?.3:.12; ei=1.1;
+  }
+  else if(l>=.78){ col='#A9AFB7'; metal=.95; r=.32; ei=.95; }
+  else if(l>=.5){ col=mixHex('#5E656D',hex,.1); metal=.92; r=.4; ei=.95; }
+  else if(l>=.3){ col=mixHex('#2E3238',hex,.12); metal=.85; r=.34; ei=1.0; }
+  else if(l>=.14){ col='#17191D'; metal=.6; r=.42; ei=.9; }
+  else { col='#0F1114'; metal=.55; r=.28; ei=.9; }
+  return {col,metal,r,ei,em,emI};
 }
+export function hwMat(hex,rough){
+  const q=DONE.get(String(hex).toLowerCase())||hwSpec(hex);
+  const m=new THREE.MeshStandardMaterial({color:q.col,roughness:rough??q.r,metalness:q.metal,envMapIntensity:q.ei});
+  if(q.em){ m.emissive=new THREE.Color(q.em); m.emissiveIntensity=q.emI; m.userData.emBase=new THREE.Color(q.em); m.userData.emI=q.emI; }
+  return m;
+}
+/* mute(): in the hardware theme, maps a paint colour to its metal/anodised equivalent (for raw colours set per frame). */
+export function mute(hex){ const q=hwSpec(hex); DONE.set(q.col.toLowerCase(),q); return q.col; }
 export class Mats {
   constructor(T){ this.T=T; this.list=[]; }
   clay(hex,{rough,metal=0,emissive=0}={}){
-    hex=mute(hex);
-    const m = new THREE.MeshStandardMaterial({color:hex, roughness:rough??this.T.rough, metalness:metal});
-    m.userData.base = new THREE.Color(hex);
+    let m;
+    if(this.T.hw){ m=hwMat(hex,rough); }
+    else { hex=mute(hex); m=new THREE.MeshStandardMaterial({color:hex, roughness:rough??this.T.rough, metalness:metal}); }
+    m.userData.base = m.color.clone();
     this.list.push(m); return m;
   }
+}
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+/* studio(): filmic tone-mapping, image-based reflections and two cool rim lights behind the subject */
+export function studio(renderer,scene,mobile,rims){
+  rims=rims||['#cfe0ff','#ffffff'];
+  renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=.9;
+  const pm=new THREE.PMREMGenerator(renderer); const env=new RoomEnvironment(renderer);
+  scene.environment=pm.fromScene(env,.03).texture; pm.dispose();
+  const r1=new THREE.DirectionalLight(rims[0],3.0); r1.position.set(-9,6,-10);
+  const r2=new THREE.DirectionalLight(rims[1],2.0); r2.position.set(10,5,-8);
+  scene.add(r1,r2);
 }
 const G = {}; // geometry cache
 const geo = (k,f)=> G[k] || (G[k]=f());

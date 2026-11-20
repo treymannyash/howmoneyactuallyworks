@@ -2,7 +2,7 @@
 import { createStage, THREE, clayMesh, smoothTo, lighten, darken, rrect, mute } from './lib/stage3d.js';
 import { NUGGETS } from './content/site-data.js';
 
-const HUES = ['#E58353', '#E8A94B', '#DE7068', '#6FA3CC', '#A58BD0', '#5FBBA0', '#86B58F', '#E5BD54', '#72C4C7'].map(mute);
+const HUES = ['#F7931A', '#EBA82E', '#E5586A', '#4C8DFF', '#A78BFA', '#2FBFB0', '#2FBF8A', '#EBA82E', '#34D1E6'];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const parse = n => { const m = n.body.match(/<div class="mech">([\s\S]*?)<\/div>/); const b = m && m[1].match(/<b>([\s\S]*?)<\/b>/); const chain = b ? b[1].split(/\s*→\s*|\s+—\s+/).map(s => s.replace(/\.$/, '')) : []; return { chain, mech: m ? m[0] : '' }; };
 
@@ -22,11 +22,13 @@ export function createXray(stageEl, panel, listEl, { gl, reduced }) {
   if (!gl) { stageEl.style.display = 'none'; document.querySelector('.xray').style.gridTemplateColumns = '1fr'; return; }
   st = createStage(stageEl, { tray: { w: 17, d: 12, r: 2, z: .9 }, polar: [.3, 1.0], azimuth: [-.55, .55], zoom: false, minDist: 9, maxDist: 40, label: 'Nine speech bubbles, one per common slogan. Select one to crack it open and see the mechanism underneath. The same list is below as buttons.' });
   if (!st) { stageEl.style.display = 'none'; document.querySelector('.xray').style.gridTemplateColumns = '1fr'; return; }
+  const bright = h => '#' + new THREE.Color(h).lerp(new THREE.Color('#ffffff'), .38).getHexString();
   const plain = s => s.replace(/<[^>]+>/g, '');
   const wrap = (ctx, text, maxW) => { const words = text.split(' '); const lines = []; let line = ''; words.forEach(w => { const test = line ? line + ' ' + w : w; if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test; }); lines.push(line); return lines; };
-  const paint = (cv, n, hex, idx) => { const c = cv.getContext('2d'); c.clearRect(0, 0, 1024, 512); c.fillStyle = '#' + new THREE.Color(hex).lerp(new THREE.Color('#ffffff'), .62).getHexString(); c.fillRect(0, 0, 1024, 512);
-    c.fillStyle = '#' + new THREE.Color(hex).lerp(new THREE.Color('#2A2118'), .5).getHexString(); c.font = '600 30px "IBM Plex Mono", monospace'; c.textBaseline = 'top'; c.fillText(String(idx + 1).padStart(2, '0') + ' / 09', 60, 50);
-    c.fillStyle = '#2A2118'; let fs = 112; c.font = `italic 600 ${fs}px Fraunces, Georgia, serif`; let lines = wrap(c, n.badge, 880); while (lines.length > 2 && fs > 60) { fs -= 8; c.font = `italic 600 ${fs}px Fraunces, Georgia, serif`; lines = wrap(c, n.badge, 880); }
+  const paint = (cv, n, hex, idx) => { const c = cv.getContext('2d'); c.clearRect(0, 0, 1024, 512); c.fillStyle = '#12151A'; c.fillRect(0, 0, 1024, 512);
+    c.fillStyle = bright(hex); c.fillRect(0, 0, 1024, 14); c.fillRect(0, 498, 1024, 14);
+    c.fillStyle = bright(hex); c.font = '600 30px "JetBrains Mono", monospace'; c.textBaseline = 'top'; c.fillText(String(idx + 1).padStart(2, '0') + ' / 09', 60, 50);
+    c.fillStyle = '#F2F4F6'; let fs = 104; c.font = `600 ${fs}px Inter, system-ui, sans-serif`; let lines = wrap(c, n.badge, 880); while (lines.length > 2 && fs > 56) { fs -= 8; c.font = `600 ${fs}px Inter, system-ui, sans-serif`; lines = wrap(c, n.badge, 880); }
     lines.forEach((l, k) => c.fillText(l, 60, 130 + k * (fs * 1.15))); };
   const hit = [];
   const bubbles = items.map((n, i) => {
@@ -44,13 +46,13 @@ export function createXray(stageEl, panel, listEl, { gl, reduced }) {
   st.canvas.addEventListener('pointerup', e => { if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 6) return; const r = st.canvas.getBoundingClientRect(); mp.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(mp, st.camera); const h = ray.intersectObjects(hit, false)[0]; if (h) select(h.object.userData.i); });
   st.canvas.style.cursor = 'pointer';
   const chain = new THREE.Group(); st.root.add(chain); const nodes = [], nlabs = [], links = [];
-  for (let k = 0; k < 4; k++) { const m = clayMesh(st, new THREE.SphereGeometry(.55, 24, 16), '#E58353', { y: .7, parent: chain }); const lab = st.addLabel(() => new THREE.Vector3(m.position.x, 1.45, m.position.z), '', { cls: 'chn', anchor: mobile ? 'below' : 'above' }); nodes.push(m); nlabs.push(lab); if (k) { const c = clayMesh(st, new THREE.CylinderGeometry(.09, .09, 1, 10), '#C8B58F', { y: .7, parent: chain }); links.push(c); } }
+  for (let k = 0; k < 4; k++) { const m = clayMesh(st, new THREE.SphereGeometry(.55, 24, 16), '#4C8DFF', { y: .7, parent: chain }); const lab = st.addLabel(() => new THREE.Vector3(m.position.x, 1.45, m.position.z), '', { cls: 'chn', anchor: mobile ? 'below' : 'above' }); nodes.push(m); nlabs.push(lab); if (k) { const c = clayMesh(st, new THREE.CylinderGeometry(.09, .09, 1, 10), '#8A939D', { y: .7, parent: chain }); links.push(c); } }
   chain.position.z = 2.3;
   const apt = new THREE.Group(); apt.position.z = 4.6; st.root.add(apt); const apts = [];
-  for (let k = 0; k < 6; k++) { const g = new THREE.Group(); g.position.x = -4 + k * 1.6; apt.add(g); const b = clayMesh(st, new THREE.BoxGeometry(1.1, 1, 1.1), ['#E9CDA6', '#F1D9B5', '#DDBB8E'][k % 3], { y: .5, parent: g }); clayMesh(st, new THREE.BoxGeometry(1.25, .16, 1.25), '#C0392B', { y: 1.08, parent: b, cast: false }).scale.set(1, 1, 1); g.userData = { b }; apts.push(g); }
-  const people = []; for (let k = 0; k < 8; k++) { const p = new THREE.Group(); clayMesh(st, new THREE.CylinderGeometry(.16, .22, .45, 12), '#6B5A45', { y: .22, parent: p }); clayMesh(st, new THREE.SphereGeometry(.2, 12, 10), '#E9CDA6', { y: .62, parent: p }); p.position.set(5.2, 0, 1.0 - k * .45); p.userData = { u: 0 }; apt.add(p); people.push(p); }
+  for (let k = 0; k < 6; k++) { const g = new THREE.Group(); g.position.x = -4 + k * 1.6; apt.add(g); const b = clayMesh(st, new THREE.BoxGeometry(1.1, 1, 1.1), ['#C9CED4', '#D5D9DE', '#BCC2C9'][k % 3], { y: .5, parent: g }); clayMesh(st, new THREE.BoxGeometry(1.25, .16, 1.25), '#4C8DFF', { y: 1.08, parent: b, cast: false }).scale.set(1, 1, 1); g.userData = { b }; apts.push(g); }
+  const people = []; for (let k = 0; k < 8; k++) { const p = new THREE.Group(); clayMesh(st, new THREE.CylinderGeometry(.2, .2, .5, 16), '#EBA82E', { y: .25, parent: p }); clayMesh(st, new THREE.CylinderGeometry(.2, .2, .08, 16), '#F2F4F6', { y: .54, parent: p }); p.position.set(5.2, 0, 1.0 - k * .45); p.userData = { u: 0 }; apt.add(p); people.push(p); }
   const aLab1 = st.addLabel(() => new THREE.Vector3(-4, 2.3, 4.6), '<b>Rental homes</b>', { cls: 'tw', anchor: 'above' }), aLab2 = st.addLabel(() => new THREE.Vector3(5.2, 1.2, 4.6), '<b>Waiting list</b>', { cls: 'tw', anchor: 'above' });
-  const tok = new THREE.Mesh(new THREE.SphereGeometry(.2, 14, 10), new THREE.MeshStandardMaterial({ color: '#FBF4E6', emissive: '#E58353', emissiveIntensity: .7 })); chain.add(tok);
+  const tok = new THREE.Mesh(new THREE.SphereGeometry(.2, 14, 10), new THREE.MeshStandardMaterial({ color: '#F2F4F6', emissive: '#4C8DFF', emissiveIntensity: .7 })); chain.add(tok);
   setSel = () => { st.markDirty(); };
   st.onFrame((dt, t, k) => {
     let mv = false; const n = items[sel], cnt = n.chain.length;

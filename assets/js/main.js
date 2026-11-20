@@ -6,6 +6,7 @@ import { shockFrames } from './lib/shock.js';
 import { NM } from './lib/data.js';
 import { CH, DET, YEAR_TEXTS, M2, EVS } from './content/site-data.js';
 import { createXray } from './xray.js';
+import { legendEl } from './lib/flows.js';
 
 const reduced = prefersReduced(), gl = webglOK();
 const $ = (s, r = document) => r.querySelector(s);
@@ -13,8 +14,8 @@ if (!gl) document.documentElement.classList.add('nogl');
 if (reduced) document.documentElement.classList.add('rm');
 const T = THEMES.A;
 const HREF = { ideas: 'chapters/ideas.html', machine: 'chapters/machine.html', trap: 'chapters/trap.html', exit: 'chapters/exit.html', detour: 'chapters/detour.html' };
-const LEG = { ideas: '#f5a623', machine: '#4db8ff', trap: '#f87171', exit: '#ff7043', detour: '#00e5a0' };
-const CC = { ideas: '#C9941A', machine: '#4A8CBB', trap: '#C9564D', exit: '#D1702F', detour: '#4E9468' };
+const LEG = { ideas: '#f5a623', machine: '#4db8ff', trap: '#f87171', exit: '#ff7043', detour: '#c084fc' };
+const CC = { ideas: '#F2B13C', machine: '#4C8DFF', trap: '#F04F6B', exit: '#F7931A', detour: '#A78BFA' };
 
 /* ---------- hero ---------- */
 let hero = null;
@@ -37,7 +38,7 @@ setYear(EVS[0][0]);
 const ALL = [...CH, DET];
 const stOf = c => c.stats.replace(/<i>/g, '<i>');
 $('#chambers').innerHTML = ALL.map((c, i) => `
-<section class="chamber${i % 2 ? ' alt' : ''}${c.key === 'detour' ? ' det' : ''}" data-k="${c.key}" id="ch-${c.key}" aria-labelledby="h-${c.key}">
+<section class="chamber${i % 2 ? ' alt light' : ''}${c.key === 'detour' ? ' det' : ''}" data-k="${c.key}" id="ch-${c.key}" aria-labelledby="h-${c.key}">
   <span class="bignum" aria-hidden="true">${c.num}</span>
   <div class="txt">
     <div class="eyebrow">${c.key === 'detour' ? 'Branches off Chapter I' : 'Chapter <b>' + c.num + '</b>'}</div>
@@ -51,8 +52,8 @@ $('#chambers').innerHTML = ALL.map((c, i) => `
 </section>`).join('');
 
 function iconStage(c, el) {
-  let st = null; const v = () => st.fit(new THREE.Vector3(0, 1.5, 0), 4.6, 3.0, .78);
-  st = createStage(el, { tray: { w: 11, d: 9, r: 1.8 }, autoRotate: true, polar: [.5, 1.2], zoom: false, refit: v, label: `Illustration for ${c.name}. Drag to rotate.` });
+  let st = null; const v = () => st.fit(new THREE.Vector3(0, 1.5, 0), 4.4, 2.9, .78);
+  st = createStage(el, { tray: { w: 10, d: 8, r: .5 }, autoRotate: true, polar: [.5, 1.2], zoom: false, refit: v, label: `Illustration for ${c.name}. Drag to rotate.` });
   if (!st) return null; const hue = hueOf(T, LEG[c.key]);
   const ic = makeChapterIcon(c.key, hue, T, st.mats); ic.scale.setScalar(3.6); ic.position.y = 0; st.root.add(ic);
   st.onFrame((dt, t) => { if (st.reduced) return false; const ud = ic.userData; ud.spin && ud.spin.forEach(([o, s]) => o.rotation.y += dt * s); ud.bob && ud.bob.forEach(([o, a]) => o.position.y = (o.userData.y0 ??= o.position.y) + Math.sin(t * 2) * a); return true; });
@@ -67,6 +68,7 @@ function machineChamber(el) {
   btn.addEventListener('click', () => { if (i >= 0) { reset(); return; } eco.clearFocus(); eco.autoRotate(false); eco.flyTo(null); btn.textContent = '■ Reset'; (function next() { i++; show(i); if (i < 5) timer = setTimeout(next, reduced ? 1800 : 2600); else { timer = null; btn.textContent = '↺ Reset'; } })(); });
   return eco;
 }
+{ const t = document.querySelector('.chamber[data-k=machine] .txt .btns'); if (t) t.parentNode.insertBefore(legendEl(), t); }
 const made = {};
 const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const k = e.target.dataset.k; if (made[k] || !gl) return; made[k] = 1; const c = ALL.find(x => x.key === k); const el = $('#sc-' + k); try { (k === 'machine' ? machineChamber(el) : iconStage(c, el)); } catch (er) { console.warn(er); } }), { rootMargin: '400px' });
 document.querySelectorAll('.chamber').forEach(s => io.observe(s));

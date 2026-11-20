@@ -1,4 +1,4 @@
-import { createStage, clayMesh, smoothTo, THREE, lighten, darken, mute } from '../lib/stage3d.js';
+import { createStage, clayMesh, smoothTo, THREE, lighten, darken, mute, ACCENT } from '../lib/stage3d.js';
 import { EXTRAS } from '../content/extras-data.js';
 import { mountChapter, $, $$, esc, segmented } from '../lib/kit.js';
 import { EXIT as X } from '../content/exit-data.js';
@@ -17,7 +17,7 @@ function buildScene(el) {
   const roof = clayMesh(st, new THREE.BoxGeometry(10.4, .5, 4.4), C.l1, { y: 2.05, parent: cake }); const roofLab = st.addLabel(() => new THREE.Vector3(0, 2.3, 2.3), '<b>₿ Bitcoin base layer</b><span class="st">Layer 1 · the foundation</span>', { cls: 'tw', anchor: 'above' });
   const mkRoom = (x, hex, name, sub) => { const g = new THREE.Group(); g.position.set(x, 2.3, -.9); cake.add(g); const b = clayMesh(st, new THREE.BoxGeometry(4.3, 1.9, 2.1), hex, { y: .95, parent: g }); const r = clayMesh(st, new THREE.BoxGeometry(4.7, .28, 2.5), darken(hex, .12), { y: 2.05, parent: g });
     [-1.2, 0, 1.2].forEach(k => clayMesh(st, new THREE.BoxGeometry(.7, .8, .06), '#FBF4E6', { x: k, y: 1.1, z: 1.06, parent: g, cast: false })); const L = st.addLabel(() => new THREE.Vector3(x, 4.8, -.9), `<b>${name}</b><span class="st">${sub}</span>`, { cls: 'tw', anchor: 'above' }); g.userData = { b, r, L, glow: 0 }; return g; };
-  const liq = mkRoom(-2.7, C.liq, '💧 Liquid', 'Layer 2 · the institutional room'), fed = mkRoom(2.7, C.fed, '🔐 Fedimint', 'Layer 2 · the community room');
+  const liq = mkRoom(-2.7, C.liq, 'Liquid', 'Layer 2 · the institutional room'), fed = mkRoom(2.7, C.fed, 'Fedimint', 'Layer 2 · the community room');
   // vaults (inside roofs' underside = on the ground between columns) + coins
   const vault = x => { const v = clayMesh(st, new THREE.BoxGeometry(1.2, .6, .9), '#8A6A4C', { x, y: 2.3 + .3, z: 1.35, parent: cake }); return v; };
   const vL = vault(-3), vF = vault(3);
@@ -35,8 +35,8 @@ function buildScene(el) {
     const showFiat = fiat || (view === 'cmp' && cmpCol === 3); cake.visible = !showFiat; fi.visible = showFiat; fiL.forEach(L => L.el.hidden = !showFiat); roofLab.el.hidden = showFiat; liq.userData.L.el.hidden = showFiat; fed.userData.L.el.hidden = showFiat; cols.forEach(c => c.userData.L.el.hidden = showFiat);
     // highlight
     const hl = (name) => (hlLayer === 'all' || hlLayer === name) ? 0 : 1;
-    [[roof, 'l1', C.l1], [liq.userData.b, 'liq', C.liq], [fed.userData.b, 'fed', C.fed]].forEach(([m, n, hex]) => { m.userData.dim = m.userData.dim ?? 0; if (smoothTo(m.userData, 'dim', hl(n), k)) mv = true; m.material.color.set(hex).lerp(new THREE.Color('#E7DCC6'), m.userData.dim * .8); });
-    cols.forEach((g, i) => { const u = g.userData; const on = prop === i; if (smoothTo(u, 'sel', on ? 1 : 0, k)) mv = true; g.position.y = u.sel * .35; u.c.material.emissive.set('#FFD28A'); u.c.material.emissiveIntensity = u.sel * .5; const dimC = (hlLayer === 'all' || hlLayer === 'l1') ? 0 : .8; u.c.material.color.set(C.l1).lerp(new THREE.Color('#E7DCC6'), dimC); u.L.el.classList.toggle('sel', on); });
+    [[roof, 'l1', C.l1], [liq.userData.b, 'liq', C.liq], [fed.userData.b, 'fed', C.fed]].forEach(([m, n, hex]) => { m.userData.dim = m.userData.dim ?? 0; if (smoothTo(m.userData, 'dim', hl(n), k)) mv = true; m.material.color.set(hex).lerp(new THREE.Color('#262A30'), m.userData.dim * .8); });
+    cols.forEach((g, i) => { const u = g.userData; const on = prop === i; if (smoothTo(u, 'sel', on ? 1 : 0, k)) mv = true; g.position.y = u.sel * .35; u.c.material.emissive.set(ACCENT); u.c.material.emissiveIntensity = u.sel * .5; const dimC = (hlLayer === 'all' || hlLayer === 'l1') ? 0 : .8; u.c.material.color.set(C.l1).lerp(new THREE.Color('#262A30'), dimC); u.L.el.classList.toggle('sel', on); });
     // peg animation
     const isL = room === 'liquid', vx = isL ? -3 : 3, tok = isL ? tokL : tokF, other = isL ? tokF : tokL, tx = isL ? -2.7 : 2.7; other.visible = false;
     const tgtC = new THREE.Vector3(), tgtT = new THREE.Vector3(); let tokS = 0;
@@ -62,7 +62,7 @@ const setHL = h => { hlLayer = h; S && S.markDirty(); };
 const go = v => { sc && sc.show(v); };
 const rot = b => S && S.autoRotate(b);
 
-const roomCard = (id, R, color) => `<div class="kicker-row"><span class="tag-risk" style="background:${color};color:#fff">${esc(R.badge)}</span></div><h2>${esc(R.head)}</h2><p class="lede">${R.lede}</p>
+const roomCard = (id, R, color) => `<div class="kicker-row"><span class="tag-risk" style="background:color-mix(in srgb,${color} 24%,#0A0B0D);color:#F2F4F6;border:1px solid ${color}">${esc(R.badge)}</span></div><h2>${esc(R.head)}</h2><p class="lede">${R.lede}</p>
   <div class="widget"><label for="${id}-ph"><span>Walk through it</span><output id="${id}-out"></output></label><input type="range" id="${id}-ph" min="0" max="3" step="1" value="0"><div class="tl-ticks" aria-hidden="true">${R.steps.map((_, i) => `<span>${i + 1}</span>`).join('')}</div></div>
   <div class="who" id="${id}-who" aria-live="polite" style="border-color:${color}"></div>
   <div class="feat">${R.feat.map(f => `<div><span class="fl">${esc(f.l)}</span><span class="fv">${esc(f.v)}</span></div>`).join('')}</div>
