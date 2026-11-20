@@ -201,3 +201,9 @@ h1 em{background:linear-gradient(90deg,#F5BE57 0%,#7FB0FF 36%,#FF7B8F 68%,#FFA64
 /* label density on small stages */
 @media (max-width:900px){.stage .flow-legend{top:62px;bottom:auto;max-width:none;width:auto;right:8px;left:8px;display:flex}}
 @media (max-width:640px){.nlabel.plab .st{display:none}.nlabel.plab{font-size:9px}.nlabel .st{font-size:8px}}
+@media (max-width:640px){
+  .nlabel[data-k],.stn-label{padding-top:13px!important;font-size:8px;letter-spacing:.08em}
+  .nlabel[data-k]::before,.stn-label::before{height:10px}
+  .nlabel[data-k] .nm{padding:1px 4px}
+}
+@media (max-width:640px){.nlabel.plab,.nlabel.plab b{font-size:8px!important;letter-spacing:0!important}.nlabel.plab{padding:2px 5px!important}.nlabel.tw b,.nlabel.mlab b{font-size:9px}}
