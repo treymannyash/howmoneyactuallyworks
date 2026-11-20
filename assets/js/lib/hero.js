@@ -72,6 +72,7 @@ export function createHero(container, opts = {}) {
     ideas: ['I.', 'The Ideas', 'Where the doctrine came from', '#ch-ideas'], machine: ['II.', 'The Machine', 'How money actually moves', '#chamber-machine'],
     trap: ['III.', 'The Trap', 'What the plumbing does in a crisis', '#ch-trap'], exit: ['IV.', 'The Exit', 'Rails built outside the system', '#ch-exit'], detour: ['◆', 'The Detour', 'School of Salamanca, 1544–1605', '#ch-detour']
   };
+  const AX = mobile ? {} : { ideas: '-70%', detour: '-12%' }, AY = mobile ? {} : { ideas: '-6px', detour: '4px' }; /* keep neighbouring labels from colliding */
   const labels = {};
   for (const k in LAB) { const a = document.createElement('a'); a.href = (opts.hrefs && opts.hrefs[k]) || LAB[k][3]; a.className = 'stn-label ' + k; a.innerHTML = `<span class="num">${LAB[k][0]}</span> <b>${LAB[k][1]}</b><small>${LAB[k][2]}</small>`; layer.appendChild(a); labels[k] = a; }
 
@@ -83,7 +84,7 @@ export function createHero(container, opts = {}) {
     const dist = Math.max(10.4 / (th * aspect), 7.4 / th) * 1.0 + (mobile ? 0 : 0);
     const pitch = .86; controls.target.set(-.2, 0, 1.2);
     camera.position.set(controls.target.x, Math.sin(pitch) * dist, controls.target.z + Math.cos(pitch) * dist);
-    if (!mobile) camera.setViewOffset(size.w, size.h, -size.w * .05, -size.h * .08, size.w, size.h); else camera.clearViewOffset();
+    camera.clearViewOffset(); /* stage is its own framed box: centre the map in it */
     camera.aspect = aspect; camera.updateProjectionMatrix(); controls.update(); dirty = true;
   }
   const ro = new ResizeObserver(() => { const r = container.getBoundingClientRect(); size = { w: Math.max(2, r.width | 0), h: Math.max(2, r.height | 0) }; renderer.setSize(size.w, size.h, false); place(); }); ro.observe(container);
@@ -97,7 +98,7 @@ export function createHero(container, opts = {}) {
     if (!reduced) { for (const k in stations) { const ud = stations[k].ic.userData; ud.spin.forEach(([o, s]) => o.rotation.y += dt * s); ud.bob.forEach(([o, a]) => o.position.y = (o.userData.y0 ??= o.position.y) + Math.sin(time * 2) * a); } moving = true; }
     if (controls.update()) moving = true;
     const hw = size.w / 2, hh = size.h / 2;
-    for (const k in stations) { const g = stations[k].g; v.set(g.position.x, 0, g.position.z + stations[k].r + .18).project(camera); labels[k].style.transform = `translate(${(v.x * hw + hw).toFixed(1)}px,${(-v.y * hh + hh).toFixed(1)}px) translate(-50%,0)`; }
+    for (const k in stations) { const g = stations[k].g; v.set(g.position.x, 0, g.position.z + stations[k].r + .18).project(camera); labels[k].style.transform = `translate(${(v.x * hw + hw).toFixed(1)}px,${(-v.y * hh + hh).toFixed(1)}px) translate(${AX[k] || '-50%'},${AY[k] || '0px'})`; }
     if (!reduced || dirty || moving) { renderer.render(scene, camera); dirty = false; }
   }
   requestAnimationFrame(frame);
